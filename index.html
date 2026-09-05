@@ -1,13 +1,2032 @@
 <!doctype html>
 <html lang="ja">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SOTOTUNA - 政策学部コミュニティ</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SOTOTUNA 🌱 — 政策学部つながりアプリ（内部β）</title>
+<link rel="icon" type="image/png" href="data:image/png;base64,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">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ===== CONFIG: デザイントークン（要件定義書A §7.2 共通＋C案固有） ===== */
+:root {
+  --green: #3a7500;
+  --green-light: #8bc34a;
+  --green-pale: #e8f2dc;
+  --cream: #faf7ef;
+  --white: #ffffff;
+  --coral: #ff8a65;
+  --yellow: #f5c542;
+  --sky: #7ec8e3;
+  --ink: #4c4948;
+  --ink-weak: #8d8a87;
+  --ba-ribbon: #f5c542;
+  --thanks: #ff8a65;
+  --anon-bg: #eef4e6;
+  --mark: #fff3bf;
+  --radius: 20px; --radius-s: 12px;
+  --shadow: 0 4px 16px rgba(58,117,0,.08);
+  --dur-fast: 150ms; --dur: 250ms;
+  --ease-pop: cubic-bezier(.34,1.56,.64,1);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  font-family: "Zen Maru Gothic", "Hiragino Maru Gothic ProN", sans-serif;
+  background: var(--cream); color: var(--ink);
+  font-size: 15px; line-height: 1.6;
+}
+button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
+  outline: 3px solid var(--green-light); outline-offset: 2px; border-radius: 6px;
+}
+mark { background: var(--mark); border-radius: 3px; padding: 0 1px; }
+#app { max-width: 480px; margin: 0 auto; min-height: 100dvh; position: relative;
+  padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
+
+.app-head { display: flex; align-items: center; gap: 8px; padding: 16px 16px 4px; }
+.app-logo { font-size: 22px; font-weight: 700; color: var(--green); }
+.app-logo .leaf { font-size: 18px; }
+.brand-mark { width: 27px; height: 27px; flex: none; display: block; }
+.ob-brand { display: flex; flex-direction: column; align-items: center; gap: 4px;
+  margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--green-pale); }
+.ob-brand img { width: 132px; height: auto; display: block; opacity: .95; }
+.ob-brand span { font-size: 11px; color: var(--ink-weak); }
+
+.head-search { margin-left: auto; margin-right: 94px; width: 44px; height: 44px; border-radius: 50%;
+  background: var(--white); box-shadow: var(--shadow); font-size: 18px; }
+.screen-title { font-size: 20px; font-weight: 700; color: var(--green); padding: 16px 112px 2px 16px; }
+.screen-sub { font-size: 12px; color: var(--ink-weak); padding: 0 16px 10px; }
+
+/* ===== 使い方ガイド ===== */
+.guide-launch { position: fixed; z-index: 45; top: max(12px, env(safe-area-inset-top));
+  right: max(12px, calc((100vw - 480px) / 2 + 12px)); min-width: 84px; height: 44px;
+  padding: 0 13px; border-radius: 999px; background: var(--white); color: var(--green);
+  box-shadow: 0 4px 18px rgba(58,117,0,.16); border: 1.5px solid var(--green-pale);
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  font-size: 12px; font-weight: 700; }
+.guide-launch:active { transform: scale(.96); }
+.guide-launch[hidden] { display: none; }
+.guide-launch .guide-q { width: 22px; height: 22px; border-radius: 50%; background: var(--green);
+  color: #fff; display: grid; place-items: center; font-size: 14px; line-height: 1; }
+.guide-overlay { position: fixed; inset: 0; z-index: 100; display: none; align-items: center;
+  justify-content: center; padding: 20px; background: rgba(47,55,43,.58); backdrop-filter: blur(4px); }
+.guide-overlay.on { display: flex; animation: fadeIn var(--dur) ease; }
+.guide-dialog { width: min(100%, 390px); min-height: 520px; background: var(--white);
+  border-radius: 28px; box-shadow: 0 24px 70px rgba(28,48,20,.24); padding: 18px;
+  display: flex; flex-direction: column; }
+.guide-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.guide-kicker { color: var(--green); font-size: 12px; font-weight: 700; letter-spacing: .06em; }
+.guide-close { width: 40px; height: 40px; border-radius: 50%; background: var(--cream);
+  color: var(--ink-weak); font-size: 22px; display: grid; place-items: center; }
+.guide-visual { width: 104px; height: 104px; margin: 18px auto 12px; border-radius: 30px;
+  background: var(--green-pale); display: grid; place-items: center; position: relative; }
+.guide-visual img { width: 72px; height: 72px; object-fit: contain; }
+.guide-visual::after { content: ""; position: absolute; inset: -7px; border: 2px dashed rgba(58,117,0,.22);
+  border-radius: 36px; }
+.guide-title { color: var(--green); font-size: 25px; line-height: 1.35; text-align: center; }
+.guide-copy { margin: 12px auto 0; max-width: 300px; color: var(--ink); font-size: 14px;
+  line-height: 1.8; text-align: center; }
+.guide-tip { margin: 16px auto 0; padding: 10px 13px; max-width: 310px; width: 100%;
+  border-radius: 14px; background: var(--cream); color: var(--ink-weak); font-size: 12px; line-height: 1.65; }
+.guide-spacer { flex: 1; }
+.guide-progress { display: flex; justify-content: center; gap: 7px; margin: 18px 0; }
+.guide-dot { width: 8px; height: 8px; border-radius: 50%; background: #d9dfd3; }
+.guide-dot.on { width: 24px; border-radius: 999px; background: var(--green); }
+.guide-actions { display: flex; gap: 10px; }
+.guide-actions button { min-height: 48px; border-radius: 999px; font-weight: 700; }
+.guide-back { width: 92px; background: var(--cream); color: var(--ink-weak); }
+.guide-next { flex: 1; background: var(--green); color: #fff; box-shadow: var(--shadow); }
+.guide-back[hidden] { display: block; visibility: hidden; }
+@media (max-width: 380px) {
+  .guide-launch { min-width: 44px; width: 44px; padding: 0; }
+  .guide-launch .guide-label { display: none; }
+  .head-search { margin-right: 54px; }
+  .screen-title { padding-right: 72px; }
+}
+
+/* ===== チップ・並び ===== */
+.chips { display: flex; gap: 8px; padding: 10px 16px 4px; overflow-x: auto; scrollbar-width: none; }
+.chips::-webkit-scrollbar { display: none; }
+.chip { flex: none; padding: 7px 14px; border-radius: 999px; font-size: 13px; font-weight: 500;
+  background: var(--white); color: var(--green); border: 1.5px solid var(--green-pale);
+  transition: transform 100ms; min-height: 36px; display: inline-flex; align-items: center; gap: 5px; }
+.chip:active { transform: scale(.96); }
+.chip.on { background: var(--green); color: #fff; border-color: var(--green); }
+.sort-row { display: flex; align-items: center; gap: 8px; padding: 6px 16px 10px; font-size: 13px; color: var(--ink-weak); }
+.sort-row select { font: inherit; font-size: 13px; border: 1.5px solid var(--green-pale);
+  border-radius: 999px; padding: 6px 12px; background: var(--white); color: var(--green); font-weight: 700; }
+.search-bar { display: none; padding: 4px 16px 8px; }
+.search-bar.on { display: block; }
+.search-bar input { width: 100%; border: 1.5px solid var(--green-pale); border-radius: 999px;
+  padding: 10px 16px; font: inherit; background: var(--white); color: var(--ink); }
+
+/* ===== カード共通 ===== */
+.card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: 16px; margin: 0 16px 12px; }
+.badge { font-size: 11px; font-weight: 700; color: #fff; padding: 2px 9px; border-radius: 999px; }
+.badge.current { background: var(--green); }
+.badge.obog { background: var(--coral); }
+.badge.faculty { background: var(--yellow); color: #6b5300; }
+.badge.staff { background: var(--sky); color: #1c5468; }
+.cat-chip { font-size: 11px; font-weight: 700; padding: 2px 10px; border-radius: 999px;
+  background: var(--green-pale); color: var(--green); display: inline-flex; align-items: center; gap: 4px; }
+.mini-icon { width: 17px; height: 17px; object-fit: contain; flex: none; }
+.solve-chip { font-size: 11px; font-weight: 700; padding: 2px 10px; border-radius: 999px;
+  background: var(--yellow); color: #6b5300; }
+.open-chip { font-size: 11px; font-weight: 700; padding: 2px 10px; border-radius: 999px;
+  background: var(--coral); color: #fff; }
+
+/* ===== 質問カード ===== */
+.q-card { cursor: pointer; transition: transform 100ms; }
+.q-card:active { transform: scale(.985); }
+.q-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
+.q-user { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; }
+.q-avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--green-pale);
+  display: grid; place-items: center; font-size: 16px; }
+.q-avatar.anon { background: var(--anon-bg); }
+.q-date { margin-left: auto; font-size: 11px; color: var(--ink-weak); }
+.q-text { font-size: 15px; overflow-wrap: anywhere; }
+.q-text.clamp { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.q-meta { display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--ink-weak);
+  margin-top: 8px; flex-wrap: wrap; font-variant-numeric: tabular-nums; }
+
+/* ===== 質問詳細 ===== */
+.detail-back { display: flex; align-items: center; gap: 4px; color: var(--green); font-weight: 700;
+  font-size: 14px; padding: 12px 16px 0; min-height: 44px; }
+.metoo-btn { display: inline-flex; align-items: center; gap: 6px; border: 1.5px solid var(--green-pale);
+  background: var(--cream); border-radius: 999px; padding: 8px 14px; font-size: 13px; font-weight: 700;
+  min-height: 44px; transition: transform 100ms; }
+.metoo-btn:active { transform: scale(.95); }
+.metoo-btn.done { background: var(--green-pale); border-color: var(--green-light); color: var(--green); }
+.ans-count-label { font-size: 14px; font-weight: 700; color: var(--green); padding: 4px 16px 8px; }
+.answer { position: relative; }
+.answer.best { border: 2px solid var(--ba-ribbon); }
+.ba-ribbon { position: absolute; top: -10px; left: 16px; background: var(--ba-ribbon); color: #6b5300;
+  font-size: 11px; font-weight: 700; padding: 2px 12px; border-radius: 999px; }
+.ans-head { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap; }
+.ans-name { font-weight: 700; font-size: 13px; }
+.ans-gen { font-size: 11px; color: var(--ink-weak); }
+.ans-text { font-size: 14px; overflow-wrap: anywhere; }
+.thanks-row { margin-top: 10px; display: flex; align-items: center; gap: 8px; }
+.thanks-btn { display: inline-flex; align-items: center; gap: 6px; border: 1.5px solid var(--thanks);
+  color: var(--thanks); background: none; border-radius: 999px; padding: 7px 14px;
+  font-size: 13px; font-weight: 700; min-height: 40px; transition: transform 100ms;
+  font-variant-numeric: tabular-nums; }
+.thanks-btn:active { transform: scale(.95); }
+.thanks-btn.mine { background: var(--thanks); color: #fff; }
+.thanks-btn .sprout { display: inline-block; }
+.thanks-btn .sprout.grow { animation: grow 300ms var(--ease-pop); }
+@keyframes grow { 0% { transform: scale(0); } 60% { transform: scale(1.2); } 100% { transform: scale(1); } }
+.ans-form { margin: 0 16px 16px; }
+.ans-guide { font-size: 12px; color: var(--ink-weak); margin-bottom: 6px; }
+.ans-form textarea { width: 100%; border: 1.5px solid var(--green-pale); border-radius: var(--radius-s);
+  padding: 11px 12px; font: inherit; background: var(--white); color: var(--ink); resize: none; height: 76px; }
+.ans-submit { margin-top: 8px; height: 44px; }
+
+/* ===== ひろば ===== */
+.board-toggle { display: flex; align-items: center; gap: 8px; padding: 4px 16px 10px; font-size: 13px; }
+.switch { position: relative; width: 44px; height: 26px; border-radius: 999px; background: #ddd8d0;
+  transition: background var(--dur-fast); flex: none; }
+.switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px;
+  border-radius: 50%; background: #fff; transition: transform var(--dur-fast); box-shadow: 0 1px 4px rgba(0,0,0,.2); }
+.switch.on { background: var(--green-light); }
+.switch.on::after { transform: translateX(18px); }
+.r-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
+.r-type { font-size: 11px; font-weight: 700; padding: 2px 10px; border-radius: 999px;
+  background: var(--green-pale); color: var(--green); }
+.r-state { font-size: 11px; font-weight: 700; padding: 2px 10px; border-radius: 999px; }
+.r-state.open { background: var(--green); color: #fff; }
+.r-state.closed { background: #dcd8d2; color: var(--ink-weak); }
+.r-title { font-size: 15px; font-weight: 700; margin: 2px 0; text-wrap: balance; }
+.r-body { font-size: 13px; color: var(--ink); display: -webkit-box; -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical; overflow: hidden; }
+.r-meta { font-size: 12px; color: var(--ink-weak); margin: 6px 0; }
+.help-row { display: flex; align-items: center; gap: 10px; }
+.help-btn { height: 42px; padding: 0 16px; border-radius: 999px; font-weight: 700; font-size: 13px;
+  background: var(--green); color: #fff; transition: transform 100ms; }
+.help-btn:active { transform: scale(.96); }
+.help-btn.mine { background: var(--coral); }
+.help-btn:disabled { background: #dcd8d2; color: var(--ink-weak); cursor: default; }
+.help-count { font-size: 13px; color: var(--ink-weak); font-variant-numeric: tabular-nums; }
+.r-card { cursor: pointer; border: 1.5px solid transparent; transition: transform 100ms, border-color var(--dur-fast); }
+.r-card:active { transform: scale(.985); }
+.r-card:focus-visible { border-color: var(--green-light); }
+.r-open { margin-left: auto; font-size: 12px; font-weight: 700; color: var(--green); }
+.board-detail-head { margin-top: 6px; }
+.board-detail-head .r-body { display: block; overflow: visible; }
+.thread-title { display: flex; align-items: center; justify-content: space-between; padding: 8px 16px; }
+.thread-title h2 { font-size: 15px; color: var(--green); }
+.thread-title span { font-size: 11px; color: var(--ink-weak); }
+.thread-list { position: relative; padding: 0 16px 4px; }
+.thread-list::before { content: ""; position: absolute; left: 31px; top: 10px; bottom: 18px;
+  width: 2px; background: var(--green-pale); }
+.thread-item { position: relative; display: grid; grid-template-columns: 36px 1fr; gap: 10px; margin-bottom: 12px; }
+.thread-avatar { position: relative; z-index: 1; width: 36px; height: 36px; border-radius: 50%;
+  background: var(--green-pale); display: grid; place-items: center; font-size: 18px; border: 3px solid var(--cream); }
+.thread-bubble { background: var(--white); border-radius: 4px 16px 16px 16px; padding: 10px 12px;
+  box-shadow: var(--shadow); overflow-wrap: anywhere; }
+.thread-item.mine .thread-bubble { background: #fff1ec; }
+.thread-by { display: flex; align-items: baseline; gap: 8px; margin-bottom: 2px; }
+.thread-by b { font-size: 12px; }
+.thread-by time { font-size: 10px; color: var(--ink-weak); }
+.thread-bubble p { font-size: 13px; }
+.thread-form { margin: 0 16px 18px; padding: 14px; border-radius: var(--radius); background: var(--green-pale); }
+.thread-form label { display: block; color: var(--green); font-size: 12px; font-weight: 700; margin-bottom: 5px; }
+.thread-form textarea { width: 100%; height: 82px; resize: none; border: 1.5px solid rgba(58,117,0,.2);
+  border-radius: var(--radius-s); padding: 10px 11px; font: inherit; background: var(--white); }
+.thread-form .btn-main { margin-top: 8px; height: 42px; }
+
+/* ===== 先生図鑑 ===== */
+.teacher-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 4px 16px; }
+.tcard { perspective: 800px; min-height: 236px; }
+.tcard-inner { position: relative; width: 100%; height: 100%;
+  transform-style: preserve-3d; transition: transform 400ms ease-in-out; min-height: 236px; }
+.tcard.flipped .tcard-inner { transform: rotateY(180deg); }
+.tface { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  background: var(--white); border-radius: var(--radius-s); box-shadow: var(--shadow);
+  padding: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; gap: 2px; }
+.tface.back { transform: rotateY(180deg); background: var(--green-pale); justify-content: flex-start;
+  text-align: left; align-items: stretch; overflow: hidden; }
+.t-avatar { width: 58px; height: 58px; display: grid; place-items: center; }
+.t-avatar img { width: 56px; height: 56px; object-fit: contain; }
+.t-name { font-weight: 700; font-size: 15px; }
+.t-field { font-size: 12px; color: var(--green); font-weight: 700; }
+.t-sem { font-size: 11px; color: var(--ink-weak); }
+.t-flip-hint { font-size: 10px; color: var(--ink-weak); margin-top: 6px; }
+.t-back-row { font-size: 11px; margin-bottom: 3px; line-height: 1.45; }
+.t-back-row b { color: var(--green); font-size: 10px; display: block; }
+.t-msg { font-size: 11px; font-weight: 700; color: var(--green); margin-top: auto; }
+.teacher-note { text-align: center; font-size: 12px; color: var(--ink-weak); padding: 14px 24px; }
+
+/* ===== 本棚 ===== */
+.book-card { display: flex; gap: 12px; }
+.book-icon { flex: none; width: 44px; height: 56px; border-radius: 6px 10px 10px 6px;
+  display: grid; place-items: center; background: var(--green-pale); }
+.book-icon img { width: 42px; height: 42px; object-fit: contain; }
+.book-title { font-weight: 700; font-size: 14px; }
+.book-author { font-size: 12px; color: var(--ink-weak); }
+.book-reco { font-size: 12px; margin-top: 4px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.book-comment { font-size: 13px; margin-top: 2px; color: var(--ink); }
+.book-tag { font-size: 10px; font-weight: 700; color: var(--green); background: var(--green-pale);
+  border-radius: 999px; padding: 1px 8px; }
+
+/* ===== マイページ ===== */
+.me-head { display: flex; align-items: center; gap: 12px; }
+.avatar-big { width: 56px; height: 56px; border-radius: 50%; background: var(--green-pale);
+  display: grid; place-items: center; font-size: 30px; }
+.me-name { font-size: 18px; font-weight: 700; }
+.tree-card { text-align: center; }
+.tree-svg { transform-origin: bottom center; }
+.tree-svg.sprout-in { animation: treein 600ms ease both; }
+@keyframes treein { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+.tree-count { font-size: 14px; font-weight: 700; color: var(--green); margin-top: 4px; }
+.tree-stage { font-size: 12px; color: var(--ink-weak); }
+.me-tabs { display: flex; gap: 8px; padding: 4px 16px 10px; }
+.mylist-row { padding: 8px 0; font-size: 13px; border-bottom: 1px solid var(--green-pale); }
+.mylist-row:last-child { border-bottom: none; }
+.mylist-empty { font-size: 13px; color: var(--ink-weak); }
+
+/* ===== タブバー ===== */
+.tabbar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 100%; max-width: 480px; height: calc(64px + env(safe-area-inset-bottom));
+  padding-bottom: env(safe-area-inset-bottom);
+  background: var(--white); border-top: 1.5px solid var(--green-pale);
+  display: flex; z-index: 50; }
+.tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 1px; font-size: 10px; color: var(--ink-weak); font-weight: 700; }
+.tab .ic { width: 29px; height: 29px; display: grid; place-items: center; line-height: 1; }
+.tab .ic img { width: 29px; height: 29px; object-fit: contain; transition: transform var(--dur-fast); }
+.tab.on .ic img { transform: translateY(-2px) scale(1.08); }
+.tab.on { color: var(--green); }
+
+/* ===== FAB ===== */
+.fab { position: fixed; right: max(16px, calc(50% - 240px + 16px));
+  bottom: calc(84px + env(safe-area-inset-bottom)); z-index: 45;
+  background: var(--green); color: #fff; font-weight: 700; font-size: 14px;
+  border-radius: 999px; padding: 14px 20px; box-shadow: 0 4px 14px rgba(58,117,0,.35);
+  transition: transform 100ms; }
+.fab:active { transform: scale(.95); }
+
+/* ===== 画面切替 ===== */
+.view { display: none; }
+.view.on { display: block; animation: viewin var(--dur-fast) ease both; }
+@keyframes viewin { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+.empty { text-align: center; padding: 40px 24px; color: var(--ink-weak); }
+.empty .mascot { margin-bottom: 8px; }
+.inline-mascot { width: 76px; height: 76px; object-fit: contain; display: inline-block;
+  filter: drop-shadow(0 3px 6px rgba(58,117,0,.12)); }
+#obMascot .inline-mascot { width: 92px; height: 92px; }
+
+/* ===== オーバーレイ・シート ===== */
+.overlay { position: fixed; inset: 0; background: rgba(76,73,72,.45); z-index: 100;
+  display: none; align-items: flex-end; justify-content: center; }
+.overlay.on { display: flex; }
+.overlay.center { align-items: center; padding: 24px; }
+.sheet { background: var(--white); width: 100%; max-width: 480px;
+  border-radius: var(--radius) var(--radius) 0 0; padding: 20px 20px calc(20px + env(safe-area-inset-bottom));
+  animation: sheetin var(--dur) var(--ease-pop) both; max-height: 88dvh; overflow-y: auto; }
+.dialog { background: var(--white); width: 100%; max-width: 400px; border-radius: var(--radius);
+  padding: 24px 20px; text-align: center; animation: sheetin var(--dur) var(--ease-pop) both; }
+@keyframes sheetin { from { transform: translateY(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+.sheet-title { font-size: 17px; font-weight: 700; margin-bottom: 12px; }
+.hello { font-size: 16px; font-weight: 700; margin: 10px 0 2px; }
+.hello-sub { font-size: 13px; color: var(--ink-weak); margin-bottom: 14px; }
+.field { margin-bottom: 14px; text-align: left; }
+.field label { font-size: 12px; font-weight: 700; color: var(--green); display: block; margin-bottom: 6px; }
+.field input[type=text], .field input[type=date], .field textarea, .field select {
+  width: 100%; border: 1.5px solid var(--green-pale); border-radius: var(--radius-s);
+  padding: 11px 12px; font: inherit; background: var(--cream); color: var(--ink); }
+.field textarea { resize: none; height: 96px; }
+.count-note { text-align: right; font-size: 12px; color: var(--ink-weak); margin-top: 4px;
+  font-variant-numeric: tabular-nums; }
+.attr-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.attr-chip { padding: 8px 14px; border-radius: 999px; border: 1.5px solid var(--green-pale);
+  background: var(--cream); font-size: 13px; font-weight: 500; min-height: 40px;
+  display: inline-flex; align-items: center; gap: 5px; }
+.attr-chip.on { background: var(--green); border-color: var(--green); color: #fff; }
+.anon-row { display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  background: var(--anon-bg); border-radius: var(--radius-s); padding: 10px 14px; }
+.anon-label { font-size: 13px; font-weight: 700; }
+.anon-note { font-size: 11px; color: var(--ink-weak); }
+.btn-main { display: block; width: 100%; height: 48px; border-radius: 999px;
+  background: var(--green); color: #fff; font-size: 15px; font-weight: 700;
+  transition: transform 100ms, opacity var(--dur-fast); }
+.btn-main:active { transform: scale(.96); }
+.btn-main:disabled { opacity: .4; cursor: default; }
+
+/* ===== つなまる・トースト・紙吹雪 ===== */
+.tsunamaru { position: fixed; right: max(12px, calc(50% - 240px + 12px));
+  bottom: calc(84px + env(safe-area-inset-bottom)); z-index: 40;
+  animation: floaty 3s ease-in-out infinite; }
+@keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+.tsunamaru button { display: block; border-radius: 50%; }
+.tsunamaru img { display: block; width: 72px; height: 72px; object-fit: contain;
+  filter: drop-shadow(0 4px 7px rgba(58,117,0,.18)); }
+.speech { position: fixed; right: max(12px, calc(50% - 240px + 12px));
+  bottom: calc(140px + env(safe-area-inset-bottom)); z-index: 41;
+  background: var(--white); border: 1.5px solid var(--green-pale); border-radius: 16px 16px 4px 16px;
+  padding: 8px 12px; font-size: 13px; font-weight: 500; box-shadow: var(--shadow);
+  max-width: 220px; animation: sheetin 200ms var(--ease-pop) both; }
+.toast { position: fixed; left: 50%; transform: translateX(-50%);
+  bottom: calc(88px + env(safe-area-inset-bottom)); z-index: 200;
+  background: var(--green); color: #fff; font-size: 13px; font-weight: 500;
+  padding: 10px 18px; border-radius: 999px; box-shadow: var(--shadow);
+  animation: sheetin 200ms ease both; max-width: 90%; text-align: center; }
+.confetti { position: fixed; inset: 0; pointer-events: none; z-index: 300; overflow: hidden; }
+.confetti i { position: absolute; top: -12px; width: 8px; height: 12px; border-radius: 2px;
+  animation: fall 1s ease-in forwards; }
+@keyframes fall { to { transform: translateY(105vh) rotate(540deg); opacity: .7; } }
+
+/* ===== ブランド ===== */
+.brand-logo { height: 26px; width: auto; display: block; }
+
+/* ===== イベント ===== */
+.event-stage { min-height: calc(100dvh - 76px); background:
+  radial-gradient(circle at 10% 6%, rgba(245,197,66,.16) 0 42px, transparent 43px),
+  radial-gradient(circle at 92% 23%, rgba(139,195,74,.16) 0 62px, transparent 63px), var(--cream); }
+.event-hero { position: relative; min-height: 166px; margin: 12px 16px 4px; padding: 22px 128px 18px 20px;
+  overflow: hidden; border-radius: 28px 28px 10px 28px; background: var(--green);
+  color: #fff; box-shadow: 0 8px 24px rgba(31,86,0,.18); }
+.event-hero::after { content: ""; position: absolute; inset: 8px; border: 1.5px dashed rgba(255,255,255,.36);
+  border-radius: 22px 22px 8px 22px; pointer-events: none; }
+.event-kicker { display: inline-block; padding: 3px 9px; border-radius: 999px; background: var(--yellow);
+  color: #5b4700; font-size: 10px; font-weight: 700; letter-spacing: .06em; }
+.event-hero h1 { position: relative; z-index: 1; font-size: 25px; line-height: 1.3; margin-top: 8px; }
+.event-hero p { position: relative; z-index: 1; font-size: 12px; margin-top: 6px; opacity: .9; }
+.event-hero img { position: absolute; z-index: 1; width: 132px; height: 132px; object-fit: contain;
+  right: 3px; bottom: -4px; transform: rotate(2deg); }
+.event-tabs { justify-content: center; padding-top: 12px; }
+.event-tabs .chip { min-width: 124px; justify-content: center; background: rgba(255,255,255,.82); }
+.event-tabs .chip.on { background: var(--yellow); border-color: var(--yellow); color: #5b4700; }
+.event-list-label { margin: 10px 16px 7px; font-size: 12px; font-weight: 700; color: var(--green); }
+.ev-card { display: flex; gap: 12px; align-items: flex-start; cursor: pointer; transition: transform 100ms; }
+.event-stage .ev-card { border: 1.5px solid rgba(58,117,0,.12); border-radius: 10px 24px 24px 24px; }
+.event-stage .ev-card:nth-of-type(even) { border-radius: 24px 10px 24px 24px; }
+.ev-card:active { transform: scale(.985); }
+.ev-emoji { flex: none; width: 46px; height: 46px; border-radius: 14px; background: var(--green-pale);
+  display: grid; place-items: center; }
+.ev-emoji img { width: 41px; height: 41px; object-fit: contain; }
+.year-event { display: inline-flex; align-items: center; gap: 3px; }
+.year-icon { width: 19px; height: 19px; object-fit: contain; vertical-align: middle; }
+.ev-head-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.ev-title { font-weight: 700; font-size: 15px; }
+.ev-when { font-size: 12px; color: var(--ink-weak); margin-top: 2px; font-variant-numeric: tabular-nums; }
+.ev-lead { font-size: 13px; margin-top: 6px; }
+.ev-state { font-size: 11px; font-weight: 700; padding: 2px 10px; border-radius: 999px; }
+.ev-state.now { background: var(--green); color: #fff; }
+.ev-state.soon { background: var(--yellow); color: #6b5300; }
+.ev-state.planned { background: var(--green-pale); color: var(--green); }
+.ev-state.done { background: #dcd8d2; color: var(--ink-weak); }
+.ev-joined { font-size: 12px; color: var(--ink-weak); font-variant-numeric: tabular-nums; }
+.join-row { display: flex; align-items: center; gap: 10px; margin: 0 16px 14px; flex-wrap: wrap; }
+.join-btn { height: 44px; padding: 0 20px; border-radius: 999px; font-weight: 700; font-size: 14px;
+  background: var(--green); color: #fff; transition: transform 100ms; }
+.join-btn:active { transform: scale(.96); }
+.join-btn.mine { background: var(--coral); }
+.year-row { display: flex; gap: 10px; align-items: baseline; padding: 7px 8px; font-size: 13px;
+  border-bottom: 1px solid var(--green-pale); }
+.year-row:last-child { border-bottom: none; }
+.year-row.on { background: var(--green-pale); border-radius: 10px; border-bottom-color: transparent; }
+.year-m { flex: none; width: 46px; font-weight: 700; color: var(--green); }
+.year-e.none { color: var(--ink-weak); }
+.req-box { margin: 16px; padding: 18px 16px; border-radius: var(--radius); background: var(--white);
+  border: 1.5px dashed var(--green-light); text-align: center; }
+.req-title { font-weight: 700; font-size: 14px; color: var(--green); }
+.req-note { font-size: 12px; color: var(--ink-weak); margin: 4px 0 12px; }
+.note-box { margin: 0 16px 12px; font-size: 12px; color: var(--ink); background: var(--green-pale);
+  border-radius: var(--radius-s); padding: 10px 12px; line-height: 1.5; }
+
+/* ===== OB訪問うけつけ ===== */
+.host-card { display: flex; gap: 12px; }
+.host-av { flex: none; width: 44px; height: 44px; border-radius: 50%; background: var(--green-pale);
+  display: grid; place-items: center; font-size: 22px; }
+.host-name { font-weight: 700; font-size: 14px; }
+.host-meta { font-size: 12px; color: var(--ink-weak); }
+.host-topics { font-size: 13px; margin-top: 4px; }
+.host-style { font-size: 11px; font-weight: 700; color: var(--green); background: var(--green-pale);
+  border-radius: 999px; padding: 2px 9px; display: inline-block; margin-top: 6px; }
+.host-ask { margin-top: 8px; height: 38px; padding: 0 14px; border-radius: 999px; font-size: 13px;
+  font-weight: 700; border: 1.5px solid var(--green); color: var(--green); }
+.host-toggle { display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  background: var(--anon-bg); border-radius: var(--radius-s); padding: 12px 14px; }
+
+/* ===== 討論会ブラッシュアップ ===== */
+.tr-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
+.tr-sem { font-size: 11px; font-weight: 700; background: var(--sky); color: #1c5468;
+  border-radius: 999px; padding: 2px 10px; }
+.tr-sem.mine { background: var(--green); color: #fff; }
+.tr-title { font-size: 15px; font-weight: 700; margin: 2px 0 4px; text-wrap: balance; }
+.tr-body { font-size: 13px; }
+.tr-lock { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; color: var(--ink-weak);
+  background: var(--cream); border: 1.5px dashed #ddd8d0; border-radius: var(--radius-s); padding: 12px; }
+.tr-comment { font-size: 13px; border-left: 3px solid var(--green-pale); padding: 4px 0 4px 10px; margin-top: 8px; }
+.tr-comment b { display: block; font-size: 11px; color: var(--green); }
+.tr-cta { margin-top: 10px; height: 40px; padding: 0 16px; border-radius: 999px; font-size: 13px;
+  font-weight: 700; background: var(--green-pale); color: var(--green); }
+.preview-row { display: flex; gap: 8px; align-items: center; padding: 0 16px 10px;
+  font-size: 12px; color: var(--ink-weak); overflow-x: auto; scrollbar-width: none; }
+.preview-row::-webkit-scrollbar { display: none; }
+.preview-row > * { flex: none; }
+.sem-pick { display: flex; gap: 8px; padding: 0 16px 10px; overflow-x: auto; scrollbar-width: none; }
+.sem-pick::-webkit-scrollbar { display: none; }
+
+/* ===== 先生詳細シート ===== */
+.t-title { font-size: 11px; color: var(--ink-weak); }
+.t-more { font-size: 10px; font-weight: 700; color: var(--green); margin-top: 6px; }
+.tsheet-head { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; }
+.tsheet-av { flex: none; width: 54px; height: 54px; border-radius: 50%; background: var(--green-pale);
+  display: grid; place-items: center; }
+.tsheet-av img { width: 50px; height: 50px; object-fit: contain; }
+.tsheet-name { font-weight: 700; font-size: 17px; }
+.tsheet-field { font-size: 12px; color: var(--green); font-weight: 700; }
+.tsheet-sec { margin-bottom: 12px; }
+.tsheet-sec h4 { font-size: 12px; color: var(--green); margin-bottom: 2px; }
+.tsheet-sec p { font-size: 13px; line-height: 1.65; }
+.tsheet-link { display: inline-block; margin-top: 2px; font-size: 12px; color: var(--green);
+  font-weight: 700; text-decoration: underline; }
+.tsheet-p { font-size: 13px; line-height: 1.65; margin-bottom: 8px; }
+.tsheet-p:last-child { margin-bottom: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .tsunamaru { animation: none; }
+  .confetti { display: none; }
+  .tcard-inner { transition: none; }
+  .thanks-btn .sprout.grow { animation: none; }
+  .tree-svg.sprout-in { animation: none; }
+  .view.on, .sheet, .dialog, .toast, .speech { animation-duration: 1ms; }
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <button class="guide-launch" id="guideLaunch" aria-label="アプリの使い方を見る" hidden>
+    <span class="guide-q" aria-hidden="true">?</span><span class="guide-label">使い方</span>
+  </button>
+
+  <!-- きく（Q&Aフィード） -->
+  <section class="view" id="view-qa" aria-label="質問一覧">
+    <header class="app-head">
+      <img class="brand-logo" src="data:image/png;base64,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" alt="SOTOTUNA">
+      <button class="head-search" id="searchToggle" aria-label="検索">🔍</button>
+    </header>
+    <div class="search-bar" id="searchBar">
+      <input type="text" id="searchInput" placeholder="キーワードでさがす" aria-label="質問を検索">
+    </div>
+    <div class="chips" id="qaChips"></div>
+    <div class="sort-row">並び:
+      <select id="sortSel" aria-label="並び替え">
+        <option value="new">新着順</option>
+        <option value="thanks">🌱が多い順</option>
+        <option value="open">未回答のみ</option>
+      </select>
+    </div>
+    <div id="qaList"></div>
+  </section>
+
+  <!-- 質問詳細 -->
+  <section class="view" id="view-detail" aria-label="質問詳細"></section>
+
+  <!-- ひろば -->
+  <section class="view" id="view-board" aria-label="ひろば">
+    <h1 class="screen-title">ひろば</h1>
+    <p class="screen-sub">「一緒にしませんか」の募集ボード🌱</p>
+    <div class="board-toggle">
+      <button class="switch on" id="openOnly" role="switch" aria-checked="true" aria-label="募集中のみ表示"></button>
+      募集中のみ表示
+    </div>
+    <div id="boardList"></div>
+  </section>
+
+  <!-- ひろば詳細・スレッド -->
+  <section class="view" id="view-boarddetail" aria-label="ひろばの募集詳細"></section>
+
+  <!-- 先生図鑑 -->
+  <section class="view" id="view-teachers" aria-label="先生図鑑">
+    <h1 class="screen-title">先生図鑑</h1>
+    <p class="screen-sub">政策学部の先生たち。タップするとめくれるよ</p>
+    <div class="search-bar on" style="padding-top:2px">
+      <input type="text" id="teacherSearch" placeholder="名前・専門でさがす（例: 防災、経営、言語）" aria-label="先生を検索">
+    </div>
+    <div class="sort-row"><span id="teacherCount">33人</span></div>
+    <div class="teacher-grid" id="teacherGrid"></div>
+    <div class="empty" id="teacherEmpty" hidden>見つからなかった…<br>ちがう言葉でさがしてみて🌱</div>
+    <p class="teacher-note">※ 政策学部公式サイトの公開情報をもとにした<b>内部検討用</b>の画面です。<br>外部公開の際は、ご本人の確認をとります</p>
+  </section>
+
+  <!-- イベント -->
+  <section class="view event-stage" id="view-events" aria-label="イベント">
+    <div class="event-hero">
+      <span class="event-kicker">SOTOTUNA SEASON</span>
+      <h1>今だけの<br>つながる企画</h1>
+      <p>季節ごとに開く、みんなの特設会場です。</p>
+      <img src="assets/character-event-guide-v01.png" alt="旗を持ってイベントを案内するキャラクター">
+    </div>
+    <div class="chips event-tabs" id="eventChips"></div>
+    <div class="event-list-label" id="eventListLabel">いま参加できる企画</div>
+    <div id="eventList"></div>
+    <div class="req-box">
+      <div class="req-title">こんなイベントしてほしい！</div>
+      <p class="req-note">やってほしい企画、ありますか?　運営に届きます</p>
+      <button class="btn-main" id="eventRequest">リクエストを送る</button>
+    </div>
+  </section>
+
+  <!-- イベント詳細 -->
+  <section class="view" id="view-eventdetail" aria-label="イベント詳細"></section>
+
+  <!-- マイページ -->
+  <section class="view" id="view-me" aria-label="マイページ"></section>
+
+  <!-- タブバー -->
+  <nav class="tabbar" aria-label="メインタブ">
+    <button class="tab" data-route="#/qa"><span class="ic"><img src="assets/icon-nav-ask.png" alt=""></span>きく</button>
+    <button class="tab" data-route="#/board"><span class="ic"><img src="assets/icon-nav-board.png" alt=""></span>ひろば</button>
+    <button class="tab" data-route="#/events"><span class="ic"><img src="assets/icon-nav-events.png" alt=""></span>イベント</button>
+    <button class="tab" data-route="#/teachers"><span class="ic"><img src="assets/icon-nav-teachers.png" alt=""></span>先生</button>
+    <button class="tab" data-route="#/me"><span class="ic"><img src="assets/icon-nav-me.png" alt=""></span>マイ</button>
+  </nav>
+
+  <!-- FAB -->
+  <button class="fab" id="askFab" hidden>＋ きいてみる</button>
+  <button class="fab" id="recruitFab" hidden>＋ 募集する</button>
+
+  <!-- イベント案内キャラクター -->
+  <div class="tsunamaru" id="tsunamaru" hidden>
+    <button id="tsunamaruBtn" aria-label="イベント案内キャラクターに話しかける"></button>
+  </div>
+
+  <!-- 質問投稿シート -->
+  <div class="overlay" id="askOverlay">
+    <div class="sheet" role="dialog" aria-modal="true" aria-label="質問を投稿">
+      <h2 class="sheet-title">みんなに、きいてみよう</h2>
+      <div class="field">
+        <label>カテゴリ</label>
+        <div class="attr-chips" id="askCats"></div>
+      </div>
+      <div class="field">
+        <label for="askText">質問（300字まで）</label>
+        <textarea id="askText" maxlength="300" placeholder="例: 公務員試験の勉強、いつから始めましたか?"></textarea>
+        <div class="count-note" id="askCount">0 / 300</div>
+      </div>
+      <div class="field">
+        <div class="anon-row">
+          <div>
+            <div class="anon-label">匿名できく</div>
+            <div class="anon-note">匿名でも、ちゃんと届くよ🌱</div>
+          </div>
+          <button class="switch on" id="anonToggle" role="switch" aria-checked="true" aria-label="匿名で投稿"></button>
+        </div>
+      </div>
+      <button class="btn-main" id="askSubmit" disabled>きいてみる</button>
+    </div>
+  </div>
+
+  <!-- 募集投稿シート -->
+  <div class="overlay" id="recruitOverlay">
+    <div class="sheet" role="dialog" aria-modal="true" aria-label="募集を投稿">
+      <h2 class="sheet-title">「一緒にしませんか」を募集する</h2>
+      <div class="field">
+        <label>募集タイプ</label>
+        <div class="attr-chips" id="recTypes"></div>
+      </div>
+      <div class="field">
+        <label for="recTitle">タイトル（30字まで）</label>
+        <input type="text" id="recTitle" maxlength="30" placeholder="例: 卒論アンケートにご協力ください">
+      </div>
+      <div class="field">
+        <label for="recBody">内容（200字まで）</label>
+        <textarea id="recBody" maxlength="200" style="height:76px"></textarea>
+        <div class="count-note" id="recCount">0 / 200</div>
+      </div>
+      <div class="field">
+        <label for="recDeadline">締切日</label>
+        <input type="date" id="recDeadline">
+      </div>
+      <button class="btn-main" id="recSubmit" disabled>募集する</button>
+    </div>
+  </div>
+
+  <!-- 先生詳細シート -->
+  <div class="overlay" id="teacherOverlay">
+    <div class="sheet" role="dialog" aria-modal="true" aria-label="先生の詳細" id="teacherSheet"></div>
+  </div>
+
+  <!-- オンボーディング -->
+  <div class="overlay center" id="onboarding">
+    <div class="dialog" role="dialog" aria-modal="true" aria-label="はじめまして">
+      <div id="obMascot"></div>
+      <div class="hello">はじめまして！なんて呼んだらいい?</div>
+      <div class="hello-sub">きく・つながる・引き出す。<br>政策学部の、卒業しない場所。</div>
+      <div class="field">
+        <label for="obName">よびな（1〜10字）</label>
+        <input type="text" id="obName" maxlength="10" autocomplete="nickname" placeholder="例: まる">
+      </div>
+      <div class="field">
+        <label>あなたは…</label>
+        <div class="attr-chips" id="obAttrs"></div>
+      </div>
+      <div class="field" id="obSemField" hidden>
+        <label>参加ゼミ（討論会イベントの公開範囲に使います）</label>
+        <div class="attr-chips" id="obSems"></div>
+      </div>
+      <div class="field" id="obGenField" hidden>
+        <label for="obGeneration">卒業期</label>
+        <select id="obGeneration" aria-label="卒業期を選択">
+          <option value="">選んでください</option>
+        </select>
+        <div class="count-note">12期生が2026年卒です</div>
+      </div>
+      <button class="btn-main" id="obStart" disabled>はじめる</button>
+      <div class="ob-brand">
+        <img src="data:image/png;base64,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" alt="SOTOTUNA">
+        <span>政策学部同窓会がつくっています</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- アプリの使い方 -->
+  <div class="guide-overlay" id="guideOverlay" aria-hidden="true">
+    <div class="guide-dialog" role="dialog" aria-modal="true" aria-labelledby="guideTitle">
+      <div class="guide-head">
+        <span class="guide-kicker" id="guideStepLabel">SOTOTUNAの使い方</span>
+        <button class="guide-close" id="guideClose" aria-label="使い方を閉じる">×</button>
+      </div>
+      <div class="guide-visual" id="guideVisual"></div>
+      <h2 class="guide-title" id="guideTitle"></h2>
+      <p class="guide-copy" id="guideCopy"></p>
+      <div class="guide-tip" id="guideTip"></div>
+      <div class="guide-spacer"></div>
+      <div class="guide-progress" id="guideProgress" aria-label="ガイドの進み具合"></div>
+      <div class="guide-actions">
+        <button class="guide-back" id="guideBack">もどる</button>
+        <button class="guide-next" id="guideNext">つぎへ</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* =====================================================================
+   CONFIG
+===================================================================== */
+const ATTRS = {
+  current: { label: "現役生", cls: "current" },
+  obog:    { label: "OBOG",   cls: "obog" },
+  faculty: { label: "教員",   cls: "faculty" },
+  staff:   { label: "職員",   cls: "staff" },
+};
+const GRADUATION_COHORTS = Array.from({ length: 12 }, (_, i) => ({
+  cohort: i + 1,
+  graduationYear: 2015 + i,
+}));
+const GUIDE_STEPS = [
+  { route:"#/qa", icon:"assets/icon-nav-ask.png", title:"きく",
+    copy:"就活・仕事・研究・くらしの疑問を、政策学部のみんなに質問できます。匿名でも投稿できます。",
+    tip:"経験から答えられる質問には、ぜひひとこと。役立った回答には「ありがとう🌱」を送れます。" },
+  { route:"#/board", icon:"assets/icon-nav-board.png", title:"ひろば",
+    copy:"アンケート、壁打ち、イベントのお手伝いなど、「一緒にしませんか」を募集する場所です。",
+    tip:"気になる募集を開くと、公開スレッドで質問や日程相談、参加表明ができます。" },
+  { route:"#/events", icon:"assets/icon-nav-events.png", title:"イベント",
+    copy:"同窓会やOB訪問月間など、季節ごとの企画を見つけて参加できます。",
+    tip:"「開催中」と「まもなく」を切り替えると、今参加できる企画と次の予定が分かります。" },
+  { route:"#/teachers", icon:"assets/icon-nav-teachers.png", title:"先生",
+    copy:"政策学部の先生を、名前や専門分野から探せます。カードを開くと研究や人柄が分かります。",
+    tip:"気になる先生のページから、その分野について質問することもできます。" },
+  { route:"#/me", icon:"assets/icon-nav-me.png", title:"マイ",
+    copy:"自分の質問・回答・募集を振り返る場所です。届いた「ありがとう」の数も確認できます。",
+    tip:"使い方を忘れたときは、どの画面からでも右上の「使い方」を押してください。" },
+];
+const QCATS = {
+  career:   { label: "就活",       icon: "assets/icon-cat-job.png" },
+  work:     { label: "仕事",       icon: "assets/icon-cat-work.png" },
+  research: { label: "研究・ゼミ", icon: "assets/icon-cat-research.png" },
+  life:     { label: "くらし",     icon: "assets/icon-cat-life.png" },
+};
+function uiIcon(src, cls = "mini-icon") {
+  return `<img class="${cls}" src="${src}" alt="" aria-hidden="true">`;
+}
+function catLabel(key) {
+  const cat = QCATS[key];
+  return `${uiIcon(cat.icon)}${cat.label}`;
+}
+const RTYPES = {
+  survey:     { label: "🙋アンケート協力" },
+  brainstorm: { label: "🤝ブレスト相手" },
+  event:      { label: "🎪イベント手伝い" },
+  other:      { label: "📦その他" },
+};
+const BOOK_TAGS = ["すべて", "公務員", "金融", "メーカー", "IT", "教育", "NPO"];
+const SPEECHES = [
+  "その質問、だれかが詳しいかも","匿名でも大丈夫だよ","ありがとうを伝えよう🌱","未回答の質問が待ってるよ",
+  "先生図鑑、めくってみた?","10月はOB訪問月間だよ","11月は討論会ブラッシュアップ","9月5日は同窓会だよ",
+  "経験はだれかの地図になる","社外秘はNGだよ〜","イベントのリクエスト、待ってます","また来てね〜",
+];
+const STORE_KEY = "sototuna_v0";
+const DAY = 86400000;
+const NOW = Date.now();
+
+/* =====================================================================
+   DATA: モックデータ（人物はすべて架空・書籍のみ実在）
+===================================================================== */
+const USERS = {
+  u1: { name:"まちこ", avatar:"🐸", attr:"current", gen:"13期" },
+  u2: { name:"ゆうた", avatar:"🐧", attr:"current", gen:"12期" },
+  u3: { name:"さくら", avatar:"🐰", attr:"current", gen:"14期" },
+  u4: { name:"たかし", avatar:"🦊", attr:"obog", gen:"3期" },
+  u5: { name:"ももこ", avatar:"🐹", attr:"obog", gen:"4期" },
+  u6: { name:"けんじ", avatar:"🐻", attr:"obog", gen:"8期" },
+  u7: { name:"みどり先生", avatar:"🦉", attr:"faculty", gen:"—" },
+  u8: { name:"事務室のいしださん", avatar:"🐢", attr:"staff", gen:"—" },
+  u9: { name:"あやか", avatar:"🐱", attr:"obog", gen:"6期" },
+  u10:{ name:"しんご", avatar:"🐺", attr:"obog", gen:"2期" },
+};
+const QUESTIONS = [
+  { id:"q12", userId:"u3", anonymous:true, category:"career", daysAgo:0, meToo:7, solved:false,
+    text:"ES見てもらえる人いますか…? 初めてで書き方が分かりません。" },
+  { id:"q4", userId:"u1", anonymous:true, category:"research", daysAgo:1, meToo:3, solved:false,
+    text:"質的調査のサンプル数って、どれくらいが妥当なんでしょうか? 卒論でインタビュー調査を予定しています。" },
+  { id:"q9", userId:"u3", anonymous:false, category:"research", daysAgo:1, meToo:5, solved:false,
+    text:"ゼミ発表のスライド、見やすくするコツありますか? 文字が多いって言われがちです…" },
+  { id:"q2", userId:"u5", anonymous:false, category:"work", daysAgo:2, meToo:12, solved:false,
+    text:"みなさんの会社、AI研修ってどんなことしてますか? うちはまだ手探りで、他社の様子が知りたいです。" },
+  { id:"q8", userId:"u2", anonymous:true, category:"work", daysAgo:3, meToo:10, solved:false,
+    text:"転職を考え始めたら、最初にすることは何でしょう? まだ誰にも話していません。" },
+  { id:"q3", userId:"u1", anonymous:true, category:"career", daysAgo:4, meToo:6, solved:false,
+    text:"◯◯業界のリアルな残業時間が知りたいです。説明会ではなかなか聞きにくくて…" },
+  { id:"q11", userId:"u2", anonymous:true, category:"work", daysAgo:5, meToo:2, solved:false,
+    text:"仕事で使える資格って、政策学部出身だと何が活きますか?" },
+  { id:"q6", userId:"u3", anonymous:true, category:"career", daysAgo:6, meToo:11, solved:false,
+    text:"文系修士の就活って不利ですか? 進学か就職かで迷っています。" },
+  { id:"q10", userId:"u1", anonymous:true, category:"life", daysAgo:7, meToo:6, solved:false,
+    text:"病児保育ってどうやって登録するんでしょうか? 復職を控えていて不安です。" },
+  { id:"q7", userId:"u9", anonymous:false, category:"life", daysAgo:9, meToo:4, solved:false,
+    text:"結婚式の段取り、みなさん何から始めましたか? 式場見学の前にやることってありますか?" },
+  { id:"q1", userId:"u2", anonymous:true, category:"career", daysAgo:12, meToo:8, solved:true, bestAnswerId:"a1-1",
+    text:"国家一般職と地方上級で迷っています。最終的な決め手は何でしたか? 説明会にはどちらも行きました。" },
+  { id:"q5", userId:"u6", anonymous:false, category:"life", daysAgo:15, meToo:9, solved:true, bestAnswerId:"a5-1",
+    text:"親の介護が始まりそうです。最初にやることを教えてください。" },
+].map((q) => ({ ...q, createdAt: NOW - q.daysAgo * DAY }));
+const ANSWERS = [
+  { id:"a1-1", questionId:"q1", userId:"u6", thanks:14,
+    text:"市役所勤務です。自分は「地元で顔が見える仕事がしたい」で地方にしました。志望動機が書きやすい方、が意外と大事。" },
+  { id:"a1-2", questionId:"q1", userId:"u5", thanks:7,
+    text:"民間→公務員転職の同期もいるので、新卒でどちらかに決めきらなくても大丈夫ですよ。" },
+  { id:"a1-3", questionId:"q1", userId:"u4", thanks:3,
+    text:"説明会の雰囲気で決めるのも一つの手。合う合わないは肌感が正直です。" },
+  { id:"a2-1", questionId:"q2", userId:"u9", thanks:6,
+    text:"eラーニング＋実務での活用共有会をやってます。手を動かす回がいちばん好評。" },
+  { id:"a2-2", questionId:"q2", userId:"u4", thanks:5,
+    text:"営業部門は商談メモの要約から始めました。小さく始めるのがコツかと。" },
+  { id:"a2-3", questionId:"q2", userId:"u6", thanks:4,
+    text:"うちは研修より先にガイドラインの整備からでした。" },
+  { id:"a2-4", questionId:"q2", userId:"u10", thanks:2,
+    text:"NPOは助成金の申請文づくりで活用中です。" },
+  { id:"a2-5", questionId:"q2", userId:"u5", thanks:1,
+    text:"社内勉強会を月1で。講師は持ち回りです。" },
+  { id:"a3-1", questionId:"q3", userId:"u4", thanks:6,
+    text:"繁忙期はそれなり、月平均だと20時間くらい。業界より部署差が大きいです。" },
+  { id:"a3-2", questionId:"q3", userId:"u9", thanks:3,
+    text:"面談で「平均残業時間」を聞くのは失礼じゃないですよ。数字で答えてくれる会社は信頼できます。" },
+  { id:"a5-1", questionId:"q5", userId:"u5", thanks:15,
+    text:"まず地域包括支援センターに相談を。ぜんぶひとりで抱えないのが何より大事です。" },
+  { id:"a5-2", questionId:"q5", userId:"u9", thanks:8,
+    text:"職場の介護休暇制度を先に確認しておくと、いざという時に慌てません。" },
+  { id:"a5-3", questionId:"q5", userId:"u10", thanks:5,
+    text:"介護保険の申請は早めに。認定までけっこう時間がかかります。" },
+  { id:"a5-4", questionId:"q5", userId:"u7", thanks:3,
+    text:"ゼミ生の研究テーマでもありました。制度は遠慮なく使い倒していいんです。" },
+  { id:"a6-1", questionId:"q6", userId:"u9", thanks:7,
+    text:"不利とは感じませんでした。研究を「課題解決の経験」として話せると強いです。" },
+  { id:"a6-2", questionId:"q6", userId:"u5", thanks:5,
+    text:"企業によります。研究概要を1分で話す練習をしておくのがおすすめ。" },
+  { id:"a6-3", questionId:"q6", userId:"u7", thanks:3,
+    text:"進学の相談、研究室でも聞きますよ🌱" },
+  { id:"a7-1", questionId:"q7", userId:"u5", thanks:4,
+    text:"私は「ふたりの予算決め」からでした。式場見学はその後のほうが冷静に選べます。" },
+  { id:"a7-2", questionId:"q7", userId:"u6", thanks:3,
+    text:"日取りの希望だけ先に両家で共有しておくとスムーズでした。" },
+  { id:"a8-1", questionId:"q8", userId:"u9", thanks:6,
+    text:"まず職務経歴の棚卸しから。エージェント登録は焦らなくて大丈夫。" },
+  { id:"a8-2", questionId:"q8", userId:"u4", thanks:4,
+    text:"信頼できる人に話すと頭が整理されます。私の場合は同期でした。" },
+  { id:"a8-3", questionId:"q8", userId:"u10", thanks:2,
+    text:"「何が嫌か」より「何がしたいか」を書き出すのがおすすめです。" },
+  { id:"a9-1", questionId:"q9", userId:"u7", thanks:4,
+    text:"1スライド1メッセージ。文字は「読む」量じゃなく「見る」量に。" },
+  { id:"a10-1", questionId:"q10", userId:"u5", thanks:7,
+    text:"自治体のサイトから事前登録できます。復職前の登録がおすすめです。" },
+  { id:"a10-2", questionId:"q10", userId:"u9", thanks:4,
+    text:"かかりつけ医の診察が必要な施設もあるので、早めの確認を。" },
+  { id:"a11-1", questionId:"q11", userId:"u6", thanks:3,
+    text:"宅建や簿記は部署を問わず効きます。政策系だと統計検定もじわじわ活きますよ。" },
+].map((a, i) => ({ ...a, createdAt: NOW - (20 - i) * 3600000 }));
+const RECRUITS = [
+  { id:"r1", type:"survey", userId:"u3", title:"卒論アンケート協力（5分）", deadline:"2026-09-20",
+    body:"地域コミュニティへの参加意識についてのアンケートです。スマホで5分・匿名回答。現役生もOBOGも大歓迎です🙇", helpers:7, status:"open" },
+  { id:"r4", type:"survey", userId:"u1", title:"ゼミのインタビュー協力者募集", deadline:"2026-09-15",
+    body:"調査の練習として、30分ほどオンラインでインタビューをさせてください。テーマは「働き方と地域」です。", helpers:2, status:"open" },
+  { id:"r6", type:"brainstorm", userId:"u9", title:"壁打ち：地域イベント企画", deadline:"2026-09-25",
+    body:"商店街での小さなイベントを企画中。政策学部っぽい視点でアイデアをぶつけてほしいです！", helpers:1, status:"open" },
+  { id:"r3", type:"event", userId:"u8", title:"オープンキャンパス説明会メンバー募集", deadline:"2026-09-28",
+    body:"10月のオープンキャンパスで、学部ブースの運営を手伝ってくれる学生さんを探しています。お昼つき。", helpers:3, status:"open" },
+  { id:"r2", type:"brainstorm", userId:"u10", title:"地方創生案件のブレスト相手", deadline:"2026-08-25",
+    body:"仕事で地方創生の企画を担当中。政策学部脳で壁打ちに付き合ってくれる方を探していました。", helpers:3, status:"closed" },
+  { id:"r5", type:"other", userId:"u4", title:"同窓会の写真係", deadline:"2026-08-30",
+    body:"9/5の同窓会でスナップ写真をお願いできる方。カメラはこちらで用意します。", helpers:1, status:"closed" },
+];
+const BOARD_THREADS = {
+  r1: [
+    { userId:"u3", time:"きのう 12:10", text:"回答期限は9月20日です。年齢や所属が特定される質問はありません。" },
+    { userId:"u5", time:"きのう 18:24", text:"OBOGでも回答できますか？ 周りにも共有できそうです。" },
+    { userId:"u3", time:"きょう 9:05", text:"ありがとうございます！ OBOGの方も対象です。共有も大歓迎です。" },
+  ],
+  r4: [
+    { userId:"u1", time:"きのう 16:40", text:"オンラインで30分ほど、質問の順番や聞き方も含めて練習したいです。" },
+    { userId:"u9", time:"きのう 20:12", text:"平日の夜なら協力できます。インタビュー項目は事前にもらえますか？" },
+    { userId:"u1", time:"きょう 8:30", text:"はい、前日までに共有します。候補日をこのスレッドで相談させてください。" },
+  ],
+  r6: [
+    { userId:"u9", time:"きのう 10:18", text:"まだ企画書になる前の段階です。『誰が来たくなるか』から一緒に考えてほしいです。" },
+    { userId:"u6", time:"きのう 15:02", text:"自治体側の目線なら出せそうです。オンラインでも大丈夫ですか？" },
+    { userId:"u9", time:"きのう 15:21", text:"ぜひお願いします！ 30分ほどオンラインで考えています。" },
+  ],
+  r3: [
+    { userId:"u8", time:"きょう 9:10", text:"高校生への学部説明と、在学生とのミニ交流会を予定しています。" },
+    { userId:"u2", time:"きょう 10:05", text:"午前だけでも参加できますか？ 学生生活の話なら担当できます。" },
+    { userId:"u8", time:"きょう 10:28", text:"午前だけでも大丈夫です。役割分担は参加者が決まってから相談します。" },
+  ],
+};
+const TEACHERS = [
+  { id:"abe", avatar:"🏙", name:"阿部 大輔", title:"教授", field:"都市計画・都市デザイン", book:"ガルシア・マルケス", movie:"「ミツバチのささやき」「ギター弾きの恋」「ナイト・オン・ザ・プラネット」", kyoto:"格子状の市街地が単調かと思いきや、様々な界隈が重層していて飽きない／暑い夏、寒い冬、ぶれのない、確固たる「都市性」", motto:"What a difference a day makes", fun:"「都市」や「まち」は、わたしたちが生活し、活動を繰り広げる舞台です。人生の思い出の多くは、おそらく都市空間と密接に関係しているのではないでしょうか。／普段何気なく遊んでいる界隈も、ちょっと目を凝らせば、その空間の意味や面白さ、あるいは問題点が分かってくる。／都市を計画することは自分の人生だけでなく多様な人々の人生を知り、豊かな想像力でもって将来の空間像を構想することでもあります。そこに都市学の面白さがあります。", why:"高校生の頃から建築や土木など実際の空間設計に関する学問に興味がありました。バックパックの旅をする中で、様々な都市と出会い、多様な人々の交差する都市の豊かさに触れたことも大きかったと思います。", vision:"机上の空論だけでもない、けれども現場至上主義に陥ることのない、理論と実践のバランスの取れた人材を輩出する学部にしていきたいと思います。また、「難しい、できない」と考える前に、楽観的に、けれど用意周到に「やってやろう」と考えることのできる、状況を突破することに意識的でありたいと考えています。そのためには、日本だけでなく、世界の都市でどのような問題があり、どのような解決策を模索しているか、常に広い視野をもつ人材を育成できる学部を目指したいです。", url:"https://www.policy.ryukoku.ac.jp/teacher/abe.html" },
+  { id:"an", avatar:"🗳", name:"安 周永", title:"教授", field:"政治学、比較政治", book:"自分が大学生の時に、『薔薇の名前』を読んで衝撃を受けました。", movie:"最近見た映画では、『わたしは、ダニエル・プレイク』です。", kyoto:"何処を歩いても、面白い店や美しい建物に出会えること（頑張らなくても、何かの発見があること）", motto:"人事を尽くして天命を待つ", fun:"人と人の間の取り引きは、基本的に売り手と買い手の両者が納得して行われます。しかし、社会はそのようなことだけでは成り立ちません。社会を維持するためには、いやでも税金を払わなければなりません。しかし、税金の重さとその税金の使い方は、国によって大きく異なっています。ほかの先進国のなかには医療費や大学の授業料が無料の国も多くあります。政治学はそのような違いを研究する方法を提供してくれます。", why:"1990年代末に韓国の経済危機があり、倒産の危機に直面した大手自動車メーカーに整理解雇が行われました。その際に、低賃金の掃除係の人が先に解雇されました。なぜこのことが生じたのかを研究したく、政治学を選びました。", vision:"社会が多様化しているため、社会を分析するためには学際的研究が必要になります。これに対応している政策学部には、様々な専門を持つ教員がいるため、政策学部の学生は多様で総合的な視点から社会を分析できるようになると思います。", url:"https://www.policy.ryukoku.ac.jp/teacher/an.html" },
+  { id:"fukao", avatar:"🤝", name:"深尾 昌峰", title:"教授", field:"非営利組織論", book:"井上章一『京都ぎらい』／内山節さんの本", movie:"仲間たちが作った映画「ねこにみかん」。最近、地域での映画づくりも結構盛んにされています！", kyoto:"大山崎町。天下分け目の天王山の自然を始め、アサヒビール大山崎山荘美術館などもありオススメ！", motto:"「笑いたい奴は笑え」「温柔敦厚」「『変人』は変える人」", fun:"一文でいうと、／「市民が多様な形で社会的連帯を紡いでいけば、社会のいろいろな課題を自分たちで主体的に解決できる！こと」／もう少し詳しく言うと・・・／非営利組織は、営利を目的とせず、社会解決を目的とする組織形態です。NPOやNGOはその代表的なものです。私たちは、生活の中で「おかしいな」「理不尽だな」と思ったことを、自発的に解決に向けて動くことができます。そして少しずつ問題の解決に近づけていくことができます。その過程で、多くの人々や機関、団体との関係や交渉を行わなければ行けません。ですから当然、非営利組織だけを考えていればいいわけでなく、政府や役所の仕組み、税制の問題など関係してくる領域や問題は多様です。そういった多領域、多セクターをつないでいきながら、社会をよくすることができるということが私にとっての「面白さ」です。一部の専門家や専門的職業人だけでは社会をよくすることはできません。若干抽象的ですが、ひとり一人が自己有用感を持ちながら、社会の中で生き生きと輝くという当たり前のことですが、今日的にはなかなか難しくなってしまったことにも、非営利組織はチカラを発揮できると思っています。／また、加えて最近株式会社で社会解決を目指す形態なども登場してきました。（社会的企業といわれたりします）ますます、私にとって面白くなってきました。", why:"学生の頃に出会ったボランティア活動や阪神・淡路大震災を契機に「ボランティア」や「市民活動」に惹かれていきました。大学院生のときに多くの仲間とNPOを立ち上げ、経営をしてきました。その中で非営利組織の無限の可能性と共に抱える課題も数多くあることを実感しました。課題を解決し、可能性を引きのばしていくためにも、実践（現場）と研究をつなぐ必要性を感じていました。そういった思いから、この分野に取り組み、よりよい社会の実現に向けて努力したい！！と思っています。", vision:"政策学部の学びの特徴の一つは「大学」と「現場」を往復できること。正課・課外・その間と多様な学び方があります。／そしてなにより教員が一丸となっていい社会を創ろうとしていること！チームワークは世界一。", url:"https://www.policy.ryukoku.ac.jp/teacher/fukao.html" },
+  { id:"funada", avatar:"🧮", name:"船田 智史", title:"教授", field:"科学教育・情報教育・数学教育", book:"「塵劫記」京都の吉田光由が寛永四年に執筆した、日本で最初に出版された本格的な算術書。", movie:"「ダイ・ハード３」・・・数学が登場するシーン。", kyoto:"神社仏閣の多い京都。江戸時代の数学（和算）。数学の問題を奉納した「算額」を巡る旅はいかが？", motto:"何かを学ぶためには、自分で経験する以上にいい方法はない。 アインシュタイン", fun:"体験してはじめて深い学びを得たとき、人はその学びの楽しさに気づきます。「驚き」から「納得」への主体的な学びとつながる活動ができたときに、この研究のおもしろさを感じます。目の前の自然現象をどう理解するか？という命題に対し、「対話」を通して解決できる空間をつくることが、この研究の醍醐味です。", why:"自然現象に対する興味や関心と学校現場での経験を通して、理数系科目に対する教育普及活動を続けた結果、今の研究に至っています。", vision:"リアルな実践活動の場において主体的な学び・対話的な学び・深い学びを経験することで、社会で活躍できる人材を育てる学部です。", url:"https://www.policy.ryukoku.ac.jp/teacher/funada.html" },
+  { id:"hattori", avatar:"🏙", name:"服部 圭郎", title:"教授", field:"都市政策、コミュニティ・デザイン", book:"Good City Form (Kevin Lynch)", movie:"Bladerunner, Ex-Machina, Brazil などのSF系", kyoto:"京都はまだ来たばかりで分かりませんが、いい飲み屋があるのは嬉しいですね。", motto:"While You See A Chance Take It (Steve Winwood)", fun:"都市の将来を構想し、それを具体化させるための計画を策定し、そしてそれを実現させるための政策を考える。そのプロセスを考えると個人的には、とてもわくわくします。なかなか都市を自分が計画をすることは難しいですが、先人がどのように将来を描くことを考えたのか、を調べて知ることでも面白く、興味深いです。あと、このテーマで研究していると、世界中の魅力的な都市を訪れて体験することができます。これは役得ですね。", why:"小学生の時に課題で都市の計画をさせられてから、ずっと都市計画に関心を抱いてきました。他の道に進もうと考えたり、他の道での仕事に就いたりしましたが、結局、この道に戻ってきました。好きだからとしかいいようがないですね。", vision:"教員や職員、そして学生が一つのチームとなってスクラムを組んで課題に取り組むところ、かな。", url:"https://www.policy.ryukoku.ac.jp/teacher/hattori.html" },
+  { id:"imasato", avatar:"🏛", name:"今里 佳奈子", title:"教授", field:"行政学、地方自治", book:"時間があるとき、旅に出るときなどは、司馬遼太郎の歴史小説、塩野七生『ローマ人の物語』などを手にとって読みます。", movie:"「ALWAYS 三丁目の夕日」を懐かしく感じる世代です。", kyoto:"東京⇒福岡･熊本⇒愛知（三河）と遷り住んだ後にたどり着いた京都はまだまだ初心者です。／「京都のおすすめ」はまだわかりませんが、幕末の歴史をたどる町歩きをするのが密かな夢となっています。", motto:"“Think globally, Act locally.”／または「早起きは三文の得」", fun:"「行政学」は、英語では “Public Administration” 、「公共学」でもあります。社会に存在する様々な公共問題をどのようにすれば解決していけるかを制度や政策の視点から考え、実践する。効率的かつ民主的で応答的な行政組織のあり方を考える。「行政学」の対象は幅広いものといえます。また、行政あるいは一つの自治体政府だけでは公共問題を解決することができない現在、協働や連携も行政学の重要なテーマとなってきます。幅広い対象を扱う「公共学」であると同時に様々な主体の協働や連携も視野に入れる「交響学」であるところが「行政学」の面白さといえるのではないでしょうか。", why:"記述的であると同時に規範的であり、理論的であると同時に実践的であるところに面白さを感じたからだと思います。", vision:"①「充実した講義と様々なPBLを組み合わせたアクティブラーニングの展開」、②「それを中身の濃いものにしていく学生と教員の関係（政策学部では学生と教員の距離が近いのが特徴と言われています）」、③「上の①と②を支えてくれる政策学部教務課をはじめとする事務スタッフの存在」の三位一体的効果により、社会に何よりも求められている地域公共人材（の卵）を世に送り出すことができることではないでしょうか。", url:"https://www.policy.ryukoku.ac.jp/teacher/imasato.html" },
+  { id:"j_sakurai", avatar:"🌏", name:"櫻井 次郎", title:"教授", field:"環境政策、中国法", book:"山崎豊子『大地の子』（文春文庫）、見田宗介『現代社会の理論』（岩波新書）など。", movie:"伊丹十三監督の映画全般。洋画は「パルプ・フィクション」って、古すぎるか・・。", kyoto:"龍谷大学1年目ですので、京都居住歴はまだないのですが、竹林の小径（嵐山）はお勧めしたいです。", motto:"「知之者不如好之者、好之者不如楽之者」／これを知る者これを好む者に如かず、これを好む者これを楽しむ者に如かず", fun:"人類の発展の持続可能性について考える際、「環境問題」と「中国」はどうしても考慮しなければならないリスクとしてまずイメージされると思います。例えば、地球温暖化が人類の発展の持続可能性に影響を与えることはすでに勉強されたと思いますが、世界のCO2排出量の凡そ3割は中国起源であり、世界の石炭の約5割は中国が消費しています。つまり、「中国の環境政策」は世界が注目せざるを得ないテーマと言えます。", why:"大学生のころ、人類の将来に対して漠然とした不安を感じていましたが、中国の内陸部をあちこち旅行して歩いた際、汚染された水と大気にショックを受けたことが影響していると思います。", vision:"社会の課題を解決するための方策について、様々な専門分野の視点から考えることができること、だと思います。", url:"https://www.policy.ryukoku.ac.jp/teacher/j_sakurai.html" },
+  { id:"matoba", avatar:"🌐", name:"的場 信敬", title:"教授", field:"地域ガバナンス論、持続可能性論", book:"『三国志』や『真田太平記』などの歴史小説で、かなりリアルな空想世界に逃避するのが好きです。あと、『Harry Potter』シリーズも。", movie:"『Léon』、『Notting Hill』。せっかくなんでもありの世界なので、基本的には「それ、絶対ありえんやろ！」というくらいのハッピーエンドの映画が好きです（『Léon』は悲しいですが）。", kyoto:"豊かな自然と日本の伝統文化へのアクセスの良さ。市内に住んでいても、毎日をHolidayにするポテンシャルがあります。夏の蒸し暑さだけは勘弁してほしいですが・・・。", motto:"「座右の銘」とはちょっと違いますが、「あたりまえのことをあたりまえに出来る」人でありたいと、いつも思っています。", fun:"専門分野の面白さではないですが、海外の事例から学んでいて面白いのが、「当然」とされていることが、実は「当然」とは限らないことに気づかされることです。日本の「当然」が諸外国では「当然」ではない。「当然」の意識、つまりは「固定観念」の中で「改革」を考えることほど難しいことはない、と思うのですが、想像力の乏しい私でも、諸外国の経験を学ぶことで「当然」に縛られることなく日本の「改革」について考えることが出来ます。", why:"自然の中にいることが好きなので環境問題に興味があったのですが、それを解決するためには、その要因となる人間の営みの根本的な検討が必要になる、という持続可能な発展の概念に共感し、その実現を考えてみたいと思うようになりました。", vision:"チーム政策！", url:"https://www.policy.ryukoku.ac.jp/teacher/matoba.html" },
+  { id:"matsuura", avatar:"📻", name:"松浦 さと子", title:"教授", field:"社会学・コミュニティメディア", book:"松下竜一『豆腐屋の四季 ある青春の記録』、『社会を変えるには』の小熊英二さんも推奨。日々の生活のささやかな幸せが愛おしい。", movie:"『スポットライト』『アイヒマンショー』と立て続けにメディア関連の映画を観てます。", kyoto:"水辺です。疎水沿いの桜、鴨川沿いの床、白川沿いの蛍、せせらぎのそばには、美しい花々や鳥たちも。", motto:"自分がアクションを起こさねば 誰がやってくれるというのか。何も起こりはしない。世界は昨日のままだ。（中島らも）", fun:"世論、あるいは空気やムードは、勝手に湧いてきたわけではなく、意思をもった人や組織によって創られていると観察できることがあります。それらに「流されている」と思うのは、自分が受け身でしか考えていない状態なのではないでしょうか。地域を、世界を、社会をどうしたいのか、私たちが感じていることを言葉にすると、変えられるものがたくさんあることに驚きます。人々の声が聞こえる社会は、未来が多様に描ける面白い社会なのです。", why:"干潟の埋め立て決定を覆し、言葉のちからで保全に導いた人々の活動を目の当たりにしたからです。／人間は、表現し、語り、話し合って、社会を変える力を持ってます。メディア（ジャーナリズム）はそれを助け、支えるために何ができるか考えたい。", vision:"向き合って対話する機会の多さもさることながら、同じものや現象を見て、さまざまな考え方や表現ができる仲間が、教員にも学生にもたくさんいます。多様性に富んだ、自由に翔んでるヒトたちです。", url:"https://www.policy.ryukoku.ac.jp/teacher/matsuura.html" },
+  { id:"murata_kazu", avatar:"💬", name:"村田 和代", title:"教授", field:"社会言語学（コミュニケーション研究）", book:"地図とガイドブックです。ぼうっとながめながら、一人空想の旅?!に出かけます。", movie:"\"Enchanted\" \"Nine\" \"Dreamgirls\"等々 ミュージカル映画が大好きです。", kyoto:"ズバリ「抹茶スイーツ」です。私のおすすめは、京はやしやの抹茶フラッペ、辻利の抹茶ソフト、中村藤吉の生茶ゼリー、マールブランシュのお濃茶ラングドシャ。それから抹茶パフェは何と言っても都路里と西尾茶屋です。", motto:"All our dreams can come true, if we have the courage to pursue them.(by Walt Disney)", fun:"実際の言語活動を通して人の思いやりが垣間見られるところです。 もう少し詳しく言うと・・・ 何気なく日々行っているコミュニケーションは、恣意的に行われているのではなく、何らかの原理や原則が働いているのです。実際のコミュニケーションの考察や分析を通して、直感的に感じているようなコミュニケーションのルールを可視化したり体系化したりすることができたときに達成感を感じます。コミュニケーションには、情報を伝達する機能だけでなく、人と人をつなぐ機能(ポライトネス)があります。ポライトネスをベースにしたコミュニケーション研究を通して、ひとにやさしいコミュニケーションのエッセンスや、価値観や利害の異なるひとたちが「共生」し「創発」が生まれるようなコミュニケーションデザインを見いだせると考えています。私の研究を通して人間賛歌のメッセージを送ることができれば嬉しいです。", why:"ひとが好きで、話すことが好きだからです。そして、社会活動の核となるのがコミュニケーションであり、コミュニケーションが、ひととひととの関係を紡ぎ、それが創発やイノベーションにつながると考えるから。", vision:"チーム政策！／学部開設当初から、教員、学生、事務スタッフみんなでわくわくするような政策学部を作ろうと頑張ってきました。この素晴らしいチームワーク、これからも大切にしたいです。", url:"https://www.policy.ryukoku.ac.jp/teacher/murata_kazu.html" },
+  { id:"najima", avatar:"📋", name:"南島 和久", title:"教授", field:"公共政策学", book:"丸山眞男先生や松下圭一先生のご著作が好きです。", movie:"大統領の陰謀、ペンタゴンペーパーズ、大統領の執事の涙、ハウスオブカーズなどです。", kyoto:"京都は日本のなかでも大学がたくさんあるまちの１つです。それが一番大事です。", motto:"後藤新平の「自治三訣」です。", fun:"政策評価の面白さは、市民が望めば行政活動の深いところまで理解することができるところにあります。政府のあり方について私たちはそもそもよく知らないわけですが、政策評価を通じてそれを具体的なレベルまで覗き見ることができます。行政活動は私たちが支払う税金が原資になっています。市民に対してこれをどのように表現し、説明したらよいのかについて、行政機関側も深く悩んでいます。", why:"政策評価制度はこれまで、「日本ではうまくいかない」といわれてきました。しかし、その制度は日本の公的部門に入ってきました。ですが、必ずしもうまくいっていません。それはなぜでしょうか。こうした疑問が研究の出発点です。", vision:"政策とは「問題解決の手法」（松下圭一）であるといわれます。そもそも「問題」とは何なのでしょうか。どこまでやったら「解決」したといえるのでしょうか。そうした議論が自由にできることは私たちの社会にとってとても重要なことです。", url:"https://www.policy.ryukoku.ac.jp/teacher/najima.html" },
+  { id:"nakamori", avatar:"💼", name:"中森 孝文", title:"教授", field:"経営学、知的資産経営", book:"野村克也「無形の力」、ダン・アリエリー「予想どおりに不合理」、フリーク・ヴァーミューレン「ヤバい経営学」など。いずれも「常識」を覆すヒントが詰まっています。", movie:"フィールド・オブ・ドリームス、ALWAYS 三丁目の夕日、愛を積むひと。／現代社会が忘れがちな「大切なもの」を思い出させてくれます。", kyoto:"京都は歴史や伝統を重視し「敷居が高い」と言われることがありますが、実は新しいモノやコトを積極的に採り入れています。日本で最初の小学校、日本で初めて走った路面電車、日本初の映画上映、日本初の駅伝競走、日本で初めての中央卸売市場、日本初の無担保・無保証人融資など多くの「初」があることから、新しいことへのチャレンジ精神と、本物を見る眼力を大切にしてきたことがわかります。京都について学ぶことは、チャレンジ精神と本物を見る眼を養うことにつながるのです。", motto:"仁義ヲスル者ハ、利ハセネドモ、自ラ利ガツイテマハル也／懐徳堂の初代学主 三宅石庵先生の講義録『論孟首章講義』にある一節です。", fun:"大多数の人が「そんな馬鹿な」といって真似ない経営判断が、実は競争力の源泉だったということを発見できるところが面白い。それらを見抜くには、多面的なものの見方が必要になります。アイデアや技術、歴史や文化、ネットワークといった様々な「無形の強み」に着目し、強みを生み出し、活かすための経営者や従業員の努力や工夫を眺めることで、機械やコンピューターに置き換えることができない人間の素晴らしさを知ることができます。", why:"生来の捻くれ者ですから、他人と同じものの見方をするのが嫌いです。企業の評価って何で決まるのでしょうか。お金の量で判断もできますが、それだけでは経済を支えている中小企業を正しく評価できないので、無形の強みを見ることにしたのです。", vision:"統一性と多様性の入り混じったところ。学部共通で何かをやろうとすれば学生と教職員がベクトルを合わせて猪突猛進するし、多様な学問領域を活かしたゼミ（演習）では「そこまでやるか」と感心するほど研究内用を競い合うところがオススメ。", url:"https://www.policy.ryukoku.ac.jp/teacher/nakamori.html" },
+  { id:"oishi", avatar:"🌱", name:"大石 尚子", title:"教授", field:"ソーシャル・イノベーション、農村地域開発、食農政策", book:"夏目漱石、ゴーゴリ、コエーリョ", movie:"フェデリコ・フェリーニ「道」", kyoto:"市内であれば大原、京都北部も素敵な村がたくさんありますが、深草界隈のお寺は必見です。", motto:"直耕直衣", fun:"「人ひとりの思いが社会を変えられる」ことを実体験できる、ということでしょうか。／ソーシャル・イノベーションとは、直訳は「社会的革新」。新たな社会的サービスを創出していくことですが、それまでになかったような新しい方法を用いて、というところがイノベーションといわれる所以です。／一人の人間の社会へ対する思いが人と人とを結びつけ、化学反応を起こして社会を変えていく。そんな社会のダイナミズムに触れることができるのが、この分野の面白さです。／人の暮らしに直結する食農、そしてそれらの源となる農村においては、特にソーシャル・イノベーションが求められていると考えています。", why:"阪神淡路大震災で被災し、大量生産大量廃棄、成長至上主義の世の中に疑問を感じ、消費の対象でしかない衣を、種から育てて自分たちで作るといった「衣の自給自足のすゝめ」などの活動をしていました。そうした活動を理論づけたいという思いから選びました。", vision:"学問領域が広く、多様な学問的視点を育むことができる。チーム政策というように、教職員・学生が一体感を持っていること。", url:"https://www.policy.ryukoku.ac.jp/teacher/oishi.html" },
+  { id:"okuno", avatar:"⚖️", name:"奥野 恒久", title:"教授", field:"憲法学、人権論", book:"挫けそうなときに読み返すのが、夏目漱石の『坊ちゃん』。毅然とした自分にならねばというときには、大江健三郎の『ヒロシマ・ノート』を、誠実でありたいと思うときには、三浦綾子の『泥流地帯』を読み返します。", movie:"映画について語れるほど、観ていません。でも、これからどんどん観たい、と思ってます。", kyoto:"心と体の健康を維持するため、最近は月に2回程度「京都トレール」を歩くのが楽しみです。", motto:"", fun:"憲法は国家の最高法です。前文プラス103条の条文からなる日本国憲法ですが、その発するメッセージは、国家のあり方のみならず私たちの生活にも深くかかわっています。一人ひとりの個人を基点にしながら、社会をより良くするために憲法の発するメッセージを磨き、提起することに魅力を感じています。", why:"「腕っぷしは強くない、されど周りから認められたい」、そう思っていた中学校時代に、まあ日本国憲法の前文と第9条の「力ではなく信頼」という精神に恋したわけです。", vision:"若くて、元気、そして教職員と学生との距離がとても近い学部です。他者と一緒になって喜べる、そんな学生を育てていますので、きっと社会変革の担い手となるでしょう。", url:"https://www.policy.ryukoku.ac.jp/teacher/okuno.html" },
+  { id:"oshima", avatar:"🌏", name:"大島 堅一", title:"教授", field:"環境経済学", book:"都留重人『公害の政治経済学』岩波書店／F.エンゲルス『家族・私有財産・国家の起源』など", movie:"「自転車泥棒」、ケン・ローチ監督の映画", kyoto:"嵯峨野をぜひ探索してみてください。また、京都一周トレイルもお勧めです。", motto:"一期一会", fun:"環境問題に関連する分野は、常に真剣勝負というところが、怖いところでもあり、やりがいのあるところでもあります。また、エネルギー利用は、経済にとってなくてはならないものである反面、環境に大きな影響を与えます。これを持続可能なものにすることに貢献できるのが魅力です。", why:"学生・院生時代を通して指導教員であった寺西俊一先生に、福井県出身である以上、原子力問題にこだわってはどうかとすすめられたのが直接のきっかけです。それ以後、気候変動問題、原子力問題を研究しています。", vision:"最先端の政策に触れながらも、地に足が着いた研究ができるところではないかと思います。", url:"https://www.policy.ryukoku.ac.jp/teacher/oshima.html" },
+  { id:"ota", avatar:"📜", name:"大田 直史", title:"教授", field:"行政法", book:"吉村昭『戦艦武蔵』『赤い人』『高熱隧道』", movie:"一番最近観たのでは「母と暮せば」", kyoto:"岩倉の畑で育てられたすぐき菜を上賀茂で漬けたすぐき／鴨川河川敷", motto:"", fun:"行政は、国であれ、地方自治体であれ、権力です。権力に法的な正統性を与えながら統制するのが行政法です。行政法の研究を通じて社会正義を実現するというところに妙味があります。", why:"", vision:"学生・教員間の距離が近く、政策学という新しいチャレンジグな学問を、ＰＢＬやＣＢＬという新たな仕方で学べるところ。", url:"https://www.policy.ryukoku.ac.jp/teacher/ota.html" },
+  { id:"shimizu", avatar:"🌏", name:"清水 万由子", title:"教授", field:"環境学・環境政策論", book:"宮本常一（みやもと つねいち）の本は大好きです。今は見ることのできない日本の姿が描かれています。", movie:"最近はあまり映画を見なくなりましたが、イランの映画は人間の情を繊細に描いていて、好きです。", kyoto:"身近な自然がたくさんあること。大学の近くにも稲荷山や深草トレイルなど自然に触れられる場所があります。", motto:"「狭き門より入れ、滅にいたる門は大きく、その路は広く、之より入る者多し。」（新約聖書マタイ伝7章13節）／大学生の時に授業で教えてもらった言葉です。", fun:"一文でいうと、／「環境問題を考えることで、自らの生き方と社会のあり方を問い直すこと」でしょうか。／もう少し詳しく言うと・・・／環境問題は、人間と自然のつきあい方の問題です。どちらも未知なる生きものですから、これで100%解決！という正解はありません。私たちにできることは、自然環境をこわしてしまった人間社会のしくみが何であったのか考えること、自然環境から豊かな恵みを受け続けられる人間社会のしくみを考えることによって、私たちのリアルな生活の現場を一つずつ組み立てなおすことです。環境社会学や環境政策論は、環境問題を通して人間社会についての理解を深めるとともに、私たち自身の生き方を問い直し、社会を変革する道を模索する学問だと思います。", why:"環境問題は人間にとって避けて通れない問題だと思ったので、個人として、社会として、どうしたらいいのか考えたかったんだと思います。その気持ちはいつまでも忘れたくないですね。あとは、インタビュー調査を繰り返すうちに、現場で奮闘する人々の人間的な魅力にひきこまれていったような感じです。", vision:"政策学部では、多様な研究分野の専門的知識の習得だけでなく、様々な地域での実践的な活動をつうじて、社会で活躍するために必要な様々な能力を養う機会があります。楽しい体験に終わらない、非常に高度な学びを目指していると思います。", url:"https://www.policy.ryukoku.ac.jp/teacher/shimizu.html" },
+  { id:"tadatomo", avatar:"💴", name:"只友 景士", title:"教授", field:"財政学・地方財政論・経済学", book:"司馬遼太郎の歴史小説、山本周五郎の「赤ひげ診療譚」など。", movie:"中国映画、ジブリ映画", kyoto:"私の薦めたいのは、哲学の道の桜並木、琵琶湖疎水の蛍、鴨川の河川敷、鞍馬の木の根の道など散策ですね。五山の送り火の一つである大文字山登山もお薦めです。", motto:"愚公山を移す 自彊不息 済美", fun:"一文でいうと、／「経済や政治のダイナミクスを（動態）に迫れるところ」／もう少し詳しく言うと・・・／現代社会の突き動かす力として、経済の変化や政治の動きは重要な要素ですが。私の専門としている「財政学」は、その政治と経済の境界領域にあり、経済や政治のダイナミクス（動態）を明らかにする学問の一つです。その手法は、経済学をベースにしながら様々な学問の成果を取り入れた学際的アプローチを必要としています。／しかも、単なる経済問題だけでなく、公共性とか公正さとか正義論についても考えることができる点は面白いですね。", why:"岡山県の農村地域の出身の私は、「豊かな社会とはどのような社会だろうか？」と問い続けてきました。単に「経済的な豊かさ」だけが「豊かさ」ではないだろうと思いますし、「豊かさ」のはかり方を変えると政策も大きく変わると考えられます。／経済学をはじめとする社会科学に出会い、公正な社会をつくることの大切さや人にとって住みよい社会をつくる学問かなと漠然と思ったからです。今、自分の子どもを育てながらそのときの漠然とした思いは間違いではなかったのかなと思っています。", vision:"政策に関わる多様な専門分野を広く学べ、そして『政策実践・探究演習』を始めとする深く学べる演習系科目が充実していること。広がりと深みがある学びとそこから他者と協力して社会を変える行動力が身につく点です。", url:"https://www.policy.ryukoku.ac.jp/teacher/tadatomo.html" },
+  { id:"takahata", avatar:"🚃", name:"高畑 重勝", title:"教授", field:"地域産業政策、観光政策", book:"村上春樹の初期の作品。また、いろいろな分野のノンフィクションを乱読しています。", movie:"「激突！」（1971年 スピルバーグ監督作品）。大型のトレーラーに追いかけられる主人公の姿が、いつも締め切りに追われる自分に重なります。", kyoto:"まちなかの路地（ろーじ）を歩くこと。京の暮らしやまちの歴史がよくわかります。素敵なお店も見つかります。", motto:"「一々労不惜」。日々、小さなことも労を惜しまずに行い、労りの気持ちで人に接すること、と理解しています。", fun:"政策研究の醍醐味は、地域の特性、都市戦略や住民の利害などさまざまな制約条件の下に練られた政策、組み立てられた施策を分析し、追体験していく面白さにあると思います。産業や観光は、理解しやすく、自治体においても法令の縛りが少ない、自由度の高い政策領域です。学生の皆さんにもわかりやすく、研究しがいのある分野だと思います。", why:"京都市役所で、長く観光関係の政策に携わったことが理由の一つです。また、千年の都、京都には汲めども尽きぬ魅力があります。京都学のような観点で、京都の産業や観光を見ていきたいと考えたことがもう一つの理由です。", vision:"学生と教員との距離が近いことに加えて、政策の現場である地域や実社会との接点を増やすよう教育内容が工夫されているところです。多様な経験と知識を有する教員が、理論と実践を橋渡しするように教育活動を進めている点、また、おとなしく見えるが、実は熱い学生が多いのも魅力です。", url:"https://www.policy.ryukoku.ac.jp/teacher/takahata.html" },
+  { id:"uchida", avatar:"💼", name:"内田 恭彦", title:"教授", field:"人的資源管理論、知的資本経営論", book:"『精神としての身体』市川浩著 人の認識の在り方についての深く広い哲学的論考に驚き、多くの理解と気づきを得ました。", movie:"「奇跡のりんご」。りんごの無農薬・無肥料・無除草剤での栽培に成功させるまでの木村秋則氏と家族の困難さに向かう努力と絆に感動しました。", kyoto:"南丹市美山町。茅葺の家が多く残る「かやぶきの里」や日本古来の伝統と自然に囲まれた芦生地区など、京都の中心部とは異なる「日本」を感じられる素敵なところだと思います。", motto:"研究者とは、自らの研究で結論付けたことは、たとえ世界中が反対しても、主張すべき存在である。", fun:"人的資源管理論：今日、日本企業のキャリア・システムのメカニズムについては、単純な議論がなされていますが、多様な分野の知識と実際のデータを総動員すると、「目から鱗が落ちる」新発見に遭遇し、奥深さに気づかされます。日本にとっても重要なことと思い、日々追求しています。／知的資本経営論：中山間地域の経営問題を考えると「近代」という時代の表裏双方が見えてきます。裏の面を克服し、自然と共生的で、多様性や地域固有性、歴史などを大事にする新たな時代の在り方を考える機会とインスピレーションを与えてくれます。", why:"人的資源管理論は修士課程修了後15年間民間企業の人事教育サービス事業で新商品開発や新事業開発を担当し、その面白さと奥深さに気づいたので。／知的資本経営論は、先の民間企業の研究所でモノやカネでなく知的資本を管理するという考えが北欧で生まれたことを掴み、研究をスタートしたのがきっかけ。前任校でその考えを中山間地域の企業に適用しました。当時まだ無名の旭酒造（獺祭）を学生と一緒に最初の調査をしました。", vision:"様々な分野の教員がおり、ソーシャル・イノベーションを行える人材の育成など、より良い社会にするための研究と教育を、学部一丸となって真剣に追及しているところ、が魅力だと思っています。", url:"https://www.policy.ryukoku.ac.jp/teacher/uchida.html" },
+  { id:"yoshimoto", avatar:"💬", name:"吉本 圭佑", title:"教授", field:"応用言語学、理論言語学", book:"彬子女王『赤と青のガウン オックスフォード留学記』／ブレイディみかこ『ぼくはイエローでホワイトで、ちょっとブルー』／沢木耕太郎『深夜特急』／谷崎潤一郎『細雪』／F・スコット・フィッツジェラルド『グレート・ギャツビー』／カズオ・イシグロ『日の名残り』／トマス・ハーディ『日陰者ジュード』／E・M・フォースター『眺めのいい部屋』『モーリス』／李琴峰『独り舞』／吉田修一『路』／サリー・ルーニー『ノーマル・ピープル』", movie:"リトル・ダンサー／ニュー・シネマ・パラダイス／ノッティングヒルの恋人／ビフォア・サンライズ／Aftersun/アフターサン", kyoto:"京都には個性的な喫茶店・カフェがあちこちに存在し、賑やかな観光地とはまた違った、ゆったりとした時間を過ごすことができます。", motto:"Live and let live.（生き方は人それぞれ）／Every cloud has a silver lining. (どんな困難な状況でも必ず良い面や希望がある)／Life begins at the end of your comfort zone. (日常の殻を破ったところから、あなたの真の人生が始まる)", fun:"ソーシャルメディア等で大量の言説に日々接していると、知らず知らずのうちに特定の考え方をするようになってしまうことがあります。しかし、それらの言説は事実を伝えているとは限りません。一見「正しい」ように見える言説を無批判に受け入れていると、誤った認識や社会的不平等が再生産されるのに加担してしまうリスクがあります。私の専門分野では、大量のテキストデータや発話を集めたコーパスの解析を通じて、どのような言説が使われているのかを量的・質的に分析します。そうすることによって、世の中に氾濫する情報についてのリテラシーを培うことができるのが面白いところです。", why:"元々は言語の構造を分析する生成統語論という分野の研究をしていました。しかし、昨今根拠不明の情報や意図的に操作された情報が溢れ、それらが人々の意識や行動にまで影響を及ぼしているのを見るにつけ、言葉が社会に与える影響に関心が出てきました。", vision:"自分自身の力で社会の課題を発見し、解決できるような能力を身につけられることだと思います。", url:"https://www.policy.ryukoku.ac.jp/teacher/yoshimoto.html" },
+  { id:"inoue", avatar:"🏙", name:"井上 芳恵", title:"准教授", field:"地域居住学、都市計画学", book:"子どものころは、「はてしない物語」や「モモ」（ミヒャエル・エンデ）、／専門分野の視点からは、「となり町戦争」や「失われた町」（三崎亜記）は示唆に富むと思います。", movie:"最近、ほとんど見ることができていませんが、中学か高校の学園祭で見た、「いまを生きる」は印象に残っています。", kyoto:"京都よりも奈良の方が詳しいのですが…、中学校の修学旅行で行った時に印象に残っているのは、琵琶湖疏水を庭に引き込んだ無鄰菴や比叡山を借景とする円通寺です。／また、碁盤の目の通や路の名前の由来や現在の街並みとの比較も楽しいと思います。", motto:"「継続は力なり」", fun:"これまでに、様々な都市に住んだり、訪れたりしてきましたが、一つとして同じ都市や地域はなく、賑わったり寂れたり、日々刻々と変化をしています。その変化の中には、政治や政策、空間的、経済的条件、地域を支える組織や住民の活動が大きく関わっています。それらを調査、分析し、また地域の人々と共に考えることで、より豊かで住みやすい地域を目指すことです。", why:"地元の山口で、大型店の撤退をきっかけに、商店街が端から枯れるように寂れてしまい、一方で、郊外の実家周辺には大型ショッピングセンターが増え、帰省する度に、田んぼが宅地化される様子に疑問を感じたところがきっかけです。", vision:"様々な専門分野を超えて、教職員と学生が一体となって、地域課題に向かって共に取り組んでいること。すなわち、「チーム政策」です。", url:"https://www.policy.ryukoku.ac.jp/teacher/inoue.html" },
+  { id:"ishihara", avatar:"🛟", name:"石原 凌河", title:"准教授", field:"地域レジリエンス（地域防災、防災教育、災害復興）、交通政策", book:"森絵都『カラフル』／いとうせいこう『想像ラジオ』／宮本恒一『家郷の訓』", movie:"ワンダフルライフ（1999）", kyoto:"人生の大半を京都で過ごしているため、京都のおすすめを客観的に紹介できません。 京都は和のイメージがとても強く伝統を重んじる都市ですが、常に新しい発見があって、最先端の文化を創造・発信しつづけているところが、他の都市にはない魅力だと思います。", motto:"よい理論ほど実践的なものはない", fun:"災害が発生すれば、時にかけがえのない命や、日常生活までもが突然失われてしまいます。交通についても、地方を中心に公共交通が不便になったり廃止になることで、日常生活に多大な不便をもたらします。こうした人々の痛みに寄り添いながら、真に必要な政策について社会に広く発信できる点に面白さがあります。研究を通じて社会が少しでもより良い方向に進み、地域の方々に喜んでもらえることにやりがいを感じます。", why:"大学院生の時に東日本大震災が発生しました。その直後から東日本大震災の被災地にボランティアで何度も訪れましたが、現場の状況を知るにつれて、震災復興のあり方に疑問を感じたからです。交通政策に関する研究に取り組んだのは、鉄道駅を中心としたまちづくりが全国各地で推進されているにも関わらず、地域の顔である鉄道駅そのものの活気がなく、無人化される駅が増えつつある状況に対して、研究を通して一石を投じたいと思ったからです。", vision:"災害や交通といったように地域が抱える課題の解決に向けた実践的な研究ができる点が一番のアピールポイントだと思います。政策学部では様々な学問分野を広範に学べることができ、自分自身で学びをデザインできる点も他の学部にはない大きな特色だと思います。", url:"https://www.policy.ryukoku.ac.jp/teacher/ishihara.html" },
+  { id:"ishikura", avatar:"🌏", name:"石倉 研", title:"准教授", field:"環境経済学、地域経済学", book:"宇沢弘文『経済学と人間の心』、ドラッカー『ポスト資本主義社会』は、学部時代に読んだ本の中でも忘れられません。", movie:"友達に勧めてもらったものですが、「バック・トゥ・ザ・フューチャー」、「ブルース・ブラザース」、「天使にラブ・ソングを…」。", kyoto:"ぷらりとまち歩きをしていても、観光スポットが至るところにあり、見所が多いのは楽しいです。また、名物グルメもたくさんあるので、食に関する楽しみ方も豊富にあると思います。", motto:"大学図書館の机に落書きしてあった言葉で、\"Life is a song worth singing\"は強く印象に残っています（歌は知りません）。", fun:"一つとして同じ地域はなく、地域は多様な顔を持っています。現実や歴史が突きつけている課題は多岐に渡りますが、これらを受け止めて、新しい考え方や制度・政策のあり方を研究することは、とてもやりがいのあることだと思っています。", why:"大学院時代、指導教官が行っていた自然資源経済論プロジェクトに関わったことが大きなきっかけです。数々の国内外調査を通じて、現場の声を聞き、地域の抱える多様な課題に接する中で、地域研究の奥行きの深さと難しさに魅力を感じました。", vision:"多分野の専門家がいるので、地域の課題解決に向けた様々なアプローチに触れることができることだと思います。いろいろな考え方に接することで、自分の考えを相対化して捉えられるのではないかと思っています。", url:"https://www.policy.ryukoku.ac.jp/teacher/ishikura.html" },
+  { id:"kim", avatar:"🌏", name:"金 紅実", title:"准教授", field:"環境経済学、財政学、アジアの環境政策", book:"歴史の本", movie:"宮崎駿の映画", kyoto:"留意してみると色んなところに京都らしい文化が隠れている。", motto:"「出汚泥、而不染」（日本語の意味：泥の中に咲いても汚れを知らない蓮の花を指す。）", fun:"一文でいうと、／「環境問題の解決を通して、我々が生活している社会経済システムの変化や影響等を観察することができる」／もう少し詳しく言うと・・・／特に、中国の環境政策の発展過程における様々な事象に対する考察を通じて、それぞれの発展段階で行われた政策制度の改革の行方や社会政策の発展の方向性、そして我々の生活との結びつき等を考えることができる。", why:"学部卒業論文を書くときに、琵琶湖周辺の伝統漁業と地域経済について調査する機会があり、その際に初めて琵琶湖の生態環境が地域経済に与える悪影響を知るようになったのがきっかけとなった。", vision:"国際社会への参加意識やそのために必要な知識と実践能力を勉強するグローバル化に対応した学部作りをしていきたい。／特に中国は日本の隣国であり、経済的社会的側面からみた場合、現在までは生産拠点としての結びつきが強かったが、今後は消費大国としてより緊密な関係に発展するに違いない。双方がより客観的な見方と知識を共有し広めていくために、教育や文化、学術的な交流を中心に関係づくりに努めていきたい。", url:"https://www.policy.ryukoku.ac.jp/teacher/kim.html" },
+  { id:"matsuda", avatar:"🏃", name:"松田 繁樹", title:"准教授", field:"スポーツ科学", book:"20代、30代の頃は自己啓発系の書籍をよく読んでいました。ゼミの学生には「学問のすすめ」を読んでもらっています。", movie:"ヒューマンドラマ系（マネーボール、ソーシャルネットワーク等）", kyoto:"愛知県出身で、その後、石川県、岐阜県、滋賀県に住んでいたため、京都についてはあまり詳しくありません…。京都巡りをして、皆さんにお勧めできるようなスポットをこれから探したいと思います。", motto:"継続は力なり", fun:"サッカーに関する研究では、自身の実体験に基づいて仮説を立て、それを検証することに面白さを感じます。仮説通りの結果が得られるとさらに面白さを感じます。／裸足の効果に関する研究では、幼児期の裸足の活動は何となく良いと考えられていると思いますが、しっかりと検証されているわけではありません。曖昧な点をデータで検証していくところに面白さがあります。／（いずれの研究も道半ばですが）自身の研究結果が何かしら社会の役に立つと思っており、研究にはやりがいを感じます。", why:"幼少期からスポーツが大好きで、スポーツのことを学びたい、スポーツに関わる仕事に就きたいと思い、大学のスポーツ科学課程に進学しました。学びを深めるうちに、スポーツ科学の面白さ、奥深さを感じ、研究するまでに至りました。", vision:"教職員と学生が一緒に学び、活動することにより、お互いに刺激しあいながら、専門性を高めていけるところです。教員も学生から多くの刺激を受けています。", url:"https://www.policy.ryukoku.ac.jp/teacher/matsuda.html" },
+  { id:"tanigaki", avatar:"🐛", name:"谷垣 岳人", title:"准教授", field:"進化生態学", book:"好きな本というか、繰り返して読んだ本は「論語」です。「利己的な遺伝子」も衝撃的で面白かったです。", movie:"最近はなかなか見る時間がないのですが、学部生のときは、数百本見ました。あえて１つ選ぶなら「トリコロール青の愛」", kyoto:"日本の伝統産業が多く残っていること。街を歩くたびに発見があります。", motto:"為せば成る、為さねば成らぬ何事も、成らぬは人の為さぬなりけり", fun:"一文でいうと、／「生物の種類が増える進化過程と多種が共存する機構を研究しています」／もう少し詳しく言うと・・・／日本列島内で多様化したヒメハナカミキリムシの系統関係や種が多様化した地質年代について、DNA配列に基づいた分子系統学的手法により調べています。またこの昆虫は多くの近縁種が花に集まるので、なぜ多種が共存できるのかという点についても興味を持っています。／最近は、里山での人の自然利用と生物の豊かさとの関係についても研究しています。", why:"生物の進化過程に興味があり、DNA分析という新しいアプローチが可能になったから／里山での研究は、「龍谷の森」という研究フィールドができたから", vision:"「未来の子どもたちに豊かな自然のある都市生活を」キーワードとして、これを実現する生物多様性の保全に関わる法や政策に興味を持っています。／ぜひ学生と共に学び考えていきたいと思っています。", url:"https://www.policy.ryukoku.ac.jp/teacher/tanigaki.html" },
+  { id:"usui", avatar:"💬", name:"碓井 智子", title:"准教授", field:"認知言語学", book:"高慢と偏見、嵐が丘、旧約聖書物語、ダ・ヴィンチコード", movie:"マンマミーア、 シカゴ、 恋愛適齢期、マイ・インターン", kyoto:"本当に沢山あり過ぎて困ってしまうのですが、嵯峨野(竹林の道)、源光庵(悟りと迷いの窓)、曼殊院(枯山水庭園)、高台寺(紅葉の季節がお勧め)、青蓮院門跡と知恩院界隈、御所と鴨川沿い(散歩コースには最高)、それと多くの美術館、細見美術館は個人的に好きな美術館です。", motto:"幸せかどうかは、自分次第である。", fun:"同じ状況を見ても、人それぞれ世界を見る見方(世界の切り取り方)が違います。どのように世界を切り取ったのかを言語で表現することで、初めて他者とこの世界を共有することができます。つまり、言語を分析する事で、本来内省的なはずの個々人の世界の切り取り方を見ることができる。面白いと思いました。今最も興味があるのは、普遍性が高いと考えられている空間と時間の認知方法です。空間や時間の認知の仕方にも違いはあるのだろうか？言語も文化も異なる遠く離れた地域の人々が、私たちと同じように空間や時間を認知しているのかに興味があります。これまで研究してきて分かったことは、想像していた以上に違うということ。普遍的な要因が存在すると考えてはいますが...どうでしょうか。答えはまだわかりません。", why:"学生時代、言語はコミュニケーションのツールであると考えていました。ですがそれだけではなく、言語を介して他者が理解している世界を垣間見ることが出来ると知り、私が見ている世界と皆が見ている世界は本当に同じなのかを知りたくなりました。今は、普段当たり前に使用している「ことば」を緻密に分析することの難しさを痛感しています。", vision:"教員と学生との距離がとても近いです。教員が一方的に学生にレクチャーするのではなく、教員と学生が共に何かを作り上げていくという姿勢や考え方は龍谷大学政策学部らしさなのだと思います。", url:"https://www.policy.ryukoku.ac.jp/teacher/usui.html" },
+  { id:"yuasa", avatar:"🏛", name:"湯浅 孝康", title:"准教授", field:"公共政策学、行政学", book:"研究分野以外では、思想、哲学、歴史についての本が好きです。", movie:"あまり積極的には映画は見ないですが、比較的SF映画が好きです。テレビでやっているとついつい見てしまいます。", kyoto:"何気ないものにも歴史が潜んでいることが京都の魅力のひとつです。街中のちょっとしたものに関心を持って調べてみると、知っている歴史の話とつながることがたくさんあります。", motto:"「夢は逃げない。逃げるのはいつも自分だ。」／「理論なき実践は暴挙。実践なき理論は空虚。」", fun:"公共政策がどのように機能しているか、その実態が見えてくるところです。わたしたちの日常生活の中で見えている政策は氷山の一角に過ぎません。政策の企画・立案や実施にはたくさんの人が関わっています。意見が対立することも珍しくありません。さまざまな制度やルールをはじめ、政策は複雑な状況の中で決まり、わたしたちに影響を与えています。ぜひ、みなさんも興味のある社会問題について、少し立ち止まって調査・分析してみてください。これまで知らなかったことが見えてくるでしょう。", why:"2000年代の日本は「官と民の関係」が見直された時代でした。小泉政権（2001-05年）は「聖域なき構造改革」を掲げ、その柱の１つとして「官から民へ」を唱えました。一方、2009年に政権交代を果たした民主党は「新しい公共」の推進を表明し、担当大臣を置いてこれに取り組みました。これらをきっかけに、公共のあり方や行政改革などに関心を持ち始めました。", vision:"多様な視点を学べるところや、さまざまな実践の場があるところだと思います。学生のうちに物事を多角的に見る力を身につけたり、いろいろな経験を積んでおいたりすることは、将来きっと役に立ちます。", url:"https://www.policy.ryukoku.ac.jp/teacher/yuasa.html" },
+  { id:"mibu", avatar:"🪷", name:"壬生 泰紀", title:"講師", field:"インド仏教", book:"マックス・ウェーバー『職業としての学問』", movie:"ホラー系以外なら何でも好きで観ます。", kyoto:"寺社仏閣や美術館・博物館が多く、文化財に触れる機会が豊富にある点がおすすめです。", motto:"前に生まれんものは後を導き、後に生まれんひとは前を訪へ／（親鸞『教行信証』末文より）", fun:"経典や仏像の研究のおもしろさは、それらを読み解くことで当時の人々の思考や生活に触れられる点にあります。特に、経典や仏像のメッセージを理解できた瞬間が一番の喜びです。一方、現代インド仏教の研究には別の魅力があります。多くの仏教徒が仏教の教えに希望を見出し、生きる糧にしている姿に触れることで、仏教の新たな可能性を実感できるのが醍醐味です。", why:"大学院でサンスクリット語を学び、その厳密な文法に魅了されたことがきっかけです。経典を読み進めるうちに仏像にも関心が広がり、さらに現代インドの仏教にも興味を持ちました。振り返ると、「おもしろそう」という直感に任せて研究を続けてきたように思います。", vision:"政策学部は、多岐に渡る専門分野をカバーする教員陣を有しています。その先生方を通じて、多様な学問領域に触れることで、幅広い視野と多彩な価値観を養うことができる点が魅力です。", url:"https://www.policy.ryukoku.ac.jp/teacher/mibu.html" },
+  { id:"namiki", avatar:"🌱", name:"並木 州太朗", title:"講師", field:"地域経済政策、ソーシャルビジネス、インパクト評価", book:"マリオ・バルガス=リョサ『楽園への道』／レヴィ・ストロース『悲しき熱帯』など。／村上春樹の新刊は必ず買う派です。", movie:"「メランコリア」「ダークナイト」「WEST WORLD」といったSF的な映画をよく観ます。", kyoto:"西院や裏寺町、五条楽園といったヒップなお店や飲食店が楽しめるエリア。蹴上のインクライン周辺の水路をめぐると当時の勢いを体感できてお勧めです。", motto:"価値は生命に従って付いている cf.「ありあまる富」", fun:"地域という領域は世界経済や国の経済から影響を受ける一方で、人や起業家、企業といった個々の主体が自らの手で発展の経路を切り開いていくという可能性をもっています。／一人一人の「人」から、地球規模の経済の動きまでを、地域経済というレンズを通じて見つめ、変わり続けていく事も含めて捉えられることではないでしょうか。", why:"方々を旅するなかで出会った自然の風景や気候、工芸、人のつながりといった地域特有の素晴らしさを、経済性と両立しながら後世に受け継いでいく方法を考えたいとある旅の途中で思ったのがきっかけです。", vision:"ひとつテーマに対して、複数の分野の先生から捉え方を聞き、多角的な視点で理解できること。／フィールドに出て、体験したり実践したりする機会が多いので、自分の関心にも気づくことができる機会が多いです。", url:"https://www.policy.ryukoku.ac.jp/teacher/namiki.html" },
+  { id:"yonekura", avatar:"💼", name:"米倉 みどり", title:"講師", field:"経営学、組織行動論", book:"『星の王子さま』が好きです。読む時期によって感じ方が変わる、不思議な魅力のある本です。", movie:"『ダ・ヴィンチ・コード』。歴史や芸術に隠された謎を解き明かしていくストーリーに惹かれます。いつか舞台となった場所を訪れてみたいです。", kyoto:"京都には多くのお寺や神社があり、さまざまなお願いごとに寄り添ってくれる存在が身近にあります。疲れたときや気分を変えたいときにふらっと訪れると、不思議と心が軽くなる場所です。", motto:"「笑う門には福来る」。笑顔でいると自然と良いことが巡ってくると信じています。", fun:"仕事やキャリアといった身近なことを、データや理論を通して考えられるのが魅力です。感情ややる気のように目に見えにくいものを、数字や調査を使って検証できるのはとても面白く、実際の企業や社会の課題にもつながります。さらに、自分や身近な人の経験とも結びつけながら学べるため、働き方やキャリアをどう考えるかを深めるきっかけになる分野です。身近だからこそ、新しい発見や気づきがあるのも魅力です。", why:"自分自身の働き方やキャリアに迷った経験をきっかけに、「人はどうすれば働きがいを感じられるのか」に関心を持つようになりました。その疑問を深めるかたちで研究を進めるようになり、個人と組織を結びつけて考えるこの分野を選びました。気づけば自然と自分の専門分野となり、これからも働く人の気持ちと組織の仕組みをつなぐ視点を大切にしていきたいと思います。", vision:"いろんな分野を横断的に学べます。今の社会で起こる課題は、一つの学問だけでは分からないことも多いので、幅広い知識や視点を持つことが大切です。自分の考えを広げ、将来やキャリアを考えるヒントを得られる学部だと思います。", url:"https://www.policy.ryukoku.ac.jp/teacher/yonekura.html" },
+  { id:"sakurai", avatar:"🌏", name:"櫻井 あかね", title:"実践型教育助手", field:"環境政策、地方自治", book:"赤瀬川原平『路上観察学入門』、中島らもの本", movie:"「エリン・ブロコビッチ」、「ベルリン天使の詩」", kyoto:"町を歩いていると古い洋館に出会うことが多いですね。ビルや美術館、レストランや喫茶店など、おしゃれな空間を楽しむことができます。", motto:"", fun:"現在起こっているさまざまな問題は、行政だけでは解決できないものばかりです。企業やNPO、地域団体などセクターを超えたつながりが求められています。硬直した社会を動かすには斬新なアイデアと行動力が必要で、自治体政策によって官民連携、民民連携を引き出せるところに面白さを感じています。", why:"学生時代の恩師が掲げていた「市民研究」という言葉がきっかけでした。生活者の視点から研究をする。今でも大切にしている私の立ち位置です。先進的な取り組みをすすめている地域にいくと、たくさんの魅力的な人に出会います。知恵を出し合って困難を乗り越えた人の熱い心に触れることが好きです。", vision:"幅広い研究分野を学びつつ、正課・課外の実践的な活動を通してタフになれること。", url:"https://www.policy.ryukoku.ac.jp/teacher/sakurai.html" },
+];
+const BOOKS = [
+  { id:"b1", title:"コンサル一年目が学ぶこと", author:"大石哲之", tag:"IT", userId:"u9",
+    comment:"1年目で読みたかった…！議事録の書き方だけでも元がとれます", color:"#ff8a65" },
+  { id:"b2", title:"イシューからはじめよ", author:"安宅和人", tag:"IT", userId:"u4",
+    comment:"「解く前に問いを疑う」は営業でも研究でも効きます", color:"#3a7500" },
+  { id:"b3", title:"入社1年目の教科書", author:"岩瀬大輔", tag:"金融", userId:"u5",
+    comment:"配属直後に読んで肩の力が抜けました", color:"#7ec8e3" },
+  { id:"b4", title:"7つの習慣", author:"スティーブン・R・コヴィー", tag:"公務員", userId:"u6",
+    comment:"異動のたびに読み返しています", color:"#f5c542" },
+  { id:"b5", title:"嫌われる勇気", author:"岸見一郎・古賀史健", tag:"教育", userId:"u3",
+    comment:"対人関係で悩んだときに。対話形式で読みやすいです", color:"#8bc34a" },
+  { id:"b6", title:"FACTFULNESS", author:"ハンス・ロスリングほか", tag:"NPO", userId:"u10",
+    comment:"思い込みに気づけます。現場の仕事にも効く一冊", color:"#b39ddb" },
+  { id:"b7", title:"考える技術・書く技術", author:"バーバラ・ミント", tag:"メーカー", userId:"u7",
+    comment:"ゼミ生全員にすすめています", color:"#f7a8b8" },
+  { id:"b8", title:"経営者の条件", author:"P.F.ドラッカー", tag:"メーカー", userId:"u4",
+    comment:"マネジメント側になってから沁みました", color:"#90a4ae" },
+];
+
+const SEMINARS = ["阿部ゼミ", "石原ゼミ", "大石ゼミ", "清水ゼミ", "只友ゼミ", "中森ゼミ", "服部ゼミ", "深尾ゼミ", "村田ゼミ", "的場ゼミ"];
+const EVENTS = [
+  { id:"ev_dosokai", type:"plain", emoji:"🎉", icon:"assets/icon-event-reunion.png", title:"政策学部同窓会 2026", month:9, when:"9/5（土）14:00〜",
+    status:"now", target:"だれでも", joined:48,
+    lead:"年に一度の集まり。今年はこのアプリのお披露目もします。",
+    detail:"会場は深草キャンパス。現役生・OBOG・先生・職員、どなたでも。当日は各班の進捗共有の時間もあります。\n\nこのアプリを触ってみた感想を、その場で「きく」に投げてもらえるとうれしいです🌱" },
+  { id:"ev_sotsuron", type:"plain", emoji:"📝", icon:"assets/icon-event-thesis.png", title:"卒論かけこみ相談", month:9, when:"9/1〜10/31",
+    status:"now", target:"現役生 ⇄ OBOG・先生", joined:23,
+    lead:"テーマが決まらない、調査の型がわからない。書き上げた先輩に、途中経過のまま聞ける2か月。",
+    detail:"「きく」に #卒論 で質問を投げると、卒論を書き終えた先輩に通知が飛びます。\n\n・テーマの絞り方\n・インタビューの人数と依頼のしかた\n・分析でつまずいたとき\n\n答える側は「完璧な答え」でなくて大丈夫。自分のときどうだったか、で十分です。" },
+  { id:"ev_ob", type:"ob", emoji:"👔", icon:"assets/icon-event-obvisit.png", title:"OB訪問月間", month:10, when:"10/1〜10/31",
+    status:"soon", target:"現役生 ⇄ 社会人", joined:31,
+    lead:"「話を聞いてもいいよ」の先輩が並ぶ1か月。ふだん聞けない仕事のリアルを、家からでも。",
+    detail:"龍谷はOB訪問がしにくい、という声から生まれた企画です。この月は、受け入れOKの先輩が一覧に並びます。\n\n社会人のみなさんへ: 「うけつけ中」をONにすると、あなたのカードがこの一覧に載ります。話せることを1行書くだけでOKです。" },
+  { id:"ev_touron", type:"touron", emoji:"🗣", icon:"assets/icon-event-debate.png", title:"討論会ブラッシュアップ", month:11, when:"11/1〜11/22",
+    status:"soon", target:"参加ゼミ ⇄ OBOG・先生", joined:64,
+    lead:"各ゼミが討論会の進捗をあげて、先輩から意見をもらう。他ゼミには見えないので、安心して途中を出せます。",
+    detail:"" },
+  { id:"ev_books", type:"books", emoji:"📚", icon:"assets/icon-event-books.png", title:"本紹介ウィーク", month:12, when:"12/1〜12/7",
+    status:"planned", target:"だれでも", joined:12,
+    lead:"先輩の「1年目で読みたかった1冊」が集まる1週間。業界別に並びます。",
+    detail:"" },
+  { id:"ev_shukatsu", type:"plain", emoji:"💼", icon:"assets/icon-event-career.png", title:"就活スタート相談会", month:2, when:"2月上旬",
+    status:"planned", target:"現役生 ⇄ OBOG", joined:0,
+    lead:"何から始めればいいのか、を先輩に聞く回。ESの見せ合いもここで。",
+    detail:"3年生の冬に「まず何をしたか」を、業界ばらばらの先輩から一気に聞ける回にする予定です。企画はこれから。リクエスト歓迎です。" },
+  { id:"ev_shinkan", type:"plain", emoji:"🌸", icon:"assets/icon-event-seminar.png", title:"ゼミ選び相談ウィーク", month:4, when:"4月中旬",
+    status:"planned", target:"現役生 ⇄ 現役生・OBOG", joined:0,
+    lead:"どのゼミにする? を、そのゼミにいた人に直接きける1週間。",
+    detail:"先生図鑑とセットで使う企画です。気になる先生のページから、そのゼミのOBOGに質問が飛ばせるようにする予定。" },
+];
+const OB_HOSTS = [
+  { id:"h1", userId:"u4",  industry:"メーカー", role:"人事", topics:"新卒採用のえらび方／転勤のリアル／文系の技術系企業", style:"オンライン30分" },
+  { id:"h2", userId:"u5",  industry:"金融", role:"法人営業", topics:"総合職の1年目／産休からの復職／転勤なし勤務", style:"オンライン or 京都でお茶" },
+  { id:"h3", userId:"u6",  industry:"公務員", role:"市役所（財政課）", topics:"公務員試験のはじめ方／国家と地方の比較／異動のリアル", style:"オンライン45分" },
+  { id:"h4", userId:"u9",  industry:"IT", role:"事業企画", topics:"未経験からIT／社会人3年目の転職／リモートの働き方", style:"オンライン・夜のみ" },
+  { id:"h5", userId:"u10", industry:"NPO", role:"事務局", topics:"NPOで食べていく／助成金のしごと／地域おこし協力隊のあと", style:"オンライン or 現地訪問OK" },
+];
+const TOURON_POSTS = [
+  { id:"tp1", seminar:"中森ゼミ", updated:"2日前", title:"空き店舗を「あえて貸さない」商店街の再生案",
+    body:"全部埋めるのが正解ではない、という仮説で進めています。空き区画を共用の作業場として残す案。ヒアリング6件まで完了。数字の裏づけがまだ弱いのが悩みです。",
+    comments:[{ userId:"u4", text:"仮説は面白いです。「貸さないコスト」を家賃換算で出すと、審査員に刺さると思います。" },
+              { userId:"u6", text:"うちの市でも似た事例があります。担当課の資料、公開されているので送りますね。" }] },
+  { id:"tp2", seminar:"石原ゼミ", updated:"3日前", title:"高校生がつくる避難所レイアウトの提案",
+    body:"防災教育のワークショップを2校で実施。生徒が出した動線案を、実際の避難所運営マニュアルと突き合わせています。当日は実演を入れる予定です。",
+    comments:[{ userId:"u9", text:"実演、強いと思います。ただ7分に収まるか要注意。リハで測っておくのがおすすめ。" }] },
+  { id:"tp3", seminar:"村田ゼミ", updated:"5日前", title:"会議の「話しやすさ」を測るものさしづくり",
+    body:"自治体の住民会議を録音・文字起こしし、発言の偏りを可視化しました。定量に寄りすぎて「で、どうする?」の提案が薄いと指摘されているところです。",
+    comments:[{ userId:"u5", text:"提案は1つに絞ったほうが伝わります。ファシリの型を1枚にまとめるだけでも十分。" },
+              { userId:"u10", text:"現場で使ってもらった結果まで載せられると一気に説得力が出ますよ。" }] },
+  { id:"tp4", seminar:"大石ゼミ", updated:"6日前", title:"規格外野菜を学食に入れるまでの段取り",
+    body:"生産者3件・学食1件と調整中。値段と量の折り合いがつかず難航しています。制度の話に落とすか、事業の話に振り切るか迷い中。",
+    comments:[{ userId:"u4", text:"迷ったら「今日から誰が何をするか」が書けるほうを選ぶと、討論会では強いです。" }] },
+  { id:"tp5", seminar:"只友ゼミ", updated:"8日前", title:"ふるさと納税に頼らない自治体財政の組み立て",
+    body:"類似団体との比較で歳入構造を整理しました。結論が「一般論」になりがちなので、対象自治体を1つに絞るか検討しています。",
+    comments:[] },
+  { id:"tp6", seminar:"服部ゼミ", updated:"10日前", title:"歩いて楽しい駅前へ：ベンチの数を数えるところから",
+    body:"駅前3地区で滞留人数とベンチ数をカウント。データは集まったので、これを政策提案の形にする段階です。",
+    comments:[{ userId:"u9", text:"「ベンチを増やす」の先に、誰が管理するかまで書けると実現性が上がります。" }] },
+];
+
+/* =====================================================================
+   STATE
+===================================================================== */
+let storageOk = true;
+function loadStore() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (!raw) return null;
+    const s = JSON.parse(raw);
+    return (s && s.ver === 1) ? s : null;
+  } catch (e) { return null; }
+}
+let store = loadStore() || { ver:1, profile:null, myQuestions:[], myAnswers:[], myRecruits:[],
+  myThanks:{}, myMeToo:[], myHelps:[], myEvents:[], boardReplies:{}, obHost:false, draft:null, receivedThanks:12 };
+if (!store.myEvents) store.myEvents = [];
+if (!store.boardReplies) store.boardReplies = {};
+function saveStore() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(store)); }
+  catch (e) { if (storageOk) { storageOk = false; toast("保存できない環境みたい。この画面のあいだだけ有効だよ"); } }
+}
+let state = { cat: "all", sort: "new", search: "", bookTag: "すべて", openOnly: true,
+  askCat: null, recType: null, meTab: "q",
+  teacherSearch: "", evFilter: "now", evId: null, boardId: null, previewAttr: "" };
+
+/* =====================================================================
+   ユーティリティ
+===================================================================== */
+const $ = (sel) => document.querySelector(sel);
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
+function esc(s) { return String(s).replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])); }
+function badge(attr) { const a = ATTRS[attr]; return `<span class="badge ${a.cls}">${a.label}</span>`; }
+function graduationLabel(gen, attr = "obog") {
+  if (attr !== "obog" || !gen || gen === "—") return gen || "";
+  const cohort = Number(String(gen).match(/\d+/)?.[0]);
+  const item = GRADUATION_COHORTS.find((x) => x.cohort === cohort);
+  return item ? `${item.cohort}期生（${item.graduationYear}年卒）` : String(gen);
+}
+function relDate(ts) {
+  const d = Math.floor((NOW - ts) / DAY);
+  if (d <= 0) return "きょう";
+  if (d === 1) return "きのう";
+  return d + "日前";
+}
+function hi(text) {
+  const t = esc(text);
+  if (!state.search) return t;
+  const q = esc(state.search).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return t.replace(new RegExp("(" + q + ")", "gi"), "<mark>$1</mark>");
+}
+function mascotPNG() {
+  return `<img class="inline-mascot" src="assets/character-event-guide-v01.png" alt="" aria-hidden="true">`;
+}
+let toastTimer = null;
+function toast(msg) {
+  document.querySelectorAll(".toast").forEach((t) => t.remove());
+  const el = document.createElement("div");
+  el.className = "toast"; el.setAttribute("role", "status"); el.textContent = msg;
+  document.body.appendChild(el);
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.remove(), 2500);
+}
+function confetti(n = 16) {
+  if (reduceMotion.matches) return;
+  const colors = ["#3a7500", "#8bc34a", "#f5c542", "#ff8a65"];
+  const wrap = document.createElement("div");
+  wrap.className = "confetti";
+  for (let i = 0; i < n; i++) {
+    const p = document.createElement("i");
+    p.style.left = Math.random() * 100 + "%";
+    p.style.background = colors[i % colors.length];
+    p.style.animationDelay = Math.random() * 0.2 + "s";
+    wrap.appendChild(p);
+  }
+  document.body.appendChild(wrap);
+  setTimeout(() => wrap.remove(), 1500);
+}
+
+/* =====================================================================
+   使い方ガイド
+===================================================================== */
+let guideIndex = 0;
+let guideReturnFocus = null;
+function renderGuide() {
+  const step = GUIDE_STEPS[guideIndex];
+  $("#guideStepLabel").textContent = `SOTOTUNAの使い方　${guideIndex + 1} / ${GUIDE_STEPS.length}`;
+  $("#guideVisual").innerHTML = `<img src="${step.icon}" alt="">`;
+  $("#guideTitle").textContent = step.title;
+  $("#guideCopy").textContent = step.copy;
+  $("#guideTip").textContent = step.tip;
+  $("#guideProgress").innerHTML = GUIDE_STEPS.map((_, i) =>
+    `<span class="guide-dot ${i === guideIndex ? "on" : ""}" aria-hidden="true"></span>`).join("");
+  $("#guideBack").hidden = guideIndex === 0;
+  $("#guideNext").textContent = guideIndex === GUIDE_STEPS.length - 1 ? "使ってみる" : "つぎへ";
+}
+function openGuide(startIndex = 0) {
+  guideReturnFocus = document.activeElement;
+  guideIndex = Math.max(0, Math.min(startIndex, GUIDE_STEPS.length - 1));
+  renderGuide();
+  $("#guideOverlay").classList.add("on");
+  $("#guideOverlay").setAttribute("aria-hidden", "false");
+  $("#guideClose").focus();
+}
+function closeGuide() {
+  $("#guideOverlay").classList.remove("on");
+  $("#guideOverlay").setAttribute("aria-hidden", "true");
+  store.guideSeen = true;
+  saveStore();
+  if (guideReturnFocus && typeof guideReturnFocus.focus === "function") guideReturnFocus.focus();
+}
+$("#guideLaunch").addEventListener("click", () => openGuide(0));
+$("#guideClose").addEventListener("click", closeGuide);
+$("#guideBack").addEventListener("click", () => {
+  if (guideIndex > 0) { guideIndex -= 1; renderGuide(); }
+});
+$("#guideNext").addEventListener("click", () => {
+  if (guideIndex < GUIDE_STEPS.length - 1) { guideIndex += 1; renderGuide(); }
+  else closeGuide();
+});
+$("#guideOverlay").addEventListener("click", (e) => {
+  if (e.target === $("#guideOverlay")) closeGuide();
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && $("#guideOverlay").classList.contains("on")) closeGuide();
+});
+
+/* =====================================================================
+   データ結合ヘルパー
+===================================================================== */
+function allQuestions() {
+  return store.myQuestions.map((q) => ({ ...q, mine: true })).concat(QUESTIONS);
+}
+function answersOf(qid) {
+  return ANSWERS.filter((a) => a.questionId === qid)
+    .concat(store.myAnswers.filter((a) => a.questionId === qid).map((a) => ({ ...a, mine: true })));
+}
+function thanksTotal(qid) {
+  return answersOf(qid).reduce((s, a) => s + a.thanks + (store.myThanks[a.id] || 0), 0);
+}
+function qUserHTML(q) {
+  if (q.anonymous) {
+    const attr = q.mine ? store.profile.attr : USERS[q.userId].attr;
+    return `<span class="q-user"><span class="q-avatar anon">🌱</span>匿名の後輩🌱</span>${badge(attr)}`;
+  }
+  const u = q.mine ? { name: store.profile.name + "（あなた）", avatar: "🌱", attr: store.profile.attr } : USERS[q.userId];
+  const gen = graduationLabel(u.gen || (q.mine && store.profile.gen), u.attr);
+  return `<span class="q-user"><span class="q-avatar">${u.avatar}</span>${esc(u.name)}</span>${gen ? `<span class="ans-gen">${esc(gen)}</span>` : ""}${badge(u.attr)}`;
+}
+
+/* =====================================================================
+   RENDER: Q&Aフィード
+===================================================================== */
+function renderQaChips() {
+  const cats = [["all", "すべて"]].concat(Object.keys(QCATS).map((k) => [k, catLabel(k)]));
+  $("#qaChips").innerHTML = cats.map(([k, label]) =>
+    `<button class="chip ${state.cat === k ? "on" : ""}" data-cat="${k}">${label}</button>`).join("");
+}
+function renderQaList() {
+  let list = allQuestions().filter((q) => state.cat === "all" || q.category === state.cat);
+  if (state.search) list = list.filter((q) => q.text.toLowerCase().includes(state.search.toLowerCase()));
+  if (state.sort === "open") list = list.filter((q) => answersOf(q.id).length === 0);
+  if (state.sort === "thanks") list = [...list].sort((a, b) => thanksTotal(b.id) - thanksTotal(a.id));
+  else list = [...list].sort((a, b) => b.createdAt - a.createdAt);
+  if (!list.length) {
+    $("#qaList").innerHTML = `<div class="empty"><div class="mascot">${mascotPNG()}</div>見つからなかった…<br>言い方を変えてきいてみて🌱</div>`;
+    return;
+  }
+  $("#qaList").innerHTML = list.map((q) => {
+    const ans = answersOf(q.id);
+    const meTooN = q.meToo + (store.myMeToo.includes(q.id) ? 1 : 0);
+    return `<article class="card q-card" data-q="${q.id}" tabindex="0" role="button"
+      aria-label="質問をひらく">
+      <div class="q-head">
+        <span class="cat-chip">${catLabel(q.category)}</span>
+        ${qUserHTML(q)}
+        <span class="q-date">${relDate(q.createdAt)}</span>
+      </div>
+      <p class="q-text clamp">${hi(q.text)}</p>
+      <div class="q-meta">
+        <span>💬${ans.length}</span><span>🌱${thanksTotal(q.id)}</span><span>👀${meTooN}</span>
+        ${q.solved ? `<span class="solve-chip">✅解決済み</span>` : ""}
+        ${ans.length === 0 ? `<span class="open-chip">回答募集中</span>` : ""}
+      </div>
+    </article>`;
+  }).join("");
+}
+
+/* =====================================================================
+   RENDER: 質問詳細
+===================================================================== */
+function renderDetail(qid) {
+  const q = allQuestions().find((x) => x.id === qid);
+  if (!q) { go("#/qa"); return; }
+  const ans = answersOf(qid);
+  const sorted = [...ans].sort((a, b) => {
+    if (q.bestAnswerId === a.id) return -1;
+    if (q.bestAnswerId === b.id) return 1;
+    return (b.thanks + (store.myThanks[b.id] || 0)) - (a.thanks + (store.myThanks[a.id] || 0));
+  });
+  const meTooDone = store.myMeToo.includes(qid);
+  $("#view-detail").innerHTML = `
+    <button class="detail-back" id="detailBack">← 一覧にもどる</button>
+    <article class="card">
+      <div class="q-head">
+        <span class="cat-chip">${catLabel(q.category)}</span>
+        ${qUserHTML(q)}
+        <span class="q-date">${relDate(q.createdAt)}</span>
+      </div>
+      <p class="q-text">${esc(q.text)}</p>
+      <div class="thanks-row">
+        <button class="metoo-btn ${meTooDone ? "done" : ""}" id="meTooBtn">
+          👀 同じこと知りたい <span>${q.meToo + (meTooDone ? 1 : 0)}</span></button>
+        ${q.solved ? `<span class="solve-chip">✅解決済み</span>` : ""}
+      </div>
+    </article>
+    <div class="ans-count-label">回答 ${ans.length}件</div>
+    ${sorted.length ? sorted.map((a) => {
+      const u = a.mine ? { name: store.profile.name, avatar: "🌱", attr: store.profile.attr, gen: store.profile.gen } : USERS[a.userId];
+      const myN = store.myThanks[a.id] || 0;
+      const best = q.bestAnswerId === a.id;
+      return `<article class="card answer ${best ? "best" : ""}" data-ans="${a.id}">
+        ${best ? `<span class="ba-ribbon">🎗ベストアンサー</span>` : ""}
+        <div class="ans-head">
+          <span class="q-avatar">${u.avatar}</span>
+          <span class="ans-name">${esc(u.name)}</span>
+          ${graduationLabel(u.gen, u.attr) ? `<span class="ans-gen">${esc(graduationLabel(u.gen, u.attr))}</span>` : ""}
+          ${badge(u.attr)}
+        </div>
+        <p class="ans-text">${esc(a.text)}</p>
+        <div class="thanks-row">
+          <button class="thanks-btn ${myN ? "mine" : ""}" data-thanks="${a.id}" aria-label="ありがとうを送る">
+            <span class="sprout">🌱</span>ありがとう <span class="tn">${a.thanks + myN}</span>
+          </button>
+        </div>
+      </article>`;
+    }).join("")
+    : `<div class="empty"><div class="mascot">${mascotPNG()}</div>まだ回答がないみたい。だれかの登場を待とう…！<br>あなたが答えられるなら、ぜひ🌱</div>`}
+    <div class="ans-form">
+      <div class="ans-guide">経験ベースで、やさしく🌱（社外秘はNG）。回答は実名（${esc(store.profile.name)}）で表示されます</div>
+      <textarea id="ansText" maxlength="300" placeholder="こたえを書く…"></textarea>
+      <button class="btn-main ans-submit" id="ansSubmit">こたえる</button>
+    </div>`;
+  $("#detailBack").addEventListener("click", () => { go("#/qa"); });
+  $("#meTooBtn").addEventListener("click", () => {
+    if (store.myMeToo.includes(qid)) return;
+    store.myMeToo.push(qid); saveStore(); renderDetail(qid);
+  });
+  $("#ansSubmit").addEventListener("click", () => {
+    const text = $("#ansText").value.trim();
+    if (!text) { toast("こたえを書いてね🌱"); return; }
+    store.myAnswers.push({ id: "myans" + Date.now(), questionId: qid, userId: "me",
+      text: text.slice(0, 300), createdAt: Date.now(), thanks: 0 });
+    saveStore(); renderDetail(qid); toast("こたえをとどけたよ🌱");
+  });
+  document.querySelectorAll("[data-thanks]").forEach((b) =>
+    b.addEventListener("click", () => {
+      const id = b.dataset.thanks;
+      store.myThanks[id] = (store.myThanks[id] || 0) + 1;
+      saveStore();
+      b.classList.add("mine");
+      const n = b.querySelector(".tn");
+      n.textContent = String(Number(n.textContent) + 1);
+      const sp = b.querySelector(".sprout");
+      sp.classList.remove("grow"); void sp.offsetWidth; sp.classList.add("grow");
+    }));
+}
+
+/* =====================================================================
+   RENDER: ひろば
+===================================================================== */
+function allRecruits() {
+  return store.myRecruits.map((r) => ({ ...r, mine: true })).concat(RECRUITS);
+}
+function renderBoard() {
+  let list = allRecruits();
+  if (state.openOnly) list = list.filter((r) => r.status === "open");
+  $("#boardList").innerHTML = list.length ? list.map((r) => {
+    const u = r.mine ? { name: store.profile.name + "（あなた）", attr: store.profile.attr, gen: store.profile.gen } : USERS[r.userId];
+    const helped = store.myHelps.includes(r.id);
+    const n = r.helpers + (helped ? 1 : 0);
+    const closed = r.status === "closed";
+    return `<article class="card r-card" data-recruit="${r.id}" tabindex="0" role="button" aria-label="${esc(r.title)}の詳細を開く">
+      <div class="r-head">
+        <span class="r-type">${RTYPES[r.type].label}</span>
+        <span class="r-state ${closed ? "closed" : "open"}">${closed ? "🎉成立" : "募集中"}</span>
+      </div>
+      <h2 class="r-title">${esc(r.title)}</h2>
+      <p class="r-body">${esc(r.body)}</p>
+      <div class="r-meta">${esc(u.name)}${graduationLabel(u.gen, u.attr) ? "（" + esc(graduationLabel(u.gen, u.attr)) + "）" : ""} ${badge(u.attr)}　締切 ${esc((r.deadline || "").slice(5).replace("-", "/"))}</div>
+      <div class="help-row">
+        <button class="help-btn ${helped ? "mine" : ""}" data-help="${r.id}" ${closed ? "disabled" : ""}>
+          ${closed ? "受付終了" : helped ? "✋協力するよ！" : "✋協力する"}</button>
+        <span class="help-count">${n}人が協力中</span>
+        <span class="r-open">詳細・やりとり →</span>
+      </div>
+    </article>`;
+  }).join("") : `<div class="empty"><div class="mascot">${mascotPNG()}</div>いまは募集がないみたい</div>`;
+}
+
+function renderBoardDetail(id) {
+  const r = allRecruits().find((item) => item.id === id);
+  if (!r) { go("#/board"); return; }
+  state.boardId = id;
+  const u = r.mine ? { name: store.profile.name + "（あなた）", avatar:"🌱", attr: store.profile.attr, gen:store.profile.gen } : USERS[r.userId];
+  const helped = store.myHelps.includes(r.id);
+  const n = r.helpers + (helped ? 1 : 0);
+  const closed = r.status === "closed";
+  const posts = (BOARD_THREADS[id] || []).concat(store.boardReplies[id] || []);
+  const thread = posts.length ? posts.map((p) => {
+    const pu = p.userId === "me" ? { name:store.profile.name + "（あなた）", avatar:"🌱" } : USERS[p.userId];
+    return `<div class="thread-item ${p.userId === "me" ? "mine" : ""}">
+      <span class="thread-avatar" aria-hidden="true">${pu.avatar}</span>
+      <div class="thread-bubble"><div class="thread-by"><b>${esc(pu.name)}</b><time>${esc(p.time)}</time></div><p>${esc(p.text)}</p></div>
+    </div>`;
+  }).join("") : `<div class="empty" style="padding:22px 16px">最初のコメントを書いてみよう</div>`;
+  $("#view-boarddetail").innerHTML = `
+    <button class="detail-back" data-boardback>← ひろばへ</button>
+    <article class="card board-detail-head">
+      <div class="r-head"><span class="r-type">${RTYPES[r.type].label}</span><span class="r-state ${closed ? "closed" : "open"}">${closed ? "成立" : "募集中"}</span></div>
+      <h1 class="r-title" style="font-size:19px">${esc(r.title)}</h1>
+      <p class="r-body">${esc(r.body)}</p>
+      <div class="r-meta">${esc(u.name)}${graduationLabel(u.gen, u.attr) ? "（" + esc(graduationLabel(u.gen, u.attr)) + "）" : ""} ${badge(u.attr)}　締切 ${esc((r.deadline || "").slice(5).replace("-", "/"))}</div>
+      <div class="help-row"><button class="help-btn ${helped ? "mine" : ""}" data-detailhelp="${r.id}" ${closed ? "disabled" : ""}>${closed ? "受付終了" : helped ? "✋協力するよ！" : "✋協力する"}</button><span class="help-count">${n}人が協力中</span></div>
+    </article>
+    <div class="thread-title"><h2>やりとり</h2><span>${posts.length}件・みんなに見えるスレッド</span></div>
+    <div class="thread-list">${thread}</div>
+    ${closed ? "" : `<form class="thread-form" id="threadForm"><label for="threadText">この募集について話す</label><textarea id="threadText" maxlength="200" placeholder="質問や参加できる時間などを書いてください"></textarea><button class="btn-main" type="submit">スレッドに送る</button></form>`}`;
+}
+
+/* =====================================================================
+   RENDER: 先生図鑑（政策学部公式サイトの公開情報にもとづく）
+===================================================================== */
+function cut(s, n) { return s.length > n ? s.slice(0, n) + "…" : s; }
+function nl2p(s) {
+  return esc(s).split("\n").map((l) => (l.trim() ? `<p class="tsheet-p">${l}</p>` : "")).join("");
+}
+function filteredTeachers() {
+  const q = state.teacherSearch.trim();
+  if (!q) return TEACHERS;
+  return TEACHERS.filter((t) => (t.name + t.field + t.title).includes(q));
+}
+function renderTeachers() {
+  const list = filteredTeachers();
+  $("#teacherCount").textContent = list.length + "人";
+  $("#teacherGrid").innerHTML = list.length ? list.map((t) => `
+    <button class="tcard" data-teacher="${t.id}" aria-label="${esc(t.name)}先生のカード">
+      <div class="tcard-inner">
+        <div class="tface">
+          <span class="t-avatar">${uiIcon("assets/icon-nav-teachers.png", "teacher-art")}</span>
+          <span class="t-name">${esc(t.name)}</span>
+          <span class="t-title">${esc(t.title)}</span>
+          <span class="t-field">${esc(cut(t.field, 22))}</span>
+          <span class="t-flip-hint">タップでめくる ↻</span>
+        </div>
+        <div class="tface back">
+          ${t.book ? `<div class="t-back-row"><b>すきな本</b>${esc(cut(t.book, 20))}</div>` : ""}
+          ${t.movie ? `<div class="t-back-row"><b>すきな映画</b>${esc(cut(t.movie, 20))}</div>` : ""}
+          ${t.motto ? `<div class="t-back-row"><b>すきな言葉</b>${esc(cut(t.motto, 20))}</div>` : ""}
+          <div class="t-more">もう一度タップで、くわしく →</div>
+        </div>
+      </div>
+    </button>`).join("") : "";
+  $("#teacherEmpty").hidden = list.length > 0;
+}
+function openTeacherSheet(id) {
+  const t = TEACHERS.find((x) => x.id === id); if (!t) return;
+  const sec = (title, body) => body ? `<div class="tsheet-sec"><h4>${title}</h4>${nl2p(body)}</div>` : "";
+  $("#teacherSheet").innerHTML = `
+    <div class="tsheet-head">
+      <span class="tsheet-av">${uiIcon("assets/icon-nav-teachers.png", "teacher-art")}</span>
+      <div>
+        <div class="tsheet-name">${esc(t.name)} <span class="t-title">${esc(t.title)}</span></div>
+        <div class="tsheet-field">${esc(t.field)}</div>
+      </div>
+    </div>
+    ${sec("専門分野の面白さは？", t.fun)}
+    ${sec("なぜその分野を選んだの？", t.why)}
+    ${sec("政策学部のこと", t.vision)}
+    ${sec("すきな本", t.book)}
+    ${sec("すきな映画", t.movie)}
+    ${sec("京都のおすすめ", t.kyoto)}
+    ${sec("すきな言葉", t.motto)}
+    <a class="tsheet-link" href="${t.url}" target="_blank" rel="noopener">政策学部サイトの先生ページを見る ↗</a>
+    <div style="height:14px"></div>
+    <button class="btn-main" data-askteacher="${t.id}">この分野について、きいてみる</button>`;
+  $("#teacherOverlay").classList.add("on");
+}
+
+/* =====================================================================
+   RENDER: イベント
+===================================================================== */
+const EV_STATE = { now:"開催中", soon:"まもなく", planned:"まもなく", done:"おわり" };
+const THIS_MONTH = 9;
+function joinedCount(ev) { return ev.joined + (store.myEvents.includes(ev.id) ? 1 : 0); }
+function visibleEvents() {
+  if (state.evFilter === "soon") return EVENTS.filter((e) => e.status === "soon" || e.status === "planned");
+  return EVENTS.filter((e) => e.status === "now");
+}
+function renderEventChips() {
+  const chips = [["now", "開催中"], ["soon", "まもなく"]];
+  $("#eventChips").innerHTML = chips.map(([k, label]) =>
+    `<button class="chip ${state.evFilter === k ? "on" : ""}" data-evfilter="${k}">${label}</button>`).join("");
+  $("#eventListLabel").textContent = state.evFilter === "now" ? "いま参加できる企画" : "これから始まる企画";
+}
+function renderEvents() {
+  const months = [4,5,6,7,8,9,10,11,12,1,2,3];
+  const year = months.map((m) => {
+    const evs = EVENTS.filter((e) => e.month === m);
+    return `<div class="year-row ${m === THIS_MONTH ? "on" : ""}">
+      <span class="year-m">${m}月</span>
+      <span class="year-e ${evs.length ? "" : "none"}">${evs.length ? evs.map((e) => `<span class="year-event">${uiIcon(e.icon, "year-icon")}${esc(e.title)}</span>`).join(" / ") : "—"}</span>
+    </div>`;
+  }).join("");
+  const list = visibleEvents();
+  const yearCard = `
+    <div class="card year-card">
+      <div class="ans-count-label" style="padding:0 0 6px">年間スケジュール</div>
+      ${year}
+    </div>`;
+  $("#eventList").innerHTML = (list.length ? list.map((ev) => `
+    <article class="card ev-card" data-ev="${ev.id}" tabindex="0" role="button">
+      <span class="ev-emoji">${uiIcon(ev.icon, "event-icon")}</span>
+      <div style="flex:1">
+        <div class="ev-head-row">
+          <span class="ev-title">${esc(ev.title)}</span>
+          <span class="ev-state ${ev.status}">${EV_STATE[ev.status]}</span>
+        </div>
+        <div class="ev-when">${esc(ev.when)}・${esc(ev.target)}</div>
+        <div class="ev-lead">${esc(ev.lead)}</div>
+        <div class="ev-when" style="margin-top:6px">🙋 ${joinedCount(ev)}人が参加予定${store.myEvents.includes(ev.id) ? "（あなたも！）" : ""}</div>
+      </div>
+    </article>`).join("") : `<div class="empty">まだイベントがないよ</div>`) + yearCard;
+}
+function viewerAttr() { return state.previewAttr || (store.profile ? store.profile.attr : "current"); }
+function canSeeTouron(post) {
+  if (viewerAttr() !== "current") return true;
+  return !!store.profile && store.profile.seminar === post.seminar;
+}
+function eventBodyTouron() {
+  const iAmCurrent = viewerAttr() === "current";
+  const mySem = store.profile ? store.profile.seminar : null;
+  const semPick = iAmCurrent ? `
+    <div class="ans-count-label">あなたの参加ゼミ</div>
+    <div class="sem-pick">${SEMINARS.map((s) =>
+      `<button class="chip ${mySem === s ? "on" : ""}" data-sem="${esc(s)}">${esc(s)}</button>`).join("")}</div>` : "";
+  const posts = TOURON_POSTS.map((p) => {
+    const open = canSeeTouron(p);
+    const mine = mySem === p.seminar;
+    if (!open) {
+      return `<article class="card">
+        <div class="tr-head"><span class="tr-sem">${esc(p.seminar)}</span><span class="q-date">${esc(p.updated)}</span></div>
+        <div class="tr-lock">🔒 <div>他ゼミの進捗は、討論会当日まで見えません。<br>OBOG・先生・職員には見えています。</div></div>
+      </article>`;
+    }
+    const comments = p.comments.map((c) => {
+      const u = USERS[c.userId];
+      const gen = graduationLabel(u.gen, u.attr);
+      return `<div class="tr-comment"><b>${u.avatar} ${esc(u.name)}${gen ? `（${esc(gen)}）` : ""}</b>${esc(c.text)}</div>`;
+    }).join("");
+    return `<article class="card">
+      <div class="tr-head">
+        <span class="tr-sem ${mine ? "mine" : ""}">${esc(p.seminar)}${mine ? "・あなたのゼミ" : ""}</span>
+        <span class="q-date">${esc(p.updated)}</span>
+      </div>
+      <div class="tr-title">${esc(p.title)}</div>
+      <div class="tr-body">${esc(p.body)}</div>
+      <div class="ans-count-label" style="padding:10px 0 0">先輩からのブラッシュアップ ${p.comments.length}件</div>
+      ${comments || `<div class="mylist-empty">まだコメントがないよ</div>`}
+      ${viewerAttr() === "current"
+        ? `<button class="tr-cta" data-toast="発表資料をアップできます（本番版で対応）">📎 進捗を更新する</button>`
+        : `<button class="tr-cta" data-toast="コメント欄は本番版で開きます。当日までに一言、お願いします🌱">✍️ 意見を書く</button>`}
+    </article>`;
+  }).join("");
+  return `
+    <div class="note-box">🔒 <b>見え方のルール</b><br>
+      現役生には<b>自分のゼミの投稿だけ</b>が見えます（他ゼミの進捗は当日までふせています）。<br>
+      OBOG・先生・職員には、すべてのゼミが見えます。</div>
+    <div class="preview-row">見え方をためす:
+      ${[["", "自分（" + ATTRS[store.profile ? store.profile.attr : "current"].label + "）"], ["current", "現役生"], ["obog", "OBOG"]]
+        .map(([k, label]) => `<button class="chip ${state.previewAttr === k ? "on" : ""}" data-preview="${k}">${label}</button>`).join("")}
+    </div>
+    ${semPick}
+    <div class="ans-count-label">各ゼミの進捗 ${TOURON_POSTS.length}件</div>
+    ${posts}
+    <p class="teacher-note">※ ゼミ名は実在しますが、投稿内容はすべてサンプルです</p>`;
+}
+function eventBodyOB() {
+  const iAmObog = viewerAttr() === "obog";
+  const toggle = iAmObog ? `
+    <div class="card">
+      <div class="host-toggle">
+        <div>
+          <div class="anon-label">OB訪問をうけつける</div>
+          <div class="anon-note">ONにすると、下の一覧にあなたが載るよ</div>
+        </div>
+        <button class="switch ${store.obHost ? "on" : ""}" id="obHostToggle" role="switch"
+          aria-checked="${store.obHost}" aria-label="OB訪問をうけつける"></button>
+      </div>
+    </div>` : `
+    <div class="note-box">💡 気になる先輩の「きいてみる」から、そのまま質問を送れます。名前を出さずに聞くこともできます。</div>`;
+  const mine = (iAmObog && store.obHost) ? `
+    <article class="card host-card">
+      <span class="host-av">🌱</span>
+      <div>
+        <div class="host-name">${esc(store.profile.name)}（あなた）</div>
+        <div class="host-meta">うけつけ中</div>
+        <div class="host-topics">話せることを書いておくと、質問が届きやすくなるよ</div>
+        <span class="host-style">オンライン</span>
+      </div>
+    </article>` : "";
+  const hosts = OB_HOSTS.map((h) => {
+    const u = USERS[h.userId];
+    return `<article class="card host-card">
+      <span class="host-av">${u.avatar}</span>
+      <div style="flex:1">
+        <div class="host-name">${esc(u.name)}${badge(u.attr)}</div>
+        <div class="host-meta">${esc(graduationLabel(u.gen, u.attr))}・${esc(h.industry)}／${esc(h.role)}</div>
+        <div class="host-topics">${esc(h.topics)}</div>
+        <span class="host-style">${esc(h.style)}</span>
+        <div><button class="host-ask" data-toast="この先輩あてに質問を送れます（本番版で対応）">💬 きいてみる</button></div>
+      </div>
+    </article>`;
+  }).join("");
+  return `${toggle}
+    <div class="ans-count-label">うけつけ中の先輩 ${OB_HOSTS.length + (iAmObog && store.obHost ? 1 : 0)}人</div>
+    ${mine}${hosts}`;
+}
+function renderBookChips() {
+  const el = $("#bookChips"); if (!el) return;
+  el.innerHTML = BOOK_TAGS.map((t) =>
+    `<button class="chip ${state.bookTag === t ? "on" : ""}" data-tag="${t}">${t}</button>`).join("");
+}
+function renderBooks() {
+  const el = $("#bookList"); if (!el) return;
+  const list = BOOKS.filter((b) => state.bookTag === "すべて" || b.tag === state.bookTag);
+  el.innerHTML = list.length ? list.map((b) => {
+    const u = USERS[b.userId];
+    return `<article class="card book-card">
+      <span class="book-icon">${uiIcon("assets/icon-event-books.png", "book-art")}</span>
+      <div>
+        <div class="book-title">『${esc(b.title)}』</div>
+        <div class="book-author">${esc(b.author)}<span class="book-tag" style="margin-left:8px">${esc(b.tag)}</span></div>
+        <div class="book-reco">${u.avatar} ${esc(u.name)}${graduationLabel(u.gen, u.attr) ? "（" + esc(graduationLabel(u.gen, u.attr)) + "）" : ""}${badge(u.attr)}</div>
+        <div class="book-comment">${esc(b.comment)}</div>
+      </div>
+    </article>`;
+  }).join("") : `<div class="empty">いま表示できるイベントはありません</div>`;
+}
+function eventBodyBooks() {
+  return `
+    <div class="note-box">📚 先輩の「1年目で読みたかった1冊」を、業界別に。あなたの1冊も足せます。</div>
+    <div class="chips" id="bookChips"></div>
+    <div id="bookList" style="padding-top:8px"></div>
+    <div style="padding:0 16px 8px">
+      <button class="btn-main" data-toast="本の登録は本番版で開きます📚">＋ おすすめの1冊を足す</button>
+    </div>`;
+}
+function renderEventDetail(id) {
+  const ev = EVENTS.find((e) => e.id === id);
+  if (!ev) { go("#/events"); return; }
+  let body = "";
+  if (ev.type === "ob") body = eventBodyOB();
+  else if (ev.type === "touron") body = eventBodyTouron();
+  else if (ev.type === "books") body = eventBodyBooks();
+  else body = `<div class="card">${nl2p(ev.detail || ev.lead)}</div>`;
+  const joined = store.myEvents.includes(ev.id);
+  $("#view-eventdetail").innerHTML = `
+    <button class="detail-back" data-back="events">← イベント一覧</button>
+    <div class="app-head" style="padding-top:6px">
+      <span class="ev-emoji">${uiIcon(ev.icon, "event-icon")}</span>
+      <div>
+        <div class="screen-title" style="padding:0">${esc(ev.title)}</div>
+        <div class="ev-when">${esc(ev.when)}・${esc(ev.target)}</div>
+      </div>
+    </div>
+    <p class="screen-sub" style="padding-top:8px">${esc(ev.lead)}</p>
+    <div class="join-row">
+      <button class="join-btn ${joined ? "mine" : ""}" data-join="${ev.id}">${joined ? "✅ 参加予定！" : "🙋 参加する"}</button>
+      <span class="ev-joined">${joinedCount(ev)}人が参加予定</span>
+    </div>
+    ${body}`;
+  if (ev.type === "books") { renderBookChips(); renderBooks(); }
+}
+/* =====================================================================
+   RENDER: マイページ（ありがとうの木）
+===================================================================== */
+function treeSVG(total) {
+  const stage = total >= 30 ? 2 : total >= 10 ? 1 : 0;
+  const svgs = [
+    // 芽
+    `<svg class="tree-svg" width="120" height="120" viewBox="0 0 120 120" aria-hidden="true">
+      <ellipse cx="60" cy="104" rx="34" ry="8" fill="#e8f2dc"/>
+      <path d="M60 100 V70" stroke="#3a7500" stroke-width="5" stroke-linecap="round"/>
+      <path d="M60 74 C42 70 38 52 44 44 C58 46 62 60 60 74Z" fill="#8bc34a"/>
+      <path d="M60 80 C76 76 82 62 78 52 C64 54 58 66 60 80Z" fill="#3a7500"/>
+    </svg>`,
+    // 若木
+    `<svg class="tree-svg" width="120" height="120" viewBox="0 0 120 120" aria-hidden="true">
+      <ellipse cx="60" cy="106" rx="38" ry="8" fill="#e8f2dc"/>
+      <path d="M60 104 V56" stroke="#8a6d4a" stroke-width="7" stroke-linecap="round"/>
+      <path d="M60 74 L42 60 M60 64 L76 52" stroke="#8a6d4a" stroke-width="5" stroke-linecap="round"/>
+      <circle cx="60" cy="42" r="20" fill="#8bc34a"/>
+      <circle cx="40" cy="54" r="13" fill="#a5d36c"/>
+      <circle cx="79" cy="47" r="13" fill="#3a7500"/>
+    </svg>`,
+    // 大木
+    `<svg class="tree-svg" width="140" height="130" viewBox="0 0 140 130" aria-hidden="true">
+      <ellipse cx="70" cy="116" rx="48" ry="9" fill="#e8f2dc"/>
+      <path d="M70 114 V52" stroke="#8a6d4a" stroke-width="10" stroke-linecap="round"/>
+      <path d="M70 84 L46 64 M70 72 L94 56" stroke="#8a6d4a" stroke-width="6" stroke-linecap="round"/>
+      <circle cx="70" cy="36" r="26" fill="#8bc34a"/>
+      <circle cx="42" cy="54" r="18" fill="#a5d36c"/>
+      <circle cx="98" cy="48" r="18" fill="#3a7500"/>
+      <circle cx="58" cy="26" r="4" fill="#f5c542"/>
+      <circle cx="86" cy="38" r="4" fill="#ff8a65"/>
+      <circle cx="50" cy="46" r="4" fill="#fff"/>
+    </svg>`,
+  ];
+  return svgs[stage];
+}
+function renderMe() {
+  const p = store.profile;
+  const total = store.receivedThanks;
+  const stageLabel = total >= 30 ? "りっぱな大木🌳" : total >= 10 ? "すくすく若木🌿" : "かわいい芽🌱";
+  const tabs = [["q", "質問"], ["a", "回答"], ["r", "募集"]];
+  let listHTML = "";
+  if (state.meTab === "q") {
+    listHTML = store.myQuestions.length
+      ? store.myQuestions.map((q) => `<div class="mylist-row">${catLabel(q.category)}　${esc(q.text.slice(0, 40))}${q.text.length > 40 ? "…" : ""}${q.anonymous ? "（匿名）" : ""}</div>`).join("")
+      : `<div class="mylist-empty">まだ質問していないよ。「＋きいてみる」からどうぞ🌱</div>`;
+  } else if (state.meTab === "a") {
+    listHTML = store.myAnswers.length
+      ? store.myAnswers.map((a) => `<div class="mylist-row">💬 ${esc(a.text.slice(0, 40))}${a.text.length > 40 ? "…" : ""}</div>`).join("")
+      : `<div class="mylist-empty">まだ回答していないよ。経験はだれかの地図になる🌱</div>`;
+  } else {
+    listHTML = store.myRecruits.length
+      ? store.myRecruits.map((r) => `<div class="mylist-row">${RTYPES[r.type].label}　${esc(r.title)}</div>`).join("")
+      : `<div class="mylist-empty">まだ募集していないよ</div>`;
+  }
+  $("#view-me").innerHTML = `
+    <h1 class="screen-title">マイページ</h1>
+    <div class="card">
+      <div class="me-head">
+        <span class="avatar-big">🌱</span>
+        <div><div class="me-name">${esc(p.name)}</div>
+          ${graduationLabel(p.gen, p.attr) ? `<div class="ans-gen">${esc(graduationLabel(p.gen, p.attr))}</div>` : ""}
+          ${badge(p.attr)}</div>
+      </div>
+    </div>
+    <div class="card tree-card">
+      <div id="treeWrap">${treeSVG(total)}</div>
+      <div class="tree-count">みんなの「ありがとう」が${total}個</div>
+      <div class="tree-stage">${stageLabel}</div>
+    </div>
+    <div class="me-tabs">${tabs.map(([k, label]) =>
+      `<button class="chip ${state.meTab === k ? "on" : ""}" data-metab="${k}">${label}</button>`).join("")}</div>
+    <div class="card">${listHTML}</div>`;
+  requestAnimationFrame(() => {
+    const t = $("#treeWrap .tree-svg");
+    if (t) t.classList.add("sprout-in");
+  });
+  document.querySelectorAll("[data-metab]").forEach((b) =>
+    b.addEventListener("click", () => { state.meTab = b.dataset.metab; renderMe(); }));
+}
+
+/* =====================================================================
+   EVENTS: ルーティング
+===================================================================== */
+// ハッシュ遷移が使えない環境（サンドボックス等）では内部状態でルーティングする
+let hashWorks = true, fallbackRoute = "#/qa";
+function go(route) {
+  fallbackRoute = route;
+  if (hashWorks) {
+    try { location.hash = route; } catch (e) { hashWorks = false; }
+    if (location.hash !== route) hashWorks = false;
+  }
+  if (!hashWorks) renderRoute();
+}
+function renderRoute() {
+  let h = (hashWorks ? location.hash : fallbackRoute) || "#/qa";
+  fallbackRoute = h;
+  const qDetail = h.match(/^#\/qa\/([\w-]+)$/);
+  const bDetail = h.match(/^#\/board\/([\w-]+)$/);
+  const eDetail = h.match(/^#\/events\/([\w-]+)$/);
+  document.querySelectorAll(".view").forEach((v) => v.classList.remove("on"));
+  let tabRoute = h;
+  if (qDetail) {
+    $("#view-detail").classList.add("on");
+    tabRoute = "#/qa";
+    renderDetail(qDetail[1]);
+  } else if (bDetail) {
+    $("#view-boarddetail").classList.add("on");
+    tabRoute = "#/board";
+    renderBoardDetail(bDetail[1]);
+  } else if (eDetail) {
+    $("#view-eventdetail").classList.add("on");
+    tabRoute = "#/events";
+    state.evId = eDetail[1];
+    state.previewAttr = "";
+    renderEventDetail(eDetail[1]);
+  } else {
+    const id = { "#/qa": "view-qa", "#/board": "view-board", "#/events": "view-events",
+      "#/teachers": "view-teachers", "#/me": "view-me" }[h] || "view-qa";
+    $("#" + id).classList.add("on");
+    if (id === "view-qa") { renderQaChips(); renderQaList(); }
+    if (id === "view-board") renderBoard();
+    if (id === "view-events") { renderEventChips(); renderEvents(); }
+    if (id === "view-teachers") renderTeachers();
+    if (id === "view-me") renderMe();
+  }
+  document.querySelectorAll(".tab").forEach((t) => t.classList.toggle("on", t.dataset.route === tabRoute));
+  $("#askFab").hidden = !(h === "#/qa");
+  $("#recruitFab").hidden = !(h === "#/board");
+  $("#tsunamaru").hidden = !(h === "#/events");
+}
+window.addEventListener("hashchange", renderRoute);
+document.querySelectorAll(".tab").forEach((t) =>
+  t.addEventListener("click", () => { go(t.dataset.route); }));
+
+/* Q&Aフィード操作 */
+$("#qaChips").addEventListener("click", (e) => {
+  const b = e.target.closest(".chip"); if (!b) return;
+  state.cat = b.dataset.cat; renderQaChips(); renderQaList();
+});
+$("#sortSel").addEventListener("change", () => { state.sort = $("#sortSel").value; renderQaList(); });
+$("#searchToggle").addEventListener("click", () => {
+  $("#searchBar").classList.toggle("on");
+  if ($("#searchBar").classList.contains("on")) $("#searchInput").focus();
+  else { state.search = ""; $("#searchInput").value = ""; renderQaList(); }
+});
+let searchTimer = null;
+$("#searchInput").addEventListener("input", () => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => { state.search = $("#searchInput").value.trim(); renderQaList(); }, 300);
+});
+$("#qaList").addEventListener("click", (e) => {
+  const c = e.target.closest("[data-q]"); if (!c) return;
+  go("#/qa/" + c.dataset.q);
+});
+$("#qaList").addEventListener("keydown", (e) => {
+  if (e.key !== "Enter") return;
+  const c = e.target.closest("[data-q]"); if (!c) return;
+  go("#/qa/" + c.dataset.q);
+});
+
+/* 質問投稿 */
+$("#askFab").addEventListener("click", () => openAsk());
+function askCatsHTML() {
+  return Object.entries(QCATS).map(([k, c]) =>
+    `<button class="attr-chip ${state.askCat === k ? "on" : ""}" data-askcat="${k}">${catLabel(k)}</button>`).join("");
+}
+function askValidate() {
+  $("#askSubmit").disabled = !(state.askCat && $("#askText").value.trim());
+}
+function saveDraft() {
+  store.draft = { category: state.askCat, text: $("#askText").value,
+    anonymous: $("#anonToggle").classList.contains("on") };
+  saveStore();
+}
+function openAsk(prefill = "", category = null) {
+  const d = prefill ? null : store.draft;
+  state.askCat = category || (d ? d.category : null);
+  $("#askText").value = prefill || (d ? d.text : "");
+  $("#anonToggle").classList.toggle("on", d ? d.anonymous !== false : true);
+  $("#anonToggle").setAttribute("aria-checked", $("#anonToggle").classList.contains("on"));
+  $("#askCats").innerHTML = askCatsHTML();
+  $("#askCount").textContent = $("#askText").value.length + " / 300";
+  askValidate();
+  $("#askOverlay").classList.add("on");
+  if (prefill) setTimeout(() => $("#askText").focus(), 0);
+}
+$("#askCats").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-askcat]"); if (!b) return;
+  state.askCat = b.dataset.askcat;
+  $("#askCats").innerHTML = askCatsHTML();
+  askValidate(); saveDraft();
+});
+$("#askText").addEventListener("input", () => {
+  $("#askCount").textContent = $("#askText").value.length + " / 300";
+  askValidate(); saveDraft();
+});
+$("#anonToggle").addEventListener("click", () => {
+  $("#anonToggle").classList.toggle("on");
+  $("#anonToggle").setAttribute("aria-checked", $("#anonToggle").classList.contains("on"));
+  saveDraft();
+});
+$("#askOverlay").addEventListener("click", (e) => {
+  if (e.target === e.currentTarget) { $("#askOverlay").classList.remove("on"); }
+});
+$("#askSubmit").addEventListener("click", () => {
+  const text = $("#askText").value.trim();
+  if (!state.askCat || !text) return;
+  store.myQuestions.unshift({ id: "myq" + Date.now(), userId: "me",
+    anonymous: $("#anonToggle").classList.contains("on"), category: state.askCat,
+    text: text.slice(0, 300), createdAt: Date.now(), meToo: 0, solved: false });
+  store.draft = null;
+  saveStore();
+  $("#askOverlay").classList.remove("on");
+  renderQaList();
+  confetti(16);
+  toast("きいてみたよ！だれかが答えてくれるはず🌱");
+});
+
+/* ひろば操作 */
+$("#openOnly").addEventListener("click", () => {
+  state.openOnly = !state.openOnly;
+  $("#openOnly").classList.toggle("on", state.openOnly);
+  $("#openOnly").setAttribute("aria-checked", state.openOnly);
+  renderBoard();
+});
+$("#boardList").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-help]");
+  if (b) {
+    if (b.disabled) return;
+    const id = b.dataset.help;
+    const i = store.myHelps.indexOf(id);
+    if (i >= 0) { store.myHelps.splice(i, 1); toast("協力をとりけしたよ"); }
+    else { store.myHelps.push(id); confetti(8); toast("協力ポチ、うけとったよ✋"); }
+    saveStore(); renderBoard(); return;
+  }
+  const c = e.target.closest("[data-recruit]");
+  if (c) go("#/board/" + c.dataset.recruit);
+});
+$("#boardList").addEventListener("keydown", (e) => {
+  if (e.key !== "Enter" || e.target.closest("[data-help]")) return;
+  const c = e.target.closest("[data-recruit]");
+  if (c) go("#/board/" + c.dataset.recruit);
+});
+$("#view-boarddetail").addEventListener("click", (e) => {
+  if (e.target.closest("[data-boardback]")) { go("#/board"); return; }
+  const b = e.target.closest("[data-detailhelp]");
+  if (!b || b.disabled) return;
+  const id = b.dataset.detailhelp;
+  const i = store.myHelps.indexOf(id);
+  if (i >= 0) { store.myHelps.splice(i, 1); toast("協力をとりけしたよ"); }
+  else { store.myHelps.push(id); confetti(8); toast("協力ポチ、うけとったよ✋"); }
+  saveStore(); renderBoardDetail(id);
+});
+$("#view-boarddetail").addEventListener("submit", (e) => {
+  if (e.target.id !== "threadForm") return;
+  e.preventDefault();
+  const input = $("#threadText");
+  const text = input.value.trim();
+  if (!text || !state.boardId) return;
+  if (!store.boardReplies[state.boardId]) store.boardReplies[state.boardId] = [];
+  store.boardReplies[state.boardId].push({ userId:"me", time:"いま", text:text.slice(0, 200) });
+  saveStore(); renderBoardDetail(state.boardId); toast("スレッドに送りました");
+});
+$("#recruitFab").addEventListener("click", () => {
+  state.recType = null;
+  $("#recTypes").innerHTML = Object.entries(RTYPES).map(([k, t]) =>
+    `<button class="attr-chip" data-rectype="${k}">${t.label}</button>`).join("");
+  $("#recTitle").value = ""; $("#recBody").value = ""; $("#recDeadline").value = "";
+  $("#recCount").textContent = "0 / 200";
+  $("#recSubmit").disabled = true;
+  $("#recruitOverlay").classList.add("on");
+});
+function recValidate() {
+  $("#recSubmit").disabled = !(state.recType && $("#recTitle").value.trim() && $("#recBody").value.trim() && $("#recDeadline").value);
+}
+$("#recTypes").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-rectype]"); if (!b) return;
+  state.recType = b.dataset.rectype;
+  document.querySelectorAll("[data-rectype]").forEach((c) => c.classList.toggle("on", c === b));
+  recValidate();
+});
+$("#recTitle").addEventListener("input", recValidate);
+$("#recBody").addEventListener("input", () => {
+  $("#recCount").textContent = $("#recBody").value.length + " / 200";
+  recValidate();
+});
+$("#recDeadline").addEventListener("change", recValidate);
+$("#recruitOverlay").addEventListener("click", (e) => {
+  if (e.target === e.currentTarget) $("#recruitOverlay").classList.remove("on");
+});
+$("#recSubmit").addEventListener("click", () => {
+  store.myRecruits.unshift({ id: "myr" + Date.now(), userId: "me", type: state.recType,
+    title: $("#recTitle").value.trim().slice(0, 30), body: $("#recBody").value.trim().slice(0, 200),
+    deadline: $("#recDeadline").value, helpers: 0, status: "open" });
+  saveStore();
+  $("#recruitOverlay").classList.remove("on");
+  renderBoard();
+  confetti(16);
+  toast("募集をはじめたよ📌");
+});
+
+/* 先生図鑑 */
+let teacherTimer = null;
+$("#teacherSearch").addEventListener("input", () => {
+  clearTimeout(teacherTimer);
+  teacherTimer = setTimeout(() => { state.teacherSearch = $("#teacherSearch").value; renderTeachers(); }, 200);
+});
+$("#teacherGrid").addEventListener("click", (e) => {
+  const c = e.target.closest(".tcard"); if (!c) return;
+  if (c.classList.contains("flipped")) { openTeacherSheet(c.dataset.teacher); c.classList.remove("flipped"); }
+  else c.classList.add("flipped");
+});
+$("#teacherOverlay").addEventListener("click", (e) => {
+  if (e.target === e.currentTarget) { $("#teacherOverlay").classList.remove("on"); return; }
+  const a = e.target.closest("[data-askteacher]"); if (!a) return;
+  const teacher = TEACHERS.find((t) => t.id === a.dataset.askteacher);
+  const mention = teacher ? "@" + teacher.name.trim().split(/\s+/)[0] + "先生 " : "";
+  $("#teacherOverlay").classList.remove("on");
+  go("#/qa");
+  openAsk(mention, "research");
+});
+
+/* イベント */
+$("#eventChips").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-evfilter]"); if (!b) return;
+  state.evFilter = b.dataset.evfilter; renderEventChips(); renderEvents();
+});
+$("#eventList").addEventListener("click", (e) => {
+  const c = e.target.closest("[data-ev]"); if (!c) return;
+  go("#/events/" + c.dataset.ev);
+});
+$("#eventList").addEventListener("keydown", (e) => {
+  if (e.key !== "Enter") return;
+  const c = e.target.closest("[data-ev]"); if (!c) return;
+  go("#/events/" + c.dataset.ev);
+});
+$("#eventRequest").addEventListener("click", () => {
+  toast("Googleフォームにつながります（URLは公開前に差し込み）📮");
+});
+$("#view-eventdetail").addEventListener("click", (e) => {
+  const t = e.target;
+  if (t.closest("[data-back]")) { go("#/events"); return; }
+  const join = t.closest("[data-join]");
+  if (join) {
+    const id = join.dataset.join;
+    const i = store.myEvents.indexOf(id);
+    if (i >= 0) { store.myEvents.splice(i, 1); toast("参加をとりけしたよ"); }
+    else { store.myEvents.push(id); confetti(14); toast("参加ポチ、うけとったよ🙋"); }
+    saveStore(); renderEventDetail(state.evId); return;
+  }
+  const pv = t.closest("[data-preview]");
+  if (pv) { state.previewAttr = pv.dataset.preview; renderEventDetail(state.evId); return; }
+  const sem = t.closest("[data-sem]");
+  if (sem) {
+    store.profile.seminar = sem.dataset.sem; saveStore();
+    toast(store.profile.seminar + "に設定したよ");
+    renderEventDetail(state.evId); return;
+  }
+  if (t.closest("#obHostToggle")) {
+    store.obHost = !store.obHost; saveStore();
+    toast(store.obHost ? "うけつけ中にしたよ。後輩が見つけやすくなります🌱" : "うけつけをとめたよ");
+    renderEventDetail(state.evId); return;
+  }
+  const tag = t.closest("[data-tag]");
+  if (tag) { state.bookTag = tag.dataset.tag; renderBookChips(); renderBooks(); return; }
+  const ts = t.closest("[data-toast]");
+  if (ts) { toast(ts.dataset.toast); }
+});
+
+/* つなまる */
+$("#tsunamaruBtn").innerHTML = `<img src="assets/character-event-guide-v01.png" alt="">`;
+$("#tsunamaruBtn").addEventListener("click", () => {
+  document.querySelectorAll(".speech").forEach((s) => s.remove());
+  const sp = document.createElement("div");
+  sp.className = "speech"; sp.setAttribute("role", "status");
+  sp.textContent = SPEECHES[Math.floor(Math.random() * SPEECHES.length)];
+  document.body.appendChild(sp);
+  setTimeout(() => sp.remove(), 2500);
+});
+
+/* オンボーディング */
+$("#obMascot").innerHTML = mascotPNG();
+const OB = { attr: null, sem: null, gen: null };
+$("#obSems").innerHTML = SEMINARS.map((s) => `<button class="attr-chip" data-obsem="${s}">${s}</button>`).join("");
+$("#obGeneration").innerHTML += GRADUATION_COHORTS.slice().reverse().map((g) =>
+  `<option value="${g.cohort}">${g.cohort}期生（${g.graduationYear}年卒）</option>`).join("");
+$("#obSems").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-obsem]"); if (!b) return;
+  OB.sem = b.dataset.obsem;
+  document.querySelectorAll("#obSems .attr-chip").forEach((c) => c.classList.toggle("on", c === b));
+  obValidate();
+});
+$("#obAttrs").innerHTML = Object.entries(ATTRS).map(([k, a]) =>
+  `<button class="attr-chip" data-attr="${k}">${a.label}</button>`).join("");
+function obValidate() {
+  const currentReady = OB.attr !== "current" || OB.sem;
+  const obogReady = OB.attr !== "obog" || OB.gen;
+  $("#obStart").disabled = !($("#obName").value.trim() && OB.attr && currentReady && obogReady);
+}
+$("#obAttrs").addEventListener("click", (e) => {
+  const b = e.target.closest(".attr-chip[data-attr]"); if (!b) return;
+  OB.attr = b.dataset.attr;
+  document.querySelectorAll("#obAttrs .attr-chip").forEach((c) => c.classList.toggle("on", c === b));
+  $("#obSemField").hidden = OB.attr !== "current";
+  $("#obGenField").hidden = OB.attr !== "obog";
+  obValidate();
+});
+$("#obGeneration").addEventListener("change", () => {
+  OB.gen = $("#obGeneration").value ? Number($("#obGeneration").value) : null;
+  obValidate();
+});
+$("#obName").addEventListener("input", obValidate);
+$("#obStart").addEventListener("click", () => {
+  store.profile = { name: $("#obName").value.trim().slice(0, 10), attr: OB.attr,
+    seminar: OB.attr === "current" ? OB.sem : null, gen: OB.attr === "obog" ? OB.gen : null };
+  saveStore();
+  $("#onboarding").classList.remove("on");
+  $("#guideLaunch").hidden = false;
+  renderRoute();
+  toast("ようこそ、" + store.profile.name + "さん🌱");
+  requestAnimationFrame(() => openGuide(0));
+});
+
+/* 起動 */
+if (!store.profile) $("#onboarding").classList.add("on");
+$("#guideLaunch").hidden = !store.profile;
+if (!location.hash) { try { history.replaceState(null, "", "#/qa"); } catch (e) {} }
+renderRoute();
+</script>
+</body>
 </html>
