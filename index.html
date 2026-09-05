@@ -278,6 +278,13 @@ mark { background: var(--mark); border-radius: 3px; padding: 0 1px; }
 .avatar-big { width: 56px; height: 56px; border-radius: 50%; background: var(--green-pale);
   display: grid; place-items: center; font-size: 30px; }
 .me-name { font-size: 18px; font-weight: 700; }
+.profile-summary { display: grid; gap: 12px; }
+.profile-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.profile-meta { margin-top: 4px; color: var(--ink-weak); font-size: 12px; }
+.profile-bio { font-size: 13px; line-height: 1.7; white-space: pre-wrap; }
+.profile-bio.empty { color: var(--ink-weak); }
+.profile-edit-btn { flex: none; min-height: 36px; padding: 7px 12px; border: 1.5px solid var(--green);
+  border-radius: 999px; color: var(--green); background: var(--white); font-size: 12px; font-weight: 700; }
 .tree-card { text-align: center; }
 .tree-svg { transform-origin: bottom center; }
 .tree-svg.sprout-in { animation: treein 600ms ease both; }
@@ -285,8 +292,13 @@ mark { background: var(--mark); border-radius: 3px; padding: 0 1px; }
 .tree-count { font-size: 14px; font-weight: 700; color: var(--green); margin-top: 4px; }
 .tree-stage { font-size: 12px; color: var(--ink-weak); }
 .me-tabs { display: flex; gap: 8px; padding: 4px 16px 10px; }
-.mylist-row { padding: 8px 0; font-size: 13px; border-bottom: 1px solid var(--green-pale); }
+.mylist-row { padding: 8px 0; font-size: 13px; border-bottom: 1px solid var(--green-pale);
+  display: flex; align-items: center; gap: 8px; }
 .mylist-row:last-child { border-bottom: none; }
+.mylist-main { flex: 1; min-width: 0; text-align: left; padding: 4px 0; line-height: 1.5; }
+.delete-btn { flex: none; min-height: 36px; padding: 6px 10px; border-radius: 999px;
+  border: 1px solid #d8a3a3; color: #8c3b3b; background: #fff8f8; font-size: 12px; font-weight: 700; }
+.post-delete-row { display: flex; justify-content: flex-end; margin-top: 10px; }
 .mylist-empty { font-size: 13px; color: var(--ink-weak); }
 
 /* ===== タブバー ===== */
@@ -336,7 +348,7 @@ mark { background: var(--mark); border-radius: 3px; padding: 0 1px; }
 .hello-sub { font-size: 13px; color: var(--ink-weak); margin-bottom: 14px; }
 .field { margin-bottom: 14px; text-align: left; }
 .field label { font-size: 12px; font-weight: 700; color: var(--green); display: block; margin-bottom: 6px; }
-.field input[type=text], .field input[type=date], .field textarea, .field select {
+.field input[type=text], .field input[type=email], .field input[type=date], .field textarea, .field select {
   width: 100%; border: 1.5px solid var(--green-pale); border-radius: var(--radius-s);
   padding: 11px 12px; font: inherit; background: var(--cream); color: var(--ink); }
 .field textarea { resize: none; height: 96px; }
@@ -356,6 +368,24 @@ mark { background: var(--mark); border-radius: 3px; padding: 0 1px; }
   transition: transform 100ms, opacity var(--dur-fast); }
 .btn-main:active { transform: scale(.96); }
 .btn-main:disabled { opacity: .4; cursor: default; }
+.sheet-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.sheet-head .sheet-title { margin-bottom: 0; }
+.sheet-close { width: 40px; height: 40px; border-radius: 50%; background: var(--green-pale);
+  color: var(--green); font-size: 24px; line-height: 1; }
+.profile-icons { display: flex; flex-wrap: wrap; gap: 8px; }
+.profile-icon-btn { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%;
+  background: var(--cream); border: 1.5px solid var(--green-pale); font-size: 24px; }
+.profile-icon-btn.on { border-color: var(--green); background: var(--green-pale); box-shadow: 0 0 0 2px var(--white) inset; }
+.privacy-note { margin: -2px 0 14px; padding: 10px 12px; border-radius: var(--radius-s);
+  background: var(--green-pale); color: var(--ink-weak); font-size: 11px; line-height: 1.55; text-align: left; }
+.auth-dialog { padding-top: 28px; }
+.auth-logo { color: var(--green); font-size: 26px; font-weight: 800; letter-spacing: .08em; }
+.auth-copy { margin: 6px 0 20px; color: var(--ink-weak); font-size: 13px; line-height: 1.6; }
+.auth-actions { display: grid; gap: 10px; }
+.btn-sub { display: block; width: 100%; height: 48px; border-radius: 999px; background: var(--white);
+  border: 1.5px solid var(--green); color: var(--green); font-size: 15px; font-weight: 700; }
+.auth-back { display: block; margin: -4px 0 14px; color: var(--green); font-size: 13px; font-weight: 700; }
+.auth-note { margin-top: 12px; color: var(--ink-weak); font-size: 11px; line-height: 1.55; }
 
 /* ===== つなまる・トースト・紙吹雪 ===== */
 .tsunamaru { position: fixed; right: max(12px, calc(50% - 240px + 12px));
@@ -519,6 +549,7 @@ mark { background: var(--mark); border-radius: 3px; padding: 0 1px; }
     <div class="sort-row">並び:
       <select id="sortSel" aria-label="並び替え">
         <option value="new">新着順</option>
+        <option value="metoo">👀知りたいが多い順</option>
         <option value="thanks">🌱が多い順</option>
         <option value="open">未回答のみ</option>
       </select>
@@ -654,6 +685,60 @@ mark { background: var(--mark); border-radius: 3px; padding: 0 1px; }
     <div class="sheet" role="dialog" aria-modal="true" aria-label="先生の詳細" id="teacherSheet"></div>
   </div>
 
+  <!-- プロフィール編集シート -->
+  <div class="overlay" id="profileOverlay">
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="profileTitle">
+      <div class="sheet-head">
+        <h2 class="sheet-title" id="profileTitle">プロフィールを編集</h2>
+        <button class="sheet-close" id="profileClose" aria-label="プロフィール編集を閉じる">×</button>
+      </div>
+      <div class="field">
+        <label>アイコン</label>
+        <div class="profile-icons" id="profileIcons"></div>
+      </div>
+      <div class="field">
+        <label for="profileName">よびな（1〜10字）</label>
+        <input type="text" id="profileName" maxlength="10" autocomplete="nickname">
+      </div>
+      <div class="field">
+        <label for="profileRole">現職・所属（40字まで）</label>
+        <input type="text" id="profileRole" maxlength="40" placeholder="例: 京都市役所／地域政策">
+      </div>
+      <div class="field">
+        <label for="profileBio">プロフィール（200字まで）</label>
+        <textarea id="profileBio" maxlength="200" placeholder="いま取り組んでいること、話せることなど"></textarea>
+        <div class="count-note" id="profileBioCount">0 / 200</div>
+      </div>
+      <button class="btn-main" id="profileSave">保存する</button>
+    </div>
+  </div>
+
+  <!-- ログイン・会員登録の入口（認証はモック） -->
+  <div class="overlay center" id="authGate">
+    <div class="dialog auth-dialog" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+      <div id="authChoice">
+        <div id="authMascot"></div>
+        <h1 class="auth-logo" id="authTitle">SOTOTUNA</h1>
+        <p class="auth-copy">きく・つながる・引き出す。<br>政策学部の、卒業しない場所。</p>
+        <div class="auth-actions">
+          <button class="btn-main" id="authRegisterChoice">会員登録</button>
+          <button class="btn-sub" id="authLoginChoice">ログイン</button>
+        </div>
+      </div>
+      <div id="authEmailStep" hidden>
+        <button class="auth-back" id="authBack">← もどる</button>
+        <h1 class="hello" id="authStepTitle">メールアドレスを入力</h1>
+        <p class="auth-copy" id="authStepCopy"></p>
+        <div class="field">
+          <label for="authEmail">メールアドレス</label>
+          <input type="email" id="authEmail" autocomplete="email" inputmode="email" placeholder="example@email.com">
+        </div>
+        <button class="btn-main" id="authContinue" disabled>つぎへ</button>
+        <p class="auth-note" id="authMockNote"></p>
+      </div>
+    </div>
+  </div>
+
   <!-- オンボーディング -->
   <div class="overlay center" id="onboarding">
     <div class="dialog" role="dialog" aria-modal="true" aria-label="はじめまして">
@@ -679,6 +764,7 @@ mark { background: var(--mark); border-radius: 3px; padding: 0 1px; }
         </select>
         <div class="count-note">12期生が2026年卒です</div>
       </div>
+      <div class="privacy-note">電話番号は初期登録では集めません。メールアドレスは本番では確認コードを送る想定です。</div>
       <button class="btn-main" id="obStart" disabled>はじめる</button>
       <div class="ob-brand">
         <img src="data:image/png;base64,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" alt="SOTOTUNA">
@@ -1029,15 +1115,28 @@ function loadStore() {
 }
 let store = loadStore() || { ver:1, profile:null, myQuestions:[], myAnswers:[], myRecruits:[],
   myThanks:{}, myMeToo:[], myHelps:[], myEvents:[], boardReplies:{}, obHost:false, draft:null, receivedThanks:12 };
+if (!store.myQuestions) store.myQuestions = [];
+if (!store.myAnswers) store.myAnswers = [];
+if (!store.myRecruits) store.myRecruits = [];
+if (!store.myThanks) store.myThanks = {};
+if (!store.myMeToo) store.myMeToo = [];
+if (!store.myHelps) store.myHelps = [];
 if (!store.myEvents) store.myEvents = [];
 if (!store.boardReplies) store.boardReplies = {};
+if (store.profile) {
+  if (!store.profile.avatar) store.profile.avatar = "🌱";
+  if (!store.profile.bio) store.profile.bio = "";
+  if (!store.profile.currentRole) store.profile.currentRole = "";
+  if (!store.profile.email) store.profile.email = "";
+}
 function saveStore() {
   try { localStorage.setItem(STORE_KEY, JSON.stringify(store)); }
   catch (e) { if (storageOk) { storageOk = false; toast("保存できない環境みたい。この画面のあいだだけ有効だよ"); } }
 }
 let state = { cat: "all", sort: "new", search: "", bookTag: "すべて", openOnly: true,
   askCat: null, recType: null, meTab: "q",
-  teacherSearch: "", evFilter: "now", evId: null, boardId: null, previewAttr: "" };
+  teacherSearch: "", evFilter: "now", evId: null, boardId: null, previewAttr: "", profileIcon: "🌱" };
+const PROFILE_ICONS = ["🌱", "🐸", "🐧", "🐰", "🦊", "🐹", "🐻", "🐱", "🐺", "🦉"];
 
 /* =====================================================================
    ユーティリティ
@@ -1150,15 +1249,35 @@ function answersOf(qid) {
   return ANSWERS.filter((a) => a.questionId === qid)
     .concat(store.myAnswers.filter((a) => a.questionId === qid).map((a) => ({ ...a, mine: true })));
 }
+function meTooTotal(q) {
+  return q.meToo + (store.myMeToo.includes(q.id) ? 1 : 0);
+}
 function thanksTotal(qid) {
   return answersOf(qid).reduce((s, a) => s + a.thanks + (store.myThanks[a.id] || 0), 0);
+}
+function deleteOwnPost(kind, id) {
+  if (!confirm("この投稿を削除しますか？\n削除した投稿は元に戻せません。")) return false;
+  if (kind === "question") {
+    store.myQuestions = store.myQuestions.filter((q) => q.id !== id);
+    store.myAnswers = store.myAnswers.filter((a) => a.questionId !== id);
+    store.myMeToo = store.myMeToo.filter((qid) => qid !== id);
+  } else if (kind === "answer") {
+    store.myAnswers = store.myAnswers.filter((a) => a.id !== id);
+  } else if (kind === "recruit") {
+    store.myRecruits = store.myRecruits.filter((r) => r.id !== id);
+    delete store.boardReplies[id];
+    store.myHelps = store.myHelps.filter((rid) => rid !== id);
+  } else return false;
+  saveStore();
+  toast("投稿を削除しました");
+  return true;
 }
 function qUserHTML(q) {
   if (q.anonymous) {
     const attr = q.mine ? store.profile.attr : USERS[q.userId].attr;
     return `<span class="q-user"><span class="q-avatar anon">🌱</span>匿名の後輩🌱</span>${badge(attr)}`;
   }
-  const u = q.mine ? { name: store.profile.name + "（あなた）", avatar: "🌱", attr: store.profile.attr } : USERS[q.userId];
+  const u = q.mine ? { name: store.profile.name + "（あなた）", avatar: store.profile.avatar || "🌱", attr: store.profile.attr } : USERS[q.userId];
   const gen = graduationLabel(u.gen || (q.mine && store.profile.gen), u.attr);
   return `<span class="q-user"><span class="q-avatar">${u.avatar}</span>${esc(u.name)}</span>${gen ? `<span class="ans-gen">${esc(gen)}</span>` : ""}${badge(u.attr)}`;
 }
@@ -1176,6 +1295,7 @@ function renderQaList() {
   if (state.search) list = list.filter((q) => q.text.toLowerCase().includes(state.search.toLowerCase()));
   if (state.sort === "open") list = list.filter((q) => answersOf(q.id).length === 0);
   if (state.sort === "thanks") list = [...list].sort((a, b) => thanksTotal(b.id) - thanksTotal(a.id));
+  else if (state.sort === "metoo") list = [...list].sort((a, b) => meTooTotal(b) - meTooTotal(a));
   else list = [...list].sort((a, b) => b.createdAt - a.createdAt);
   if (!list.length) {
     $("#qaList").innerHTML = `<div class="empty"><div class="mascot">${mascotPNG()}</div>見つからなかった…<br>言い方を変えてきいてみて🌱</div>`;
@@ -1183,7 +1303,7 @@ function renderQaList() {
   }
   $("#qaList").innerHTML = list.map((q) => {
     const ans = answersOf(q.id);
-    const meTooN = q.meToo + (store.myMeToo.includes(q.id) ? 1 : 0);
+    const meTooN = meTooTotal(q);
     return `<article class="card q-card" data-q="${q.id}" tabindex="0" role="button"
       aria-label="質問をひらく">
       <div class="q-head">
@@ -1225,13 +1345,14 @@ function renderDetail(qid) {
       <p class="q-text">${esc(q.text)}</p>
       <div class="thanks-row">
         <button class="metoo-btn ${meTooDone ? "done" : ""}" id="meTooBtn">
-          👀 同じこと知りたい <span>${q.meToo + (meTooDone ? 1 : 0)}</span></button>
+          👀 同じこと知りたい <span>${meTooTotal(q)}</span></button>
         ${q.solved ? `<span class="solve-chip">✅解決済み</span>` : ""}
       </div>
+      ${q.mine ? `<div class="post-delete-row"><button class="delete-btn" data-delete-question="${q.id}">質問を削除</button></div>` : ""}
     </article>
     <div class="ans-count-label">回答 ${ans.length}件</div>
     ${sorted.length ? sorted.map((a) => {
-      const u = a.mine ? { name: store.profile.name, avatar: "🌱", attr: store.profile.attr, gen: store.profile.gen } : USERS[a.userId];
+      const u = a.mine ? { name: store.profile.name, avatar: store.profile.avatar || "🌱", attr: store.profile.attr, gen: store.profile.gen } : USERS[a.userId];
       const myN = store.myThanks[a.id] || 0;
       const best = q.bestAnswerId === a.id;
       return `<article class="card answer ${best ? "best" : ""}" data-ans="${a.id}">
@@ -1248,6 +1369,7 @@ function renderDetail(qid) {
             <span class="sprout">🌱</span>ありがとう <span class="tn">${a.thanks + myN}</span>
           </button>
         </div>
+        ${a.mine ? `<div class="post-delete-row"><button class="delete-btn" data-delete-answer="${a.id}">回答を削除</button></div>` : ""}
       </article>`;
     }).join("")
     : `<div class="empty"><div class="mascot">${mascotPNG()}</div>まだ回答がないみたい。だれかの登場を待とう…！<br>あなたが答えられるなら、ぜひ🌱</div>`}
@@ -1257,6 +1379,13 @@ function renderDetail(qid) {
       <button class="btn-main ans-submit" id="ansSubmit">こたえる</button>
     </div>`;
   $("#detailBack").addEventListener("click", () => { go("#/qa"); });
+  const deleteQuestion = $("[data-delete-question]");
+  if (deleteQuestion) deleteQuestion.addEventListener("click", () => {
+    if (deleteOwnPost("question", qid)) go("#/qa");
+  });
+  document.querySelectorAll("[data-delete-answer]").forEach((b) => b.addEventListener("click", () => {
+    if (deleteOwnPost("answer", b.dataset.deleteAnswer)) renderDetail(qid);
+  }));
   $("#meTooBtn").addEventListener("click", () => {
     if (store.myMeToo.includes(qid)) return;
     store.myMeToo.push(qid); saveStore(); renderDetail(qid);
@@ -1317,16 +1446,20 @@ function renderBoardDetail(id) {
   const r = allRecruits().find((item) => item.id === id);
   if (!r) { go("#/board"); return; }
   state.boardId = id;
-  const u = r.mine ? { name: store.profile.name + "（あなた）", avatar:"🌱", attr: store.profile.attr, gen:store.profile.gen } : USERS[r.userId];
+  const u = r.mine ? { name: store.profile.name + "（あなた）", avatar:store.profile.avatar || "🌱", attr: store.profile.attr, gen:store.profile.gen } : USERS[r.userId];
   const helped = store.myHelps.includes(r.id);
   const n = r.helpers + (helped ? 1 : 0);
   const closed = r.status === "closed";
-  const posts = (BOARD_THREADS[id] || []).concat(store.boardReplies[id] || []);
+  const basePosts = BOARD_THREADS[id] || [];
+  const localPosts = (store.boardReplies[id] || []).map((p, localIndex) => ({ ...p, localIndex }));
+  const posts = basePosts.concat(localPosts);
   const thread = posts.length ? posts.map((p) => {
-    const pu = p.userId === "me" ? { name:store.profile.name + "（あなた）", avatar:"🌱" } : USERS[p.userId];
+    const pu = p.userId === "me" ? { name:store.profile.name + "（あなた）", avatar:store.profile.avatar || "🌱" } : USERS[p.userId];
     return `<div class="thread-item ${p.userId === "me" ? "mine" : ""}">
       <span class="thread-avatar" aria-hidden="true">${pu.avatar}</span>
-      <div class="thread-bubble"><div class="thread-by"><b>${esc(pu.name)}</b><time>${esc(p.time)}</time></div><p>${esc(p.text)}</p></div>
+      <div class="thread-bubble"><div class="thread-by"><b>${esc(pu.name)}</b><time>${esc(p.time)}</time></div><p>${esc(p.text)}</p>
+        ${p.userId === "me" ? `<div class="post-delete-row"><button class="delete-btn" data-delete-reply="${p.localIndex}">コメントを削除</button></div>` : ""}
+      </div>
     </div>`;
   }).join("") : `<div class="empty" style="padding:22px 16px">最初のコメントを書いてみよう</div>`;
   $("#view-boarddetail").innerHTML = `
@@ -1337,6 +1470,7 @@ function renderBoardDetail(id) {
       <p class="r-body">${esc(r.body)}</p>
       <div class="r-meta">${esc(u.name)}${graduationLabel(u.gen, u.attr) ? "（" + esc(graduationLabel(u.gen, u.attr)) + "）" : ""} ${badge(u.attr)}　締切 ${esc((r.deadline || "").slice(5).replace("-", "/"))}</div>
       <div class="help-row"><button class="help-btn ${helped ? "mine" : ""}" data-detailhelp="${r.id}" ${closed ? "disabled" : ""}>${closed ? "受付終了" : helped ? "✋協力するよ！" : "✋協力する"}</button><span class="help-count">${n}人が協力中</span></div>
+      ${r.mine ? `<div class="post-delete-row"><button class="delete-btn" data-delete-recruit="${r.id}">募集を削除</button></div>` : ""}
     </article>
     <div class="thread-title"><h2>やりとり</h2><span>${posts.length}件・みんなに見えるスレッド</span></div>
     <div class="thread-list">${thread}</div>
@@ -1642,26 +1776,32 @@ function renderMe() {
   let listHTML = "";
   if (state.meTab === "q") {
     listHTML = store.myQuestions.length
-      ? store.myQuestions.map((q) => `<div class="mylist-row">${catLabel(q.category)}　${esc(q.text.slice(0, 40))}${q.text.length > 40 ? "…" : ""}${q.anonymous ? "（匿名）" : ""}</div>`).join("")
+      ? store.myQuestions.map((q) => `<div class="mylist-row"><button class="mylist-main" data-open-kind="question" data-open-id="${q.id}">${catLabel(q.category)}　${esc(q.text.slice(0, 40))}${q.text.length > 40 ? "…" : ""}${q.anonymous ? "（匿名）" : ""}</button><button class="delete-btn" data-delete-kind="question" data-delete-id="${q.id}">削除</button></div>`).join("")
       : `<div class="mylist-empty">まだ質問していないよ。「＋きいてみる」からどうぞ🌱</div>`;
   } else if (state.meTab === "a") {
     listHTML = store.myAnswers.length
-      ? store.myAnswers.map((a) => `<div class="mylist-row">💬 ${esc(a.text.slice(0, 40))}${a.text.length > 40 ? "…" : ""}</div>`).join("")
+      ? store.myAnswers.map((a) => `<div class="mylist-row"><button class="mylist-main" data-open-kind="answer" data-open-id="${a.questionId}">💬 ${esc(a.text.slice(0, 40))}${a.text.length > 40 ? "…" : ""}</button><button class="delete-btn" data-delete-kind="answer" data-delete-id="${a.id}">削除</button></div>`).join("")
       : `<div class="mylist-empty">まだ回答していないよ。経験はだれかの地図になる🌱</div>`;
   } else {
     listHTML = store.myRecruits.length
-      ? store.myRecruits.map((r) => `<div class="mylist-row">${RTYPES[r.type].label}　${esc(r.title)}</div>`).join("")
+      ? store.myRecruits.map((r) => `<div class="mylist-row"><button class="mylist-main" data-open-kind="recruit" data-open-id="${r.id}">${RTYPES[r.type].label}　${esc(r.title)}</button><button class="delete-btn" data-delete-kind="recruit" data-delete-id="${r.id}">削除</button></div>`).join("")
       : `<div class="mylist-empty">まだ募集していないよ</div>`;
   }
   $("#view-me").innerHTML = `
     <h1 class="screen-title">マイページ</h1>
-    <div class="card">
-      <div class="me-head">
-        <span class="avatar-big">🌱</span>
-        <div><div class="me-name">${esc(p.name)}</div>
-          ${graduationLabel(p.gen, p.attr) ? `<div class="ans-gen">${esc(graduationLabel(p.gen, p.attr))}</div>` : ""}
-          ${badge(p.attr)}</div>
+    <div class="card profile-summary">
+      <div class="profile-top">
+        <div class="me-head">
+          <span class="avatar-big">${esc(p.avatar || "🌱")}</span>
+          <div><div class="me-name">${esc(p.name)}</div>
+            ${graduationLabel(p.gen, p.attr) ? `<div class="ans-gen">${esc(graduationLabel(p.gen, p.attr))}</div>` : ""}
+            ${badge(p.attr)}
+            ${p.currentRole ? `<div class="profile-meta">${esc(p.currentRole)}</div>` : ""}
+          </div>
+        </div>
+        <button class="profile-edit-btn" id="profileEdit">編集する</button>
       </div>
+      <div class="profile-bio ${p.bio ? "" : "empty"}">${p.bio ? esc(p.bio) : "プロフィールはまだありません。編集から追加できます。"}</div>
     </div>
     <div class="card tree-card">
       <div id="treeWrap">${treeSVG(total)}</div>
@@ -1677,7 +1817,50 @@ function renderMe() {
   });
   document.querySelectorAll("[data-metab]").forEach((b) =>
     b.addEventListener("click", () => { state.meTab = b.dataset.metab; renderMe(); }));
+  $("#profileEdit").addEventListener("click", openProfileEditor);
+  document.querySelectorAll("[data-open-kind]").forEach((b) => b.addEventListener("click", () => {
+    go(b.dataset.openKind === "recruit" ? "#/board/" + b.dataset.openId : "#/qa/" + b.dataset.openId);
+  }));
+  document.querySelectorAll("[data-delete-kind]").forEach((b) => b.addEventListener("click", () => {
+    if (deleteOwnPost(b.dataset.deleteKind, b.dataset.deleteId)) renderMe();
+  }));
 }
+
+function renderProfileIcons() {
+  $("#profileIcons").innerHTML = PROFILE_ICONS.map((icon) =>
+    `<button class="profile-icon-btn ${state.profileIcon === icon ? "on" : ""}" data-profile-icon="${icon}" aria-label="${icon}をアイコンにする">${icon}</button>`).join("");
+}
+function openProfileEditor() {
+  const p = store.profile;
+  state.profileIcon = p.avatar || "🌱";
+  $("#profileName").value = p.name || "";
+  $("#profileRole").value = p.currentRole || "";
+  $("#profileBio").value = p.bio || "";
+  $("#profileBioCount").textContent = $("#profileBio").value.length + " / 200";
+  renderProfileIcons();
+  $("#profileOverlay").classList.add("on");
+}
+function closeProfileEditor() { $("#profileOverlay").classList.remove("on"); }
+$("#profileIcons").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-profile-icon]"); if (!b) return;
+  state.profileIcon = b.dataset.profileIcon; renderProfileIcons();
+});
+$("#profileBio").addEventListener("input", () => {
+  $("#profileBioCount").textContent = $("#profileBio").value.length + " / 200";
+});
+$("#profileClose").addEventListener("click", closeProfileEditor);
+$("#profileOverlay").addEventListener("click", (e) => {
+  if (e.target === e.currentTarget) closeProfileEditor();
+});
+$("#profileSave").addEventListener("click", () => {
+  const name = $("#profileName").value.trim();
+  if (!name) { toast("よびなを入力してください"); return; }
+  store.profile.name = name.slice(0, 10);
+  store.profile.avatar = state.profileIcon;
+  store.profile.currentRole = $("#profileRole").value.trim().slice(0, 40);
+  store.profile.bio = $("#profileBio").value.trim().slice(0, 200);
+  saveStore(); closeProfileEditor(); renderMe(); toast("プロフィールを更新しました");
+});
 
 /* =====================================================================
    EVENTS: ルーティング
@@ -1844,6 +2027,19 @@ $("#boardList").addEventListener("keydown", (e) => {
 });
 $("#view-boarddetail").addEventListener("click", (e) => {
   if (e.target.closest("[data-boardback]")) { go("#/board"); return; }
+  const deleteRecruit = e.target.closest("[data-delete-recruit]");
+  if (deleteRecruit) {
+    if (deleteOwnPost("recruit", deleteRecruit.dataset.deleteRecruit)) go("#/board");
+    return;
+  }
+  const deleteReply = e.target.closest("[data-delete-reply]");
+  if (deleteReply) {
+    if (!confirm("このコメントを削除しますか？\n削除したコメントは元に戻せません。")) return;
+    const replies = store.boardReplies[state.boardId] || [];
+    replies.splice(Number(deleteReply.dataset.deleteReply), 1);
+    saveStore(); renderBoardDetail(state.boardId); toast("コメントを削除しました");
+    return;
+  }
   const b = e.target.closest("[data-detailhelp]");
   if (!b || b.disabled) return;
   const id = b.dataset.detailhelp;
@@ -1859,7 +2055,7 @@ $("#view-boarddetail").addEventListener("submit", (e) => {
   const text = input.value.trim();
   if (!text || !state.boardId) return;
   if (!store.boardReplies[state.boardId]) store.boardReplies[state.boardId] = [];
-  store.boardReplies[state.boardId].push({ userId:"me", time:"いま", text:text.slice(0, 200) });
+  store.boardReplies[state.boardId].push({ id:"myreply" + Date.now(), userId:"me", time:"いま", text:text.slice(0, 200) });
   saveStore(); renderBoardDetail(state.boardId); toast("スレッドに送りました");
 });
 $("#recruitFab").addEventListener("click", () => {
@@ -1979,6 +2175,58 @@ $("#tsunamaruBtn").addEventListener("click", () => {
   setTimeout(() => sp.remove(), 2500);
 });
 
+/* ログイン・会員登録（モック） */
+$("#authMascot").innerHTML = mascotPNG();
+let authMode = "";
+let pendingEmail = "";
+function validEmail(value) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim()); }
+function showAuthChoice() {
+  authMode = "";
+  $("#authChoice").hidden = false;
+  $("#authEmailStep").hidden = true;
+  $("#authEmail").value = "";
+}
+function showAuthEmail(mode) {
+  authMode = mode;
+  $("#authChoice").hidden = true;
+  $("#authEmailStep").hidden = false;
+  $("#authStepTitle").textContent = mode === "register" ? "メールアドレスで会員登録" : "メールアドレスでログイン";
+  $("#authStepCopy").textContent = mode === "register"
+    ? "登録後に、よびなと所属区分だけ設定します。プロフィール詳細はあとから編集できます。"
+    : "登録済みのメールアドレスを入力してください。";
+  $("#authContinue").textContent = mode === "register" ? "登録をつづける" : "ログイン";
+  $("#authMockNote").textContent = mode === "register"
+    ? "電話番号は集めません。メール確認コードの送信は本番実装時に追加します。"
+    : "モックのため、現在はどのメールアドレスでもログインできます。";
+  $("#authContinue").disabled = true;
+  setTimeout(() => $("#authEmail").focus(), 0);
+}
+$("#authRegisterChoice").addEventListener("click", () => showAuthEmail("register"));
+$("#authLoginChoice").addEventListener("click", () => showAuthEmail("login"));
+$("#authBack").addEventListener("click", showAuthChoice);
+$("#authEmail").addEventListener("input", () => {
+  $("#authContinue").disabled = !validEmail($("#authEmail").value);
+});
+$("#authContinue").addEventListener("click", () => {
+  const email = $("#authEmail").value.trim();
+  if (!validEmail(email)) return;
+  if (authMode === "register") {
+    pendingEmail = email;
+    $("#authGate").classList.remove("on");
+    $("#onboarding").classList.add("on");
+    return;
+  }
+  if (!store.profile) {
+    store.profile = { name:"デモ会員", email, attr:"obog", seminar:null, gen:12,
+      avatar:"🌱", currentRole:"", bio:"" };
+  } else store.profile.email = email;
+  saveStore();
+  $("#authGate").classList.remove("on");
+  $("#guideLaunch").hidden = false;
+  renderRoute();
+  toast("ログインしました（モック）");
+});
+
 /* オンボーディング */
 $("#obMascot").innerHTML = mascotPNG();
 const OB = { attr: null, sem: null, gen: null };
@@ -2013,7 +2261,8 @@ $("#obGeneration").addEventListener("change", () => {
 $("#obName").addEventListener("input", obValidate);
 $("#obStart").addEventListener("click", () => {
   store.profile = { name: $("#obName").value.trim().slice(0, 10), attr: OB.attr,
-    seminar: OB.attr === "current" ? OB.sem : null, gen: OB.attr === "obog" ? OB.gen : null };
+    email: pendingEmail, seminar: OB.attr === "current" ? OB.sem : null,
+    gen: OB.attr === "obog" ? OB.gen : null, avatar:"🌱", currentRole:"", bio:"" };
   saveStore();
   $("#onboarding").classList.remove("on");
   $("#guideLaunch").hidden = false;
@@ -2023,7 +2272,7 @@ $("#obStart").addEventListener("click", () => {
 });
 
 /* 起動 */
-if (!store.profile) $("#onboarding").classList.add("on");
+if (!store.profile) { showAuthChoice(); $("#authGate").classList.add("on"); }
 $("#guideLaunch").hidden = !store.profile;
 if (!location.hash) { try { history.replaceState(null, "", "#/qa"); } catch (e) {} }
 renderRoute();
