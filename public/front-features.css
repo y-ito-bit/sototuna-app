@@ -1,0 +1,24 @@
+.front-panel h2 {font-size:16px;font-weight:600;margin:0 0 12px;color:#3a7500}
+.front-panel p,.front-note {font-size:13px;line-height:1.8;color:#77746d;margin:8px 0 16px}
+.front-links {display:grid;gap:0}
+.front-links button {text-align:left;width:100%;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:15px 0;border:0;border-bottom:1px solid #edf0e8;background:none;font:inherit;color:#50504b}
+.front-links button:last-child {border-bottom:0}
+.front-actions {display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}
+.front-list {list-style:none;padding:0;margin:16px 0}
+.front-list>li {padding:18px 0;border-bottom:1px solid #edf0e8;line-height:1.8;overflow-wrap:anywhere}
+.front-list p {margin:6px 0 12px;white-space:pre-wrap}
+.front-label {font-size:11px;color:#59634d;background:#eef3e8;border-radius:6px;padding:3px 7px;display:inline-block;margin:0 8px 6px 0}
+.front-setting {display:flex!important;align-items:center;justify-content:space-between;gap:18px;padding:18px 0;border-bottom:1px solid #edf0e8;font-weight:400!important}
+.front-setting input {width:20px!important;height:20px;accent-color:#3a7500;flex-shrink:0;margin:0!important}
+.front-empty {padding:24px 0;color:#77746d;font-size:14px;line-height:1.8}
+.front-stamps {display:flex;gap:8px;flex-wrap:wrap;margin:20px 0}
+.front-stamps span {width:34px;height:34px;display:grid;place-items:center;border-radius:50%;border:1px solid #dce8ce;font-size:12px;color:#77746d}
+.front-stamps .filled {background:#e8f2dc;color:#3a7500;border-color:#8bc34a}
+.front-inline {font:inherit;font-size:12px;border:0;background:none;color:#77746d;padding:8px 0;text-decoration:underline;text-underline-offset:4px}
+.front-preview {white-space:pre-wrap;overflow-wrap:anywhere;padding:16px;background:#faf7ef;border-radius:14px;margin:16px 0;line-height:1.8}
+.front-status {font-size:13px;line-height:1.8;min-height:1.8em;color:#3a7500}
+#utilityDialog .front-form input,#utilityDialog .front-form select,#utilityDialog .front-form textarea {box-sizing:border-box;width:100%;max-width:100%;font:inherit;margin:8px 0 18px;padding:12px;border:1px solid #dce8ce;border-radius:12px;background:#fff}
+#utilityDialog .front-form textarea {min-height:130px;resize:vertical}
+#utilityDialog .front-form label {display:block;font-size:13px;color:#50504b}
+#utilityDialog .front-form input[type=file] {font-size:12px}
+@media(max-width:420px){.front-actions .chip{font-size:13px;padding:9px 14px}.front-panel h2{font-size:15px}}

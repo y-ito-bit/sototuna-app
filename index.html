@@ -626,6 +626,8 @@ a:focus-visible { outline: 3px solid var(--green); outline-offset: 3px; }
 .info-content .rules-list p { margin:0; font-size:14px; line-height:1.85; }
 @media(max-width:380px) { .q-card { padding:18px; } #utilityDialog { padding:22px; } }
 </style>
+<link rel="stylesheet" href="/front-features.css">
+<script src="/front-services.js"></script>
 </head>
 <body>
 <div id="app">
@@ -2515,5 +2517,6 @@ if (!location.hash) { try { history.replaceState(null, "", "#/qa"); } catch (e) 
 renderRoute();
 if (store.profile && !store.purposeGuideSeen) requestAnimationFrame(() => openGuide(0));
 </script>
+<script src="/front-features.js"></script>
 </body>
 </html>
