@@ -575,6 +575,15 @@ a:focus-visible { outline: 3px solid var(--green); outline-offset: 3px; }
 .install-skip { display:block; margin:12px auto 0; padding:12px 0; color:var(--ink-weak); text-decoration:underline; text-underline-offset:4px; }
 .install-skip[hidden] { display:none; }
 .install-footer { display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-top:22px; }
+.member-avatar { display:inline-block; width:28px; height:28px; border-radius:50%; object-fit:cover; vertical-align:middle; flex:none; }
+.q-avatar .member-avatar { width:30px; height:30px; }
+.thread-avatar .member-avatar { width:36px; height:36px; }
+.host-av .member-avatar { width:44px; height:44px; }
+.avatar-big .member-avatar { width:56px; height:56px; }
+.profile-icon-btn { width:52px; height:52px; padding:3px; flex:none; }
+.profile-icon-btn .member-avatar { width:42px; height:42px; }
+.profile-icon-btn.on { border-width:2px; outline:2px solid var(--green); outline-offset:2px; }
+.profile-icons { gap:12px; padding:4px; }
 </style>
 </head>
 <body>
@@ -1194,6 +1203,19 @@ let state = { cat: "all", sort: "new", search: "", bookTag: "すべて", openOnl
   askCat: null, recType: null, meTab: "q",
   teacherSearch: "", evFilter: "now", evId: null, boardId: null, previewAttr: "", profileIcon: "🌱" };
 const PROFILE_ICONS = ["🌱", "🐸", "🐧", "🐰", "🦊", "🐹", "🐻", "🐱", "🐺", "🦉"];
+// Keep legacy avatar values so existing profiles retain their chosen character.
+const AVATAR_ASSETS = {
+  "🌱": ["sprout", "ふたば"], "🐸": ["frog", "カエル"], "🐧": ["penguin", "ペンギン"],
+  "🐰": ["rabbit", "ウサギ"], "🦊": ["fox", "キツネ"], "🐹": ["hamster", "ハムスター"],
+  "🐻": ["bear", "クマ"], "🐱": ["cat", "ネコ"], "🐺": ["wolf", "オオカミ"],
+  "🦉": ["owl", "フクロウ"], "🐢": ["turtle", "カメ"]
+};
+function avatarAsset(icon) { return Object.hasOwn(AVATAR_ASSETS, icon) ? AVATAR_ASSETS[icon] : AVATAR_ASSETS["🌱"]; }
+function avatarHTML(icon) {
+  const [file, label] = avatarAsset(icon);
+  return `<img class="member-avatar" src="/assets/avatar-${file}-v01.png" alt="${label}" width="192" height="192">`;
+}
+
 
 /* =====================================================================
    ユーティリティ
@@ -1334,11 +1356,11 @@ function deleteOwnPost(kind, id) {
 function qUserHTML(q) {
   if (q.anonymous) {
     const attr = q.mine ? store.profile.attr : USERS[q.userId].attr;
-    return `<span class="q-user"><span class="q-avatar anon">🌱</span>匿名のメンバー🌱</span>${badge(attr)}`;
+    return `<span class="q-user"><span class="q-avatar anon">${avatarHTML("🌱")}</span>匿名のメンバー</span>${badge(attr)}`;
   }
   const u = q.mine ? { name: store.profile.name + "（あなた）", avatar: store.profile.avatar || "🌱", attr: store.profile.attr } : USERS[q.userId];
   const gen = graduationLabel(u.gen || (q.mine && store.profile.gen), u.attr);
-  return `<span class="q-user"><span class="q-avatar">${u.avatar}</span>${esc(u.name)}</span>${gen ? `<span class="ans-gen">${esc(gen)}</span>` : ""}${badge(u.attr)}`;
+  return `<span class="q-user"><span class="q-avatar">${avatarHTML(u.avatar)}</span>${esc(u.name)}</span>${gen ? `<span class="ans-gen">${esc(gen)}</span>` : ""}${badge(u.attr)}`;
 }
 
 /* =====================================================================
@@ -1420,7 +1442,7 @@ function renderDetail(qid) {
       return `<article class="card answer ${best ? "best" : ""}" data-ans="${a.id}">
         ${best ? `<span class="ba-ribbon">🎗ベストアンサー</span>` : ""}
         <div class="ans-head">
-          <span class="q-avatar">${u.avatar}</span>
+          <span class="q-avatar">${avatarHTML(u.avatar)}</span>
           <span class="ans-name">${esc(u.name)}</span>
           ${graduationLabel(u.gen, u.attr) ? `<span class="ans-gen">${esc(graduationLabel(u.gen, u.attr))}</span>` : ""}
           ${badge(u.attr)}
@@ -1528,7 +1550,7 @@ function renderBoardDetail(id) {
   const thread = posts.length ? posts.map((p) => {
     const pu = p.userId === "me" ? { name:store.profile.name + "（あなた）", avatar:store.profile.avatar || "🌱" } : USERS[p.userId];
     return `<div class="thread-item ${p.userId === "me" ? "mine" : ""}">
-      <span class="thread-avatar" aria-hidden="true">${pu.avatar}</span>
+      <span class="thread-avatar" aria-hidden="true">${avatarHTML(pu.avatar)}</span>
       <div class="thread-bubble"><div class="thread-by"><b>${esc(pu.name)}</b><time>${esc(p.time)}</time></div><p>${esc(p.text)}</p>
         ${p.userId === "me" ? `<div class="post-delete-row"><button class="delete-btn" data-delete-reply="${p.localIndex}">コメントを削除</button></div>` : ""}
       </div>
@@ -1668,7 +1690,7 @@ function eventBodyTouron() {
     const comments = p.comments.map((c) => {
       const u = USERS[c.userId];
       const gen = graduationLabel(u.gen, u.attr);
-      return `<div class="tr-comment"><b>${u.avatar} ${esc(u.name)}${gen ? `（${esc(gen)}）` : ""}</b>${esc(c.text)}</div>`;
+      return `<div class="tr-comment"><b>${avatarHTML(u.avatar)} ${esc(u.name)}${gen ? `（${esc(gen)}）` : ""}</b>${esc(c.text)}</div>`;
     }).join("");
     return `<article class="card">
       <div class="tr-head">
@@ -1709,7 +1731,7 @@ function eventBodyOB() {
     <div class="note-box">💡 気になる先輩の「きいてみる」から、そのまま質問を送れます。名前を出さずに聞くこともできます。</div>`;
   const mine = (iAmObog && store.obHost) ? `
     <article class="card host-card">
-      <span class="host-av">🌱</span>
+      <span class="host-av">${avatarHTML(store.profile.avatar)}</span>
       <div>
         <div class="host-name">${esc(store.profile.name)}（あなた）</div>
         <div class="host-meta">うけつけ中</div>
@@ -1720,7 +1742,7 @@ function eventBodyOB() {
   const hosts = OB_HOSTS.map((h) => {
     const u = USERS[h.userId];
     return `<article class="card host-card">
-      <span class="host-av">${u.avatar}</span>
+      <span class="host-av">${avatarHTML(u.avatar)}</span>
       <div style="flex:1">
         <div class="host-name">${esc(u.name)}${badge(u.attr)}</div>
         <div class="host-meta">${esc(graduationLabel(u.gen, u.attr))}・${esc(h.industry)}／${esc(h.role)}</div>
@@ -1749,7 +1771,7 @@ function renderBooks() {
       <div>
         <div class="book-title">『${esc(b.title)}』</div>
         <div class="book-author">${esc(b.author)}<span class="book-tag" style="margin-left:8px">${esc(b.tag)}</span></div>
-        <div class="book-reco">${u.avatar} ${esc(u.name)}${graduationLabel(u.gen, u.attr) ? "（" + esc(graduationLabel(u.gen, u.attr)) + "）" : ""}${badge(u.attr)}</div>
+        <div class="book-reco">${avatarHTML(u.avatar)} ${esc(u.name)}${graduationLabel(u.gen, u.attr) ? "（" + esc(graduationLabel(u.gen, u.attr)) + "）" : ""}${badge(u.attr)}</div>
         <div class="book-comment">${esc(b.comment)}</div>
       </div>
     </article>`;
@@ -1851,7 +1873,7 @@ function renderMe() {
     <div class="card profile-summary">
       <div class="profile-top">
         <div class="me-head">
-          <span class="avatar-big">${esc(p.avatar || "🌱")}</span>
+          <span class="avatar-big">${avatarHTML(p.avatar)}</span>
           <div><div class="me-name">${esc(p.name)}</div>
             ${graduationLabel(p.gen, p.attr) ? `<div class="ans-gen">${esc(graduationLabel(p.gen, p.attr))}</div>` : ""}
             ${badge(p.attr)}
@@ -1892,7 +1914,7 @@ function renderMe() {
 
 function renderProfileIcons() {
   $("#profileIcons").innerHTML = PROFILE_ICONS.map((icon) =>
-    `<button class="profile-icon-btn ${state.profileIcon === icon ? "on" : ""}" data-profile-icon="${icon}" aria-label="${icon}をアイコンにする">${icon}</button>`).join("");
+    `<button class="profile-icon-btn ${state.profileIcon === icon ? "on" : ""}" data-profile-icon="${icon}" aria-label="${avatarAsset(icon)[1]}をアイコンにする" aria-pressed="${state.profileIcon === icon}">${avatarHTML(icon)}</button>`).join("");
 }
 function openProfileEditor() {
   const p = store.profile;
@@ -1908,6 +1930,7 @@ function closeProfileEditor() { $("#profileOverlay").classList.remove("on"); }
 $("#profileIcons").addEventListener("click", (e) => {
   const b = e.target.closest("[data-profile-icon]"); if (!b) return;
   state.profileIcon = b.dataset.profileIcon; renderProfileIcons();
+  [...$("#profileIcons").querySelectorAll('button')].find(button => button.dataset.profileIcon === state.profileIcon)?.focus();
 });
 $("#profileBio").addEventListener("input", () => {
   $("#profileBioCount").textContent = $("#profileBio").value.length + " / 200";
