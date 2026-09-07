@@ -1,0 +1,25 @@
+{
+  "id": "/",
+  "name": "SOTOTUNA",
+  "short_name": "SOTOTUNA",
+  "lang": "ja",
+  "start_url": "/#/qa",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#faf7ef",
+  "theme_color": "#faf7ef",
+  "icons": [
+    {
+      "src": "/assets/icon-app-192-v01.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/icon-app-512-v01.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
