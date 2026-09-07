@@ -606,6 +606,25 @@ a:focus-visible { outline: 3px solid var(--green); outline-offset: 3px; }
 .guide-visual { width:88px; height:88px; }
 .guide-visual img { width:60px; height:60px; }
 .event-hero img { width:108px; height:108px; right:10px; bottom:4px; }
+/* Reading rhythm: keep brand typography, give prose priority over metadata. */
+.q-card { padding:20px; margin-bottom:16px; }
+.q-head { column-gap:8px; row-gap:6px; margin-bottom:14px; }
+.q-user,.ans-name { font-weight:500; }
+.q-head .badge,.cat-chip { font-weight:500; }
+.q-head .badge.current { background:var(--green-pale); color:var(--green); }
+.q-text,.ans-text,.r-body,.thread-bubble p { line-height:1.8; }
+.q-text.clamp { -webkit-line-clamp:3; }
+.q-meta { margin-top:14px; column-gap:14px; row-gap:8px; }
+.ans-head { margin-bottom:12px; }
+.thanks-row { margin-top:14px; }
+.info-content { line-height:1.8; }
+#utilityDialog { padding:24px; }
+#utilityTitle { line-height:1.5; }
+.info-content .rules-intro { margin:18px 0 0; }
+.info-content .rules-list { display:grid; gap:24px; margin:28px 0 4px; }
+.info-content .rules-list h3 { margin:0 0 6px; color:var(--ink); font-size:15px; font-weight:500; line-height:1.6; }
+.info-content .rules-list p { margin:0; font-size:14px; line-height:1.85; }
+@media(max-width:380px) { .q-card { padding:18px; } #utilityDialog { padding:22px; } }
 </style>
 </head>
 <body>
@@ -2410,12 +2429,14 @@ function openUtility(title, body) {
   $('#utilityClose').focus();
 }
 function openRules() {
-  openUtility('みんなの利用ルール', `<p>はじめての人も、久しぶりの人も。知り合いの数や卒業期に関係なく参加できる場所にしましょう。</p>
-    <ol><li>相手を尊重し、違う意見にもやさしく。人格への攻撃や差別的な表現は控えてください。</li>
-    <li>略語や内輪の呼び名には説明を添え、初めて読む人にも伝わる言葉で。</li>
-    <li>個人情報・社外秘・他の人の写真や資料を、許可なく載せないでください。</li>
-    <li>経験と事実を分けて伝え、宣伝・勧誘・スパム投稿はしないでください。</li>
-    <li>質問への回答や協力は任意です。返事を急かさず、助かったら「ありがとう」を。</li></ol>`);
+  openUtility('みんなの利用ルール', `<div class="rules-content"><p class="rules-intro">はじめての人も、久しぶりの人も。<br>知り合いの数や卒業期に関係なく、参加できる場所にしましょう。</p>
+    <div class="rules-list">
+      <section><h3>違う意見にも、やさしく</h3><p>相手を尊重し、人格への攻撃や差別的な表現は控えてください。</p></section>
+      <section><h3>初めて読む人にも伝わる言葉で</h3><p>略語や内輪の呼び名には、ひとこと説明を添えましょう。</p></section>
+      <section><h3>情報を載せる前に、ひと確認</h3><p>個人情報・社外秘・他の人の写真や資料は、許可なく載せないでください。</p></section>
+      <section><h3>経験と事実を分けて伝える</h3><p>宣伝・勧誘・スパム投稿はしないでください。</p></section>
+      <section><h3>返事を急かさず、ありがとうを</h3><p>回答や協力は任意です。助かったときは、相手に「ありがとう」を伝えましょう。</p></section>
+    </div></div>`);
 }
 function openInstallHelp() {
   openUtility('ホーム画面から、すぐに', `<div class="install-preview"><img src="/assets/icon-app-192-v01.png" alt="SOTOTUNAのアプリアイコン"><p>いつものつながりを、ワンタップで。</p></div>
