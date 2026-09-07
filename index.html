@@ -528,13 +528,45 @@ mark { background: var(--mark); border-radius: 3px; padding: 0 1px; }
   .tree-svg.sprout-in { animation: none; }
   .view.on, .sheet, .dialog, .toast, .speech { animation-duration: 1ms; }
 }
+
+/* Existing green, rounded typography and illustrated assets remain the visual identity. */
+:root { --ink-weak: #706e68; }
+a:focus-visible { outline: 3px solid var(--green); outline-offset: 3px; }
+.guide-launch { right: max(100px, calc((100vw - 480px) / 2 + 100px)); min-width: 64px; padding: 0 10px; }
+.rules-launch { position: fixed; z-index:45; top:max(12px,env(safe-area-inset-top)); right:max(12px,calc((100vw - 480px)/2 + 12px)); height:44px; padding:0 10px; border-radius:999px; background:var(--white); color:var(--green); box-shadow:var(--shadow); font-size:12px; font-weight:700; }
+.rules-launch[hidden] { display:none; }
+.head-search { margin-right:160px; }
+.screen-title { padding-right:178px; }
+.guide-dialog { min-height:0; max-height:calc(100dvh - 32px); overflow-y:auto; }
+.owner-actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; }
+.question-image { display:block; max-width:100%; max-height:360px; object-fit:contain; margin:12px auto; border-radius:12px; }
+.related-link { display:block; text-decoration:none; color:var(--ink); }
+.related-link span { display:block; margin-top:8px; font-size:12px; color:var(--green); }
+.year-event { text-align:left; text-decoration:underline; text-underline-offset:4px; padding:8px 0; }
+.utility-link { display:flex; width:100%; align-items:center; justify-content:space-between; text-align:left; padding:12px 0; color:var(--green); }
+.utility-link + .utility-link { border-top:1px solid var(--green-pale); }
+.tree-progress { accent-color:var(--green); width:160px; height:8px; }
+.info-content h3 { margin:18px 0 6px; color:var(--green); font-size:16px; }
+.info-content p, .info-content ol { margin:10px 0; }
+.info-content ol { padding-left:22px; }
+.info-content li { margin:8px 0; }
+#utilityDialog { width:min(100% - 24px,420px); max-height:calc(100dvh - 32px); margin:auto; padding:22px; border:0; border-radius:24px; color:var(--ink); background:var(--white); font:inherit; }
+#utilityDialog::backdrop { background:rgba(47,55,43,.58); }
+#utilityTitle { font-size:20px; color:var(--green); }
+#bookForm input,#bookForm select,#bookForm textarea { width:100%; padding:12px; border:1px solid var(--green-pale); border-radius:12px; font:inherit; }
+#bookForm label { display:block; margin:14px 0 5px; }
+.q-text,.ans-text,.r-body,.thread-bubble p { overflow-wrap:anywhere; white-space:pre-wrap; }
+@media(max-width:380px) { .app-head > img { max-width:100px; height:auto; } .app-head { padding-left:12px; gap:4px; } .head-search { margin-right:148px; width:36px; flex:none; } .guide-launch { right:98px; width:auto; min-width:60px; padding:0 8px; } .guide-launch .guide-label { display:inline; } .rules-launch { right:8px; } .screen-title { font-size:18px; } }
+@media(prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:.01ms!important; transition-duration:.01ms!important; scroll-behavior:auto!important; } }
+
 </style>
 </head>
 <body>
 <div id="app">
   <button class="guide-launch" id="guideLaunch" aria-label="アプリの使い方を見る" hidden>
-    <span class="guide-q" aria-hidden="true">?</span><span class="guide-label">使い方</span>
+    <span class="guide-label">使い方</span>
   </button>
+  <button class="rules-launch" id="rulesLaunch" hidden>利用ルール</button>
 
   <!-- きく（Q&Aフィード） -->
   <section class="view" id="view-qa" aria-label="質問一覧">
@@ -549,8 +581,8 @@ mark { background: var(--mark); border-radius: 3px; padding: 0 1px; }
     <div class="sort-row">並び:
       <select id="sortSel" aria-label="並び替え">
         <option value="new">新着順</option>
-        <option value="metoo">👀知りたいが多い順</option>
-        <option value="thanks">🌱が多い順</option>
+        <option value="metoo">気になるが多い順</option>
+        <option value="thanks">ありがとうが多い順</option>
         <option value="open">未回答のみ</option>
       </select>
     </div>
@@ -651,7 +683,12 @@ mark { background: var(--mark); border-radius: 3px; padding: 0 1px; }
           <button class="switch on" id="anonToggle" role="switch" aria-checked="true" aria-label="匿名で投稿"></button>
         </div>
       </div>
+      <div class="field"><label for="askImage">画像を添付（任意・1枚）</label>
+        <input id="askImage" type="file" accept="image/jpeg,image/png,image/webp">
+        <p class="count-note">JPEG・PNG・WebP、5MBまで。名前や個人情報が写っていないか確認してください。</p>
+        <div id="askImagePreview"></div></div>
       <button class="btn-main" id="askSubmit" disabled>きいてみる</button>
+      <button class="detail-back" id="askCancel" type="button">閉じる</button>
     </div>
   </div>
 
@@ -810,6 +847,9 @@ const GRADUATION_COHORTS = Array.from({ length: 12 }, (_, i) => ({
   graduationYear: 2015 + i,
 }));
 const GUIDE_STEPS = [
+  { route:"#/qa", icon:"assets/icon-nav-board.png", title:"学部のつながりを、卒業後も。",
+    copy:"SOTOTUNAは、龍谷大学政策学部の現役生・卒業生・教職員が、経験や知恵を持ち寄る場所です。知り合いがいなくても参加できます。",
+    tip:"就活の不安を聞く。仕事の経験を伝える。研究の協力者を探す。まずは気になる質問をひとつ読んでみましょう。" },
   { route:"#/qa", icon:"assets/icon-nav-ask.png", title:"きく",
     copy:"就活・仕事・研究・くらしの疑問を、政策学部のみんなに質問できます。匿名でも投稿できます。",
     tip:"経験から答えられる質問には、ぜひひとこと。役立った回答には「ありがとう🌱」を送れます。" },
@@ -1123,6 +1163,7 @@ if (!store.myMeToo) store.myMeToo = [];
 if (!store.myHelps) store.myHelps = [];
 if (!store.myEvents) store.myEvents = [];
 if (!store.boardReplies) store.boardReplies = {};
+if (!store.myBooks) store.myBooks = [];
 if (store.profile) {
   if (!store.profile.avatar) store.profile.avatar = "🌱";
   if (!store.profile.bio) store.profile.bio = "";
@@ -1130,8 +1171,8 @@ if (store.profile) {
   if (!store.profile.email) store.profile.email = "";
 }
 function saveStore() {
-  try { localStorage.setItem(STORE_KEY, JSON.stringify(store)); }
-  catch (e) { if (storageOk) { storageOk = false; toast("保存できない環境みたい。この画面のあいだだけ有効だよ"); } }
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(store)); storageOk = true; return true; }
+  catch (e) { storageOk = false; toast("保存できませんでした。画像を外すか、ブラウザの保存設定を確認してください。"); return false; }
 }
 let state = { cat: "all", sort: "new", search: "", bookTag: "すべて", openOnly: true,
   askCat: null, recType: null, meTab: "q",
@@ -1219,7 +1260,7 @@ function openGuide(startIndex = 0) {
 function closeGuide() {
   $("#guideOverlay").classList.remove("on");
   $("#guideOverlay").setAttribute("aria-hidden", "true");
-  store.guideSeen = true;
+  store.guideSeen = true; store.purposeGuideSeen = true;
   saveStore();
   if (guideReturnFocus && typeof guideReturnFocus.focus === "function") guideReturnFocus.focus();
 }
@@ -1275,7 +1316,7 @@ function deleteOwnPost(kind, id) {
 function qUserHTML(q) {
   if (q.anonymous) {
     const attr = q.mine ? store.profile.attr : USERS[q.userId].attr;
-    return `<span class="q-user"><span class="q-avatar anon">🌱</span>匿名の後輩🌱</span>${badge(attr)}`;
+    return `<span class="q-user"><span class="q-avatar anon">🌱</span>匿名のメンバー🌱</span>${badge(attr)}`;
   }
   const u = q.mine ? { name: store.profile.name + "（あなた）", avatar: store.profile.avatar || "🌱", attr: store.profile.attr } : USERS[q.userId];
   const gen = graduationLabel(u.gen || (q.mine && store.profile.gen), u.attr);
@@ -1293,7 +1334,7 @@ function renderQaChips() {
 function renderQaList() {
   let list = allQuestions().filter((q) => state.cat === "all" || q.category === state.cat);
   if (state.search) list = list.filter((q) => q.text.toLowerCase().includes(state.search.toLowerCase()));
-  if (state.sort === "open") list = list.filter((q) => answersOf(q.id).length === 0);
+  if (state.sort === "open") list = list.filter((q) => !q.solved && answersOf(q.id).length === 0);
   if (state.sort === "thanks") list = [...list].sort((a, b) => thanksTotal(b.id) - thanksTotal(a.id));
   else if (state.sort === "metoo") list = [...list].sort((a, b) => meTooTotal(b) - meTooTotal(a));
   else list = [...list].sort((a, b) => b.createdAt - a.createdAt);
@@ -1313,9 +1354,9 @@ function renderQaList() {
       </div>
       <p class="q-text clamp">${hi(q.text)}</p>
       <div class="q-meta">
-        <span>💬${ans.length}</span><span>🌱${thanksTotal(q.id)}</span><span>👀${meTooN}</span>
+        <span>回答 ${ans.length}</span><span>ありがとう ${thanksTotal(q.id)}</span><span>気になる ${meTooN}</span>
         ${q.solved ? `<span class="solve-chip">✅解決済み</span>` : ""}
-        ${ans.length === 0 ? `<span class="open-chip">回答募集中</span>` : ""}
+        ${!q.solved && ans.length === 0 ? `<span class="open-chip">回答募集中</span>` : ""}
       </div>
     </article>`;
   }).join("");
@@ -1343,12 +1384,15 @@ function renderDetail(qid) {
         <span class="q-date">${relDate(q.createdAt)}</span>
       </div>
       <p class="q-text">${esc(q.text)}</p>
+      ${questionImage(q.image)}
       <div class="thanks-row">
         <button class="metoo-btn ${meTooDone ? "done" : ""}" id="meTooBtn">
-          👀 同じこと知りたい <span>${meTooTotal(q)}</span></button>
+          👀 気になる <span>${meTooTotal(q)}</span></button>
         ${q.solved ? `<span class="solve-chip">✅解決済み</span>` : ""}
       </div>
-      ${q.mine ? `<div class="post-delete-row"><button class="delete-btn" data-delete-question="${q.id}">質問を削除</button></div>` : ""}
+      ${q.mine ? `<div class="owner-actions"><button class="chip" id="editQuestion">質問を編集</button>
+        <button class="chip" id="solveQuestion">${q.solved ? "未解決に戻す" : "解決済みにする"}</button></div>
+        <div class="post-delete-row"><button class="delete-btn" data-delete-question="${q.id}">質問を削除</button></div>` : ""}
     </article>
     <div class="ans-count-label">回答 ${ans.length}件</div>
     ${sorted.length ? sorted.map((a) => {
@@ -1377,7 +1421,17 @@ function renderDetail(qid) {
       <div class="ans-guide">経験ベースで、やさしく🌱（社外秘はNG）。回答は実名（${esc(store.profile.name)}）で表示されます</div>
       <textarea id="ansText" maxlength="300" placeholder="こたえを書く…"></textarea>
       <button class="btn-main ans-submit" id="ansSubmit">こたえる</button>
-    </div>`;
+    </div>
+    <section class="related-questions"><h2 class="ans-count-label">同じテーマの質問</h2>
+      ${allQuestions().filter(x => x.id !== qid && x.category === q.category).slice(0,3).map(x =>
+        `<a class="card related-link" href="#/qa/${x.id}">${esc(x.text)}<span>読む →</span></a>`).join("") || '<p class="screen-sub">同じテーマの質問はまだありません。</p>'}</section>`;
+  $("#editQuestion")?.addEventListener("click", () => openAsk("", null, qid));
+  $("#solveQuestion")?.addEventListener("click", () => {
+    const own = store.myQuestions.find(x => x.id === qid);
+    if (!own) return;
+    own.solved = !own.solved; if (!saveStore()) { own.solved = !own.solved; return; } renderDetail(qid);
+    toast(own.solved ? "解決済みにしました" : "未解決に戻しました");
+  });
   $("#detailBack").addEventListener("click", () => { go("#/qa"); });
   const deleteQuestion = $("[data-delete-question]");
   if (deleteQuestion) deleteQuestion.addEventListener("click", () => {
@@ -1558,7 +1612,7 @@ function renderEvents() {
     const evs = EVENTS.filter((e) => e.month === m);
     return `<div class="year-row ${m === THIS_MONTH ? "on" : ""}">
       <span class="year-m">${m}月</span>
-      <span class="year-e ${evs.length ? "" : "none"}">${evs.length ? evs.map((e) => `<span class="year-event">${uiIcon(e.icon, "year-icon")}${esc(e.title)}</span>`).join(" / ") : "—"}</span>
+      <span class="year-e ${evs.length ? "" : "none"}">${evs.length ? evs.map((e) => `<button class="year-event" data-ev="${e.id}">${uiIcon(e.icon, "year-icon")}${esc(e.title)} →</button>`).join(" / ") : "—"}</span>
     </div>`;
   }).join("");
   const list = visibleEvents();
@@ -1589,19 +1643,10 @@ function canSeeTouron(post) {
 function eventBodyTouron() {
   const iAmCurrent = viewerAttr() === "current";
   const mySem = store.profile ? store.profile.seminar : null;
-  const semPick = iAmCurrent ? `
-    <div class="ans-count-label">あなたの参加ゼミ</div>
-    <div class="sem-pick">${SEMINARS.map((s) =>
-      `<button class="chip ${mySem === s ? "on" : ""}" data-sem="${esc(s)}">${esc(s)}</button>`).join("")}</div>` : "";
-  const posts = TOURON_POSTS.map((p) => {
-    const open = canSeeTouron(p);
+  const semPick = iAmCurrent ? `<div class="note-box">登録ゼミ：${esc(mySem || "未登録")}</div>` : "";
+  const visiblePosts = TOURON_POSTS.filter(p => canSeeTouron(p));
+  const posts = visiblePosts.map((p) => {
     const mine = mySem === p.seminar;
-    if (!open) {
-      return `<article class="card">
-        <div class="tr-head"><span class="tr-sem">${esc(p.seminar)}</span><span class="q-date">${esc(p.updated)}</span></div>
-        <div class="tr-lock">🔒 <div>他ゼミの進捗は、討論会当日まで見えません。<br>OBOG・先生・職員には見えています。</div></div>
-      </article>`;
-    }
     const comments = p.comments.map((c) => {
       const u = USERS[c.userId];
       const gen = graduationLabel(u.gen, u.attr);
@@ -1625,12 +1670,8 @@ function eventBodyTouron() {
     <div class="note-box">🔒 <b>見え方のルール</b><br>
       現役生には<b>自分のゼミの投稿だけ</b>が見えます（他ゼミの進捗は当日までふせています）。<br>
       OBOG・先生・職員には、すべてのゼミが見えます。</div>
-    <div class="preview-row">見え方をためす:
-      ${[["", "自分（" + ATTRS[store.profile ? store.profile.attr : "current"].label + "）"], ["current", "現役生"], ["obog", "OBOG"]]
-        .map(([k, label]) => `<button class="chip ${state.previewAttr === k ? "on" : ""}" data-preview="${k}">${label}</button>`).join("")}
-    </div>
     ${semPick}
-    <div class="ans-count-label">各ゼミの進捗 ${TOURON_POSTS.length}件</div>
+    <div class="ans-count-label">各ゼミの進捗 ${visiblePosts.length}件</div>
     ${posts}
     <p class="teacher-note">※ ゼミ名は実在しますが、投稿内容はすべてサンプルです</p>`;
 }
@@ -1682,9 +1723,9 @@ function renderBookChips() {
 }
 function renderBooks() {
   const el = $("#bookList"); if (!el) return;
-  const list = BOOKS.filter((b) => state.bookTag === "すべて" || b.tag === state.bookTag);
+  const list = store.myBooks.concat(BOOKS).filter((b) => state.bookTag === "すべて" || b.tag === state.bookTag);
   el.innerHTML = list.length ? list.map((b) => {
-    const u = USERS[b.userId];
+    const u = b.userId === "me" ? store.profile : USERS[b.userId];
     return `<article class="card book-card">
       <span class="book-icon">${uiIcon("assets/icon-event-books.png", "book-art")}</span>
       <div>
@@ -1702,7 +1743,7 @@ function eventBodyBooks() {
     <div class="chips" id="bookChips"></div>
     <div id="bookList" style="padding-top:8px"></div>
     <div style="padding:0 16px 8px">
-      <button class="btn-main" data-toast="本の登録は本番版で開きます📚">＋ おすすめの1冊を足す</button>
+      <button class="btn-main" id="addBook">＋ おすすめの1冊を足す</button>
     </div>`;
 }
 function renderEventDetail(id) {
@@ -1770,7 +1811,7 @@ function treeSVG(total) {
 }
 function renderMe() {
   const p = store.profile;
-  const total = store.receivedThanks;
+  const total = Math.max(0, Number(store.receivedThanks) || 0) + store.myAnswers.reduce((n,a) => n + (Number(a.thanks) || 0), 0);
   const stageLabel = total >= 30 ? "りっぱな大木🌳" : total >= 10 ? "すくすく若木🌿" : "かわいい芽🌱";
   const tabs = [["q", "質問"], ["a", "回答"], ["r", "募集"]];
   let listHTML = "";
@@ -1807,7 +1848,11 @@ function renderMe() {
       <div id="treeWrap">${treeSVG(total)}</div>
       <div class="tree-count">みんなの「ありがとう」が${total}個</div>
       <div class="tree-stage">${stageLabel}</div>
+      <p class="count-note">${total < 10 ? `あと${10-total}個で若木に` : total < 30 ? `あと${30-total}個で大木に` : "あなたの経験が、みんなの力になっています"}</p>
+      <progress class="tree-progress" max="30" value="${Math.min(total,30)}" aria-label="ありがとうの木の成長"></progress>
     </div>
+    <div class="card"><button class="utility-link" id="installHelp">ホーム画面に追加する <span>→</span></button>
+      <button class="utility-link" id="meRules">みんなの利用ルール <span>→</span></button></div>
     <div class="me-tabs">${tabs.map(([k, label]) =>
       `<button class="chip ${state.meTab === k ? "on" : ""}" data-metab="${k}">${label}</button>`).join("")}</div>
     <div class="card">${listHTML}</div>`;
@@ -1818,6 +1863,8 @@ function renderMe() {
   document.querySelectorAll("[data-metab]").forEach((b) =>
     b.addEventListener("click", () => { state.meTab = b.dataset.metab; renderMe(); }));
   $("#profileEdit").addEventListener("click", openProfileEditor);
+  $("#installHelp").addEventListener("click", openInstallHelp);
+  $("#meRules").addEventListener("click", openRules);
   document.querySelectorAll("[data-open-kind]").forEach((b) => b.addEventListener("click", () => {
     go(b.dataset.openKind === "recruit" ? "#/board/" + b.dataset.openId : "#/qa/" + b.dataset.openId);
   }));
@@ -1876,6 +1923,8 @@ function go(route) {
   if (!hashWorks) renderRoute();
 }
 function renderRoute() {
+  if (!store.profile) return;
+  window.scrollTo({top:0,behavior:"instant"});
   let h = (hashWorks ? location.hash : fallbackRoute) || "#/qa";
   fallbackRoute = h;
   const qDetail = h.match(/^#\/qa\/([\w-]+)$/);
@@ -1949,15 +1998,25 @@ function askCatsHTML() {
     `<button class="attr-chip ${state.askCat === k ? "on" : ""}" data-askcat="${k}">${catLabel(k)}</button>`).join("");
 }
 function askValidate() {
-  $("#askSubmit").disabled = !(state.askCat && $("#askText").value.trim());
+  $("#askSubmit").disabled = state.imageLoading || !(state.askCat && $("#askText").value.trim());
 }
 function saveDraft() {
-  store.draft = { category: state.askCat, text: $("#askText").value,
+  if (state.editQuestion) return;
+  store.draft = { category: state.askCat, text: $("#askText").value, image: state.askImage,
     anonymous: $("#anonToggle").classList.contains("on") };
   saveStore();
 }
-function openAsk(prefill = "", category = null) {
-  const d = prefill ? null : store.draft;
+function openAsk(prefill = "", category = null, editId = null) {
+  imageReadVersion++; state.imageLoading = false;
+  state.editQuestion = editId;
+  state.askImage = null;
+  $("#askImage").value = "";
+  $("#askImagePreview").innerHTML = "";
+  $("#askSubmit").textContent = editId ? "変更を保存" : "きいてみる";
+  $("#askOverlay .sheet-title").textContent = editId ? "質問を編集する" : "みんなに、きいてみよう";
+  const d = editId ? store.myQuestions.find(q => q.id === editId) : (prefill ? null : store.draft);
+  state.askImage = d?.image || null;
+  renderAskImage();
   state.askCat = category || (d ? d.category : null);
   $("#askText").value = prefill || (d ? d.text : "");
   $("#anonToggle").classList.toggle("on", d ? d.anonymous !== false : true);
@@ -1984,20 +2043,28 @@ $("#anonToggle").addEventListener("click", () => {
   saveDraft();
 });
 $("#askOverlay").addEventListener("click", (e) => {
-  if (e.target === e.currentTarget) { $("#askOverlay").classList.remove("on"); }
+  if (e.target === e.currentTarget) { imageReadVersion++; state.imageLoading=false; $("#askOverlay").classList.remove("on"); state.editQuestion=null; }
 });
 $("#askSubmit").addEventListener("click", () => {
   const text = $("#askText").value.trim();
-  if (!state.askCat || !text) return;
-  store.myQuestions.unshift({ id: "myq" + Date.now(), userId: "me",
-    anonymous: $("#anonToggle").classList.contains("on"), category: state.askCat,
-    text: text.slice(0, 300), createdAt: Date.now(), meToo: 0, solved: false });
-  store.draft = null;
-  saveStore();
+  if (state.imageLoading || !state.askCat || !text) return;
+  const before = structuredClone(store);
+  const fields = { anonymous: $("#anonToggle").classList.contains("on"), category: state.askCat,
+    text: text.slice(0, 300), image: state.askImage };
+  if (state.editQuestion) {
+    const q = store.myQuestions.find(q => q.id === state.editQuestion);
+    if (!q) return;
+    Object.assign(q, fields, { editedAt: Date.now() });
+  } else {
+    store.myQuestions.unshift({ id: "myq" + Date.now(), userId: "me", ...fields,
+      createdAt: Date.now(), meToo: 0, solved: false });
+    store.draft = null;
+  }
+  if (!saveStore()) { store = before; return; }
   $("#askOverlay").classList.remove("on");
-  renderQaList();
-  confetti(16);
-  toast("きいてみたよ！だれかが答えてくれるはず🌱");
+  if (state.editQuestion) { renderDetail(state.editQuestion); toast("質問を更新しました"); }
+  else { renderQaList(); confetti(16); toast("質問を投稿しました"); }
+  state.editQuestion = null;
 });
 
 /* ひろば操作 */
@@ -2015,7 +2082,10 @@ $("#boardList").addEventListener("click", (e) => {
     const i = store.myHelps.indexOf(id);
     if (i >= 0) { store.myHelps.splice(i, 1); toast("協力をとりけしたよ"); }
     else { store.myHelps.push(id); confetti(8); toast("協力ポチ、うけとったよ✋"); }
-    saveStore(); renderBoard(); return;
+    saveStore();
+    if (i < 0) { go("#/board/" + id); toast("やりとり欄で、参加できる時間などを伝えましょう"); }
+    else renderBoard();
+    return;
   }
   const c = e.target.closest("[data-recruit]");
   if (c) go("#/board/" + c.dataset.recruit);
@@ -2047,6 +2117,7 @@ $("#view-boarddetail").addEventListener("click", (e) => {
   if (i >= 0) { store.myHelps.splice(i, 1); toast("協力をとりけしたよ"); }
   else { store.myHelps.push(id); confetti(8); toast("協力ポチ、うけとったよ✋"); }
   saveStore(); renderBoardDetail(id);
+  if (i < 0) { $("#threadText")?.focus(); toast("やりとり欄で、参加できる時間などを伝えましょう"); }
 });
 $("#view-boarddetail").addEventListener("submit", (e) => {
   if (e.target.id !== "threadForm") return;
@@ -2132,10 +2203,11 @@ $("#eventList").addEventListener("keydown", (e) => {
   go("#/events/" + c.dataset.ev);
 });
 $("#eventRequest").addEventListener("click", () => {
-  toast("Googleフォームにつながります（URLは公開前に差し込み）📮");
+  window.open("https://forms.gle/iYjfzpSYbGqshBub7", "_blank", "noopener,noreferrer");
 });
 $("#view-eventdetail").addEventListener("click", (e) => {
   const t = e.target;
+  if (t.closest("#addBook")) { openBookForm(); return; }
   if (t.closest("[data-back]")) { go("#/events"); return; }
   const join = t.closest("[data-join]");
   if (join) {
@@ -2144,14 +2216,6 @@ $("#view-eventdetail").addEventListener("click", (e) => {
     if (i >= 0) { store.myEvents.splice(i, 1); toast("参加をとりけしたよ"); }
     else { store.myEvents.push(id); confetti(14); toast("参加ポチ、うけとったよ🙋"); }
     saveStore(); renderEventDetail(state.evId); return;
-  }
-  const pv = t.closest("[data-preview]");
-  if (pv) { state.previewAttr = pv.dataset.preview; renderEventDetail(state.evId); return; }
-  const sem = t.closest("[data-sem]");
-  if (sem) {
-    store.profile.seminar = sem.dataset.sem; saveStore();
-    toast(store.profile.seminar + "に設定したよ");
-    renderEventDetail(state.evId); return;
   }
   if (t.closest("#obHostToggle")) {
     store.obHost = !store.obHost; saveStore();
@@ -2222,9 +2286,10 @@ $("#authContinue").addEventListener("click", () => {
   } else store.profile.email = email;
   saveStore();
   $("#authGate").classList.remove("on");
-  $("#guideLaunch").hidden = false;
+  $("#guideLaunch").hidden = false; $("#rulesLaunch").hidden = false;
   renderRoute();
   toast("ログインしました（モック）");
+  if (!store.purposeGuideSeen) requestAnimationFrame(() => openGuide(0));
 });
 
 /* オンボーディング */
@@ -2265,17 +2330,96 @@ $("#obStart").addEventListener("click", () => {
     gen: OB.attr === "obog" ? OB.gen : null, avatar:"🌱", currentRole:"", bio:"" };
   saveStore();
   $("#onboarding").classList.remove("on");
-  $("#guideLaunch").hidden = false;
+  $("#guideLaunch").hidden = false; $("#rulesLaunch").hidden = false;
   renderRoute();
   toast("ようこそ、" + store.profile.name + "さん🌱");
   requestAnimationFrame(() => openGuide(0));
 });
 
+/* Small dialogs use the browser's native focus trap and Escape handling. */
+const utilityDialog = document.createElement('dialog');
+utilityDialog.id = 'utilityDialog';
+utilityDialog.setAttribute('aria-labelledby','utilityTitle');
+document.body.appendChild(utilityDialog);
+function openUtility(title, body) {
+  utilityDialog.innerHTML = `<div class="guide-head"><h2 id="utilityTitle">${esc(title)}</h2><button class="sheet-close" id="utilityClose" aria-label="閉じる">×</button></div><div class="info-content">${body}</div>`;
+  $('#utilityClose').onclick = () => utilityDialog.close();
+  utilityDialog.showModal();
+}
+function openRules() {
+  openUtility('みんなの利用ルール', `<p>はじめての人も、久しぶりの人も。知り合いの数や卒業期に関係なく参加できる場所にしましょう。</p>
+    <ol><li>相手を尊重し、違う意見にもやさしく。人格への攻撃や差別的な表現は控えてください。</li>
+    <li>略語や内輪の呼び名には説明を添え、初めて読む人にも伝わる言葉で。</li>
+    <li>個人情報・社外秘・他の人の写真や資料を、許可なく載せないでください。</li>
+    <li>経験と事実を分けて伝え、宣伝・勧誘・スパム投稿はしないでください。</li>
+    <li>質問への回答や協力は任意です。返事を急かさず、助かったら「ありがとう」を。</li></ol>`);
+}
+$('#rulesLaunch').addEventListener('click',openRules);
+function openInstallHelp() {
+  openUtility('ホーム画面から、すぐに', `<p>スマートフォンのホーム画面に追加すると、次からアイコンで開けます。</p>
+    <h3>iPhone・iPad（Safari）</h3><ol><li>このアプリをSafariで開きます。</li><li>共有ボタンを押します。</li><li>「ホーム画面に追加」を選び、「追加」を押します。</li></ol>
+    <h3>Android（Chrome）</h3><ol><li>このアプリをChromeで開きます。</li><li>右上のメニュー（⋮）を押します。</li><li>「ホーム画面に追加」または「アプリをインストール」を選び、案内に従います。</li></ol>
+    <p class="count-note">表示名はOS・ブラウザのバージョンによって異なります。</p>`);
+}
+function openBookForm() {
+  openUtility('おすすめの1冊を登録', `<form id="bookForm">
+    <label for="bookTitle">本のタイトル</label><input id="bookTitle" required maxlength="100">
+    <label for="bookAuthor">著者</label><input id="bookAuthor" required maxlength="80">
+    <label for="bookTag">分野</label><select id="bookTag">${BOOK_TAGS.filter(t=>t!=='すべて').map(t=>`<option>${esc(t)}</option>`).join('')}</select>
+    <label for="bookComment">おすすめの理由</label><textarea id="bookComment" required maxlength="300" placeholder="どんな人に、どんな場面で読んでほしいですか？"></textarea>
+    <button class="btn-main" type="submit">登録する</button></form>`);
+  $('#bookForm').onsubmit = e => {
+    e.preventDefault();
+    const title=$('#bookTitle').value.trim(),author=$('#bookAuthor').value.trim(),comment=$('#bookComment').value.trim(),tag=$('#bookTag').value;
+    if(!title||!author||!comment) { toast('タイトル・著者・おすすめの理由を入力してください'); return; }
+    const before = structuredClone(store);
+    store.myBooks.unshift({id:'mybook'+Date.now(),userId:'me',title,author,comment,tag});
+    if (!saveStore()) { store = before; return; } state.bookTag='すべて'; utilityDialog.close(); renderBookChips(); renderBooks(); toast('おすすめの1冊を登録しました');
+  };
+}
+function questionImage(data) {
+  return typeof data === 'string' && /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(data)
+    ? `<img class="question-image" src="${data}" alt="質問に添付された画像">` : '';
+}
+function renderAskImage() {
+  $('#askImagePreview').innerHTML = questionImage(state.askImage) + (state.askImage ? '<button class="detail-back" type="button" id="removeAskImage">画像を外す</button>' : '');
+  $('#removeAskImage')?.addEventListener('click',()=>{ state.askImage=null; $('#askImage').value=''; renderAskImage(); saveDraft(); });
+}
+let imageReadVersion = 0;
+$('#askImage').addEventListener('change', async e => {
+  const file=e.target.files[0],version=++imageReadVersion;
+  state.imageLoading=false; askValidate();
+  if(!file) return;
+  if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>5*1024*1024) {
+    toast('5MB以下のJPEG・PNG・WebPを選んでください'); e.target.value=''; return;
+  }
+  state.imageLoading=true; askValidate();
+  try {
+    const bitmap=await createImageBitmap(file);
+    const scale=Math.min(1,1200/Math.max(bitmap.width,bitmap.height));
+    const canvas=document.createElement('canvas'); canvas.width=Math.round(bitmap.width*scale); canvas.height=Math.round(bitmap.height*scale);
+    const ctx=canvas.getContext('2d'); ctx.fillStyle='#ffffff'; ctx.fillRect(0,0,canvas.width,canvas.height); ctx.drawImage(bitmap,0,0,canvas.width,canvas.height); bitmap.close();
+    if(version!==imageReadVersion) return;
+    state.askImage=canvas.toDataURL('image/jpeg',.78); renderAskImage(); saveDraft();
+  } catch { toast('画像を読み込めませんでした。別の画像を選んでください'); }
+  finally { if(version===imageReadVersion) { state.imageLoading=false; askValidate(); } }
+});
+$('#askCancel').addEventListener('click',()=>{ imageReadVersion++; $('#askOverlay').classList.remove('on'); state.editQuestion=null; });
+// Keep keyboard focus inside the existing guide.
+$('#guideOverlay').addEventListener('keydown', e => {
+  if(e.key!=='Tab') return;
+  const items=[...$('#guideOverlay').querySelectorAll('button')].filter(el=>!el.hidden&&!el.disabled);
+  const first=items[0],last=items[items.length-1];
+  if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+  else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+});
+
 /* 起動 */
 if (!store.profile) { showAuthChoice(); $("#authGate").classList.add("on"); }
-$("#guideLaunch").hidden = !store.profile;
+$("#guideLaunch").hidden = !store.profile; $("#rulesLaunch").hidden = !store.profile;
 if (!location.hash) { try { history.replaceState(null, "", "#/qa"); } catch (e) {} }
 renderRoute();
+if (store.profile && !store.purposeGuideSeen) requestAnimationFrame(() => openGuide(0));
 </script>
 </body>
 </html>
