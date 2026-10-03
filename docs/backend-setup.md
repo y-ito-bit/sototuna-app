@@ -74,3 +74,12 @@ on conflict (user_id) do nothing;
 Migration `20261003002000_beta_contacts.sql` is applied. Beta users can save only their own issued contact address from the verified JWT; real addresses and another user's address are rejected by the DB. Contact links do not launch email. Free-text fields can still contain personal data, so the screen asks participants to use fictional names and content.
 
 16 tests and build passed. Account issuance, approval, and the two-user end-to-end test are still pending.
+
+
+## Bulk issuance for 15 testers
+
+`scripts/issue-beta-accounts.mjs` creates missing beta001 through beta015 using confirmed synthetic email addresses and random individual passwords; existing passwords are preserved. It approves all 15 issued accounts and initializes fictional profiles without replacing existing profiles. It sends no emails. Run only on the dedicated project with server administrative credentials.
+
+The script reads `SOTOTUNA_ADMIN_KEY_FILE` and writes a private CSV to `SOTOTUNA_BETA_CREDENTIALS_FILE`. Both must be local temporary files under `/tmp/`, outside Google Drive and Git. The CSV is exclusively created with mode 600; passwords are saved before membership approval so a later failure does not lose access. Never set the administrative key in VITE variables. Delete the temporary key after execution. Existing users have a blank password column because their passwords cannot be retrieved.
+
+The initial manually created account uses an operator-set password. Change it to a strong individual password before distribution. Account passwords and the administrative key are not recorded in Knowledge Vault.
