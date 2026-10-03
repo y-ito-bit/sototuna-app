@@ -25,7 +25,7 @@
 
 初期段階は招待済み会員を使う。Supabase Authへテスト会員を招待し、そのUUIDを `memberships` に登録する。一般公開の新規入会や卒業確認の運用は今回まだ決めていない。
 
-`src/backend/api.js` のOTP送信は `shouldCreateUser:false`。数値コードを使うため Authentication → Emails → Magic Link の本文に `{{ .Token }}` を設定する。
+`src/backend/api.js` のOTP送信は `shouldCreateUser:false`。数値コードを使うため Authentication → Emails → Magic Link の本文に `{{ .Token }}` を設定する。現在の無料プランの管理画面では、Custom SMTP未設定時のテンプレート編集が無効だったため、この設定はまだ適用できていない。
 
 Supabase標準SMTPは組織の許可済みメール宛の検証用途。一般会員へのメール認証にはCustom SMTPの設定が必要。SMTPパスワードをフロントの環境変数に入れない。送信元ドメインの設定と配信サービス選定は別途必要。
 
