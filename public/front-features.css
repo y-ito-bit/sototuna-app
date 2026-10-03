@@ -22,3 +22,8 @@
 #utilityDialog .front-form label {display:block;font-size:13px;color:#50504b}
 #utilityDialog .front-form input[type=file] {font-size:12px}
 @media(max-width:420px){.front-actions .chip{font-size:13px;padding:9px 14px}.front-panel h2{font-size:15px}}
+
+.cooperation-consent { display:flex; align-items:flex-start; gap:10px; padding:14px; background:var(--green-pale); border-radius:12px; line-height:1.65; }
+.cooperation-consent input { flex:none; width:20px; height:20px; margin-top:3px; accent-color:var(--green); }
+.cooperation-email { overflow-wrap:anywhere; }
+.mylist-main .front-note { display:block; }

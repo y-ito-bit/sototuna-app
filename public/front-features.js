@@ -50,15 +50,18 @@
     $('#reportForm').onsubmit=e=>{e.preventDefault();const value={questionId,reason:$('#reportReason').value,detail:$('#reportDetail').value.trim()};if(value.reason==='other'&&!value.detail){$('#frontStatus').textContent='補足を入力してください';return;}dialog('通報内容を確認',`${localNote}<p>${esc(reasons[value.reason])}</p><div class="front-preview">${esc(value.detail||'補足なし')}</div><div class="front-actions"><button class="chip" id="reportBack">修正する</button><button class="btn-main" id="reportSave">通報の下書きを保存</button></div>`);$('#reportBack').onclick=()=>openReport(questionId,value);$('#reportSave').onclick=e=>act(e.currentTarget,async()=>{await service().saveReport(value);await openDrafts();$('#frontStatus').textContent='通報の下書きを保存しました。運営には未送信です。';});};
   }
   const originalBoardDetail=renderBoardDetail;
-  renderBoardDetail=function(id){originalBoardDetail(id);const r=allRecruits().find(r=>r.id===id);if(!r)return;$('#view-boarddetail .board-detail-head').insertAdjacentHTML('afterend',`<section class="card front-panel"><h2>協力の連絡</h2><p>参加できる日時や、お願いしたいことを個別にまとめられます。</p><button class="chip" id="frontContact">${r.mine?'協力者への連絡を準備':'募集者への連絡を準備'}</button><p class="front-note">連絡は下書きとして保存されます。まだ相手には届きません。</p></section>`);$('#frontContact').onclick=()=>act(null,()=>openContact(id));};
-  async function openContact(recruitmentId) {
-    const r=allRecruits().find(r=>r.id===recruitmentId);if(!r)return;
-    if(!r.mine){const user=USERS[r.userId];return openMessage({recruitmentId,recipientId:r.userId,recipientName:user.name,body:''});}
-    dialog('協力者への連絡',`<p>${esc(r.title)}</p><p class="front-empty">協力者の名簿はまだ同期されていません。<br>接続後は、協力を申し出た人をここから選べます。</p><button class="chip" id="contactSample">サンプルの宛先で試す</button>${localNote}`);
-    $('#contactSample').onclick=()=>{
-      dialog('協力者を選ぶ',`<p class="front-note">名簿の表示サンプルです。実際の協力者ではありません。</p><ul class="front-list">${['A','B'].map(name=>`<li>協力者${name}（サンプル）<div class="front-actions"><button class="chip" data-sample-helper="${name}">この人への連絡を準備</button></div></li>`).join('')}</ul>`);
-      utilityDialog.querySelectorAll('[data-sample-helper]').forEach(b=>b.onclick=()=>openMessage({recruitmentId,recipientId:'sample-helper-'+b.dataset.sampleHelper,recipientName:'協力者'+b.dataset.sampleHelper+'（サンプル）',body:''}));
-    };
+  renderBoardDetail=function(id){
+    originalBoardDetail(id);
+    const r=allRecruits().find(r=>r.id===id);if(!r)return;
+    $('#view-boarddetail .board-detail-head').insertAdjacentHTML('afterend',`<section class="card front-panel"><h2>${r.mine?'協力者・連絡先':'メールでつながる'}</h2><p>${r.mine?'協力してくれる方と、共有に同意されたメールアドレスを確認できます。':'協力するときに、募集者へのメールアドレス共有を確認します。連絡はメールでやりとりします。'}</p><button class="chip" id="frontContact">${r.mine?'協力者・連絡先を見る':store.myHelps.includes(id)?'協力内容・メールアドレスを確認':'メールアドレスを入力して協力する'}</button><p class="front-note">お試し版：この端末にのみ保存され、相手にはまだ届きません。</p></section>`);
+    $('#frontContact').onclick=()=>r.mine?openCollaborators(id):openCooperation(id);
+  };
+  function openCollaborators(id,sample=false){
+    const r=allRecruits().find(r=>r.id===id);if(!r?.mine)return;
+    // Never infer identities or consent from the legacy helper count.
+    const contacts=sample?[{name:'協力者A（サンプル）',email:'helper-a@example.com'},{name:'協力者B（サンプル）',email:'helper-b@example.com'}]:[];
+    dialog('協力者・連絡先',`<p class="front-preview">${esc(r.title)}</p><p class="front-note">${sample?'表示サンプルです。実際の協力者ではありません。':'共有に同意された方の連絡先だけを、募集者に表示する予定です。現在は別端末の協力者と同期されていません。'}</p><h3>${sample?'サンプルの協力者 2人':'協力者 0人'}</h3>${contacts.length?`<ul class="front-list">${contacts.map(c=>`<li><b>${esc(c.name)}</b><p class="cooperation-email">${esc(c.email)}</p><span class="front-label">メール共有に同意済み（サンプル）</span><button class="chip" disabled>メールで連絡（サンプル）</button></li>`).join('')}</ul>`:'<p class="front-empty">まだ確認できる協力者はいません。<br>協力者の名前・メールアドレスはここに並びます。</p>'}<button class="chip" id="cooperationSample">${sample?'実際の一覧に戻る':'サンプルの一覧を見る'}</button>`);
+    $('#cooperationSample').onclick=()=>openCollaborators(id,!sample);
   }
   function openMessage(draft) {
     dialog('連絡の下書き',`<p>宛先：${esc(draft.recipientName)}</p>${localNote}<form class="front-form" id="messageForm"><label for="messageBody">連絡したいこと（1,000文字まで）</label><textarea id="messageBody" required maxlength="1000" placeholder="参加できる日時や、確認したいことなど">${esc(draft.body)}</textarea><button class="btn-main" type="submit">内容を確認する</button></form>`);

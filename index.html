@@ -1229,6 +1229,7 @@ if (!store.myRecruits) store.myRecruits = [];
 if (!store.myThanks) store.myThanks = {};
 if (!store.myMeToo) store.myMeToo = [];
 if (!store.myHelps) store.myHelps = [];
+if (!store.cooperationContacts) store.cooperationContacts = {};
 if (!store.myEvents) store.myEvents = [];
 if (!store.boardReplies) store.boardReplies = {};
 if (!store.myBooks) store.myBooks = [];
@@ -1390,6 +1391,7 @@ function deleteOwnPost(kind, id) {
   } else if (kind === "recruit") {
     store.myRecruits = store.myRecruits.filter((r) => r.id !== id);
     delete store.boardReplies[id];
+    delete store.cooperationContacts[id];
     store.myHelps = store.myHelps.filter((rid) => rid !== id);
   } else return false;
   saveStore();
@@ -1570,8 +1572,8 @@ function renderBoard() {
       <p class="r-body">${esc(r.body)}</p>
       <div class="r-meta">${esc(u.name)}${graduationLabel(u.gen, u.attr) ? "（" + esc(graduationLabel(u.gen, u.attr)) + "）" : ""} ${badge(u.attr)}　締切 ${esc((r.deadline || "").slice(5).replace("-", "/"))}</div>
       <div class="help-row">
-        <button class="help-btn ${helped ? "mine" : ""}" data-help="${r.id}" ${closed ? "disabled" : ""}>
-          ${closed ? "受付終了" : helped ? `${uiIcon("/assets/icon-help-v01.png", "action-icon")}協力するよ！` : `${uiIcon("/assets/icon-help-v01.png", "action-icon")}協力する`}</button>
+        <button class="help-btn ${helped ? "mine" : ""}" data-help="${r.id}" ${r.mine || closed ? "disabled" : ""}>
+          ${r.mine ? "あなたの募集" : closed ? "受付終了" : helped ? `${uiIcon("/assets/icon-help-v01.png", "action-icon")}協力内容を確認` : `${uiIcon("/assets/icon-help-v01.png", "action-icon")}協力する`}</button>
         <span class="help-count">${n}人が協力中</span>
         <span class="r-open">詳細・やりとり →</span>
       </div>
@@ -1606,7 +1608,7 @@ function renderBoardDetail(id) {
       <h1 class="r-title" style="font-size:19px">${esc(r.title)}</h1>
       <p class="r-body">${esc(r.body)}</p>
       <div class="r-meta">${esc(u.name)}${graduationLabel(u.gen, u.attr) ? "（" + esc(graduationLabel(u.gen, u.attr)) + "）" : ""} ${badge(u.attr)}　締切 ${esc((r.deadline || "").slice(5).replace("-", "/"))}</div>
-      <div class="help-row"><button class="help-btn ${helped ? "mine" : ""}" data-detailhelp="${r.id}" ${closed ? "disabled" : ""}>${closed ? "受付終了" : helped ? `${uiIcon("/assets/icon-help-v01.png", "action-icon")}協力するよ！` : `${uiIcon("/assets/icon-help-v01.png", "action-icon")}協力する`}</button><span class="help-count">${n}人が協力中</span></div>
+      <div class="help-row"><button class="help-btn ${helped ? "mine" : ""}" data-detailhelp="${r.id}" ${r.mine || closed ? "disabled" : ""}>${r.mine ? "あなたの募集" : closed ? "受付終了" : helped ? `${uiIcon("/assets/icon-help-v01.png", "action-icon")}協力内容を確認` : `${uiIcon("/assets/icon-help-v01.png", "action-icon")}協力する`}</button><span class="help-count">${n}人が協力中</span></div>
       ${r.mine ? `<div class="post-delete-row"><button class="delete-btn" data-delete-recruit="${r.id}">募集を削除</button></div>` : ""}
     </article>
     <div class="thread-title"><h2>やりとり</h2><span>${posts.length}件・みんなに見えるスレッド</span></div>
@@ -1908,7 +1910,7 @@ function renderMe() {
       : `<div class="mylist-empty">まだ回答していないよ。経験はだれかの地図になる🌱</div>`;
   } else {
     listHTML = store.myRecruits.length
-      ? store.myRecruits.map((r) => `<div class="mylist-row"><button class="mylist-main" data-open-kind="recruit" data-open-id="${r.id}">${uiIcon(RTYPES[r.type].icon)}${RTYPES[r.type].label}　${esc(r.title)}</button><button class="delete-btn" data-delete-kind="recruit" data-delete-id="${r.id}">削除</button></div>`).join("")
+      ? store.myRecruits.map((r) => `<div class="mylist-row"><button class="mylist-main" data-open-kind="recruit" data-open-id="${r.id}">${uiIcon(RTYPES[r.type].icon)}${RTYPES[r.type].label}　${esc(r.title)}<small class="front-note">協力者・連絡先を確認 →</small></button><button class="delete-btn" data-delete-kind="recruit" data-delete-id="${r.id}">削除</button></div>`).join("")
       : `<div class="mylist-empty">まだ募集していないよ</div>`;
   }
   $("#view-me").innerHTML = `
@@ -2162,12 +2164,7 @@ $("#boardList").addEventListener("click", (e) => {
   if (b) {
     if (b.disabled) return;
     const id = b.dataset.help;
-    const i = store.myHelps.indexOf(id);
-    if (i >= 0) { store.myHelps.splice(i, 1); toast("協力をとりけしたよ"); }
-    else { store.myHelps.push(id); confetti(8); toast("協力ポチ、うけとったよ"); }
-    saveStore();
-    if (i < 0) { go("#/board/" + id); toast("やりとり欄で、参加できる時間などを伝えましょう"); }
-    else renderBoard();
+    openCooperation(id);
     return;
   }
   const c = e.target.closest("[data-recruit]");
@@ -2196,11 +2193,7 @@ $("#view-boarddetail").addEventListener("click", (e) => {
   const b = e.target.closest("[data-detailhelp]");
   if (!b || b.disabled) return;
   const id = b.dataset.detailhelp;
-  const i = store.myHelps.indexOf(id);
-  if (i >= 0) { store.myHelps.splice(i, 1); toast("協力をとりけしたよ"); }
-  else { store.myHelps.push(id); confetti(8); toast("協力ポチ、うけとったよ"); }
-  saveStore(); renderBoardDetail(id);
-  if (i < 0) { $("#threadText")?.focus(); toast("やりとり欄で、参加できる時間などを伝えましょう"); }
+  openCooperation(id);
 });
 $("#view-boarddetail").addEventListener("submit", (e) => {
   if (e.target.id !== "threadForm") return;
@@ -2430,6 +2423,54 @@ function openUtility(title, body) {
   utilityDialog.showModal();
   $('#utilityClose').focus();
 }
+let cooperationRecruitId = null;
+function openCooperation(id) {
+  const r = allRecruits().find(item => item.id === id);
+  if (!r || r.mine || r.status === 'closed') return;
+  cooperationRecruitId = id;
+  const previous = store.cooperationContacts[id];
+  const email = previous?.email || store.profile.email || '';
+  const owner = USERS[r.userId].name;
+  openUtility(store.myHelps.includes(id) ? '協力内容を確認' : 'メールでつながって協力する', `
+    <p class="front-preview">${esc(r.title)}</p>
+    <p>連絡はメールでやりとりします。あなたのよびなとメールアドレスを、この募集の募集者 <b>${esc(owner)}</b> さんに共有するための確認です。</p>
+    <form class="front-form" id="cooperationForm">
+      <label for="cooperationEmail">連絡用メールアドレス</label>
+      <input type="email" id="cooperationEmail" required maxlength="254" autocomplete="email" inputmode="email" value="${esc(email)}" aria-describedby="cooperationScope">
+      <p class="front-note" id="cooperationScope">公開スレッドには表示しません。この募集の連絡に使うアドレスを入力してください。</p>
+      <label class="cooperation-consent"><input type="checkbox" id="cooperationConsent" required><span>この募集の募集者に、よびなとメールアドレスを渡すことに同意します。</span></label>
+      <p class="front-note">お試し版：入力と同意はこの端末にのみ保存され、募集者にはまだ届きません。メールは自動送信されません。</p>
+      <button class="btn-main" type="submit" id="cooperationSubmit" disabled>同意して${previous?'変更を保存':'協力する'}</button>
+      <button class="chip" type="button" id="cooperationCancel">入力をやめる</button>
+      ${store.myHelps.includes(id)?'<button class="delete-btn" type="button" id="cooperationWithdraw">協力を取り消す</button>':''}
+      <p class="front-status" role="status" id="cooperationStatus"></p>
+    </form>`);
+  const input = $('#cooperationEmail'), consent = $('#cooperationConsent');
+  const validate = () => { $('#cooperationSubmit').disabled = !validEmail(input.value.trim()) || !input.checkValidity() || !consent.checked; };
+  input.oninput = validate; consent.onchange = validate;
+  $('#cooperationCancel').onclick = () => utilityDialog.close();
+  $('#cooperationForm').onsubmit = e => {
+    e.preventDefault();
+    if (cooperationRecruitId !== id || !consent.checked || !input.checkValidity() || !validEmail(input.value.trim())) return;
+    const current = allRecruits().find(item => item.id === id);
+    if (!current || current.mine || current.status !== 'open') return;
+    const before = structuredClone(store);
+    store.cooperationContacts[id] = {name:store.profile.name, email:input.value.trim(), consent:true, consentVersion:1, consentAt:new Date().toISOString(), recipientId:r.userId};
+    if (!store.myHelps.includes(id)) store.myHelps.push(id);
+    if (!saveStore()) { store = before; $('#cooperationStatus').textContent = '保存できませんでした。入力内容を確認して、もう一度お試しください。'; return; }
+    utilityDialog.close(); go('#/board/'+id); renderBoardDetail(id);
+    toast('協力内容をこの端末に保存しました。募集者には未送信です。');
+  };
+  $('#cooperationWithdraw')?.addEventListener('click', () => {
+    const before = structuredClone(store);
+    store.myHelps = store.myHelps.filter(value => value !== id);
+    delete store.cooperationContacts[id];
+    if (!saveStore()) { store = before; $('#cooperationStatus').textContent = '取消を保存できませんでした。'; return; }
+    utilityDialog.close(); renderBoard(); if(state.boardId === id) renderBoardDetail(id);
+    toast('協力を取り消し、保存した連絡先を削除しました');
+  });
+}
+
 function openRules() {
   openUtility('みんなの利用ルール', `<div class="rules-content"><p class="rules-intro">はじめての人も、久しぶりの人も。<br>知り合いの数や卒業期に関係なく、参加できる場所にしましょう。</p>
     <div class="rules-list">
