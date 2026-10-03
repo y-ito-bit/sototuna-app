@@ -31,3 +31,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .env*
+
+# Cloudflare and Supabase local state
+.wrangler/
+.dev.vars*
+supabase/.temp/
+supabase/.branches/
+!.env.example
