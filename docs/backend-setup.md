@@ -41,7 +41,12 @@ Supabase標準SMTPは組織の許可済みメール宛の検証用途。一般�
 
 Git連携時のビルド: `npm run build`。デプロイ: `npx wrangler deploy`。ビルド変数は `VITE_SUPABASE_URL` と `VITE_SUPABASE_PUBLISHABLE_KEY`。
 
-CloudflareのGit自動配信はAPIトークンを自動作成する。標準トークンにはWorkersに加えてKV/R2/D1などの編集権限が含まれるため、権限範囲を確認してから作成する。
+CloudflareのGit自動配信の標準トークンはKV/R2/D1なども編集できるため使用しない。伊藤さんの承認で、対象アカウントのみ `Workers Scripts: Edit` の1権限を持つ `sototuna-deploy-minimal` を作成。この限定トークンはGit連携フォームの候補に表示されなかったため、コマンドから配信した。Git自動配信は未設定。
+
+公開URL: https://sototuna-app.y-ito-c20.workers.dev
+接続確認: https://sototuna-app.y-ito-c20.workers.dev/backend-check
+
+`CLOUDFLARE_ACCOUNT_ID` を明示し、Workers Scripts編集のみで配信成功。R2・D1・KV・DNS・Workers Routesの権限は不要だった。トークン値はGitやGoogle Driveへ保存せず、一時ファイルは配信後に削除。今後の配信には安全な資格情報保存先の設定が必要。同じアカウント内のWorker変更権限は残る。
 
 ## 検証
 
