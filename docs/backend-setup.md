@@ -57,3 +57,20 @@ npx wrangler deploy --dry-run
 ```
 
 PGliteのPostgresで実際にRLSを適用し、募集者・本人・第三者・未承認・未認証を切り替えて検証。Supabase AuthのJWT検証・SMTP配信そのものはこのテストの対象外。実サービスでは招待した会員でOTPと申込・一覧を確認する。
+
+
+## Issued beta accounts (2026-10-03)
+
+`/backend-check` now accepts issued IDs such as `beta001` and individual passwords. Supabase Auth uses `beta001@beta.sototuna.invalid`; no email or OTP is sent. The original five-tab app still uses mock data.
+
+Create accounts through Supabase Authentication > Users > Add user > Create new user, with Auto confirm user enabled. The operator must enter the new password and submit the form. Approve only issued IDs through SQL Editor after creation:
+
+```sql
+insert into public.memberships(user_id)
+select id from auth.users where email in ('beta001@beta.sototuna.invalid','beta002@beta.sototuna.invalid')
+on conflict (user_id) do nothing;
+```
+
+Migration `20261003002000_beta_contacts.sql` is applied. Beta users can save only their own issued contact address from the verified JWT; real addresses and another user's address are rejected by the DB. Contact links do not launch email. Free-text fields can still contain personal data, so the screen asks participants to use fictional names and content.
+
+16 tests and build passed. Account issuance, approval, and the two-user end-to-end test are still pending.
