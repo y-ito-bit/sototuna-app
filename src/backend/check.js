@@ -1,3 +1,4 @@
+import {backendConfig} from './config.js';
 import {createBackend} from './client.js';
 import {createApi} from './api.js';
 const $=selector=>document.querySelector(selector);
@@ -43,7 +44,7 @@ $('#applyClose').onclick=()=>$('#apply').close();
 $('#applyForm').onsubmit=e=>{e.preventDefault();action(e.submitter,async()=>{await api.cooperate({recruitmentId:application.id,email:$('#contactEmail').value,consent:$('#consent').checked});$('#apply').close();await list();status('協力申込を保存しました。募集者が連絡先を確認できます。');});};
 async function start(){
 try{
-  const client=createBackend({url:import.meta.env.VITE_SUPABASE_URL,publishableKey:import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY});api=createApi(client);
+  const client=createBackend(backendConfig);api=createApi(client);
   const {data,error}=await client.auth.getSession();if(error)throw error;
   if(data.session)await signedIn();else{$('#auth').hidden=false;status('運営から受け取ったテストIDでログインしてください。');}
 }catch(error){status(error.message+' 接続設定後にこの画面を再ビルドしてください。');}

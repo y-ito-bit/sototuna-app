@@ -17,13 +17,13 @@
 .front-inline {font:inherit;font-size:12px;border:0;background:none;color:#77746d;padding:8px 0;text-decoration:underline;text-underline-offset:4px}
 .front-preview {white-space:pre-wrap;overflow-wrap:anywhere;padding:16px;background:#faf7ef;border-radius:14px;margin:16px 0;line-height:1.8}
 .front-status {font-size:13px;line-height:1.8;min-height:1.8em;color:#3a7500}
-#utilityDialog .front-form input,#utilityDialog .front-form select,#utilityDialog .front-form textarea {box-sizing:border-box;width:100%;max-width:100%;font:inherit;margin:8px 0 18px;padding:12px;border:1px solid #dce8ce;border-radius:12px;background:#fff}
-#utilityDialog .front-form textarea {min-height:130px;resize:vertical}
-#utilityDialog .front-form label {display:block;font-size:13px;color:#50504b}
-#utilityDialog .front-form input[type=file] {font-size:12px}
+.front-form input,.front-form select,.front-form textarea {box-sizing:border-box;width:100%;max-width:100%;font:inherit;margin:8px 0 18px;padding:12px;border:1px solid #dce8ce;border-radius:12px;background:#fff}
+.front-form textarea {min-height:130px;resize:vertical}
+.front-form label {display:block;font-size:13px;color:#50504b}
+.front-form input[type=file] {font-size:12px}
 @media(max-width:420px){.front-actions .chip{font-size:13px;padding:9px 14px}.front-panel h2{font-size:15px}}
 
-.cooperation-consent { display:flex; align-items:flex-start; gap:10px; padding:14px; background:var(--green-pale); border-radius:12px; line-height:1.65; }
-.cooperation-consent input { flex:none; width:20px; height:20px; margin-top:3px; accent-color:var(--green); }
+.front-form .cooperation-consent { display:flex; align-items:flex-start; gap:10px; padding:14px; background:var(--green-pale); border-radius:12px; line-height:1.65; }
+.front-form .cooperation-consent input { flex:none; width:20px; height:20px; margin-top:3px; accent-color:var(--green); }
 .cooperation-email { overflow-wrap:anywhere; }
 .mylist-main .front-note { display:block; }

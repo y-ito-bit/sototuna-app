@@ -29,12 +29,24 @@ export function createApi(client) {
       const current = await user();
       return unwrap(await client.from('memberships').select('user_id,approved_at').eq('user_id', current.id).maybeSingle());
     },
-    async saveProfile({ displayName, affiliation, generation = null, seminar = null }) {
+    async ownProfile() {
       const current = await user();
-      return unwrap(await client.from('profiles').upsert({user_id:current.id, display_name:displayName.trim(), affiliation, generation, seminar}).select().single());
+      return unwrap(await client.from('profiles').select('*').eq('user_id', current.id).single());
+    },
+    async myCooperations() {
+      const current = await user();
+      return unwrap(await client.from('cooperations').select('recruitment_id').eq('helper_id', current.id));
+    },
+    async deleteRecruitment(id) {
+      const current = await user();
+      return unwrap(await client.from('recruitments').delete().eq('id',id).eq('owner_id',current.id).select('id').single());
+    },
+    async saveProfile({ displayName, affiliation, generation = null, seminar = null, avatar = "🌱", currentRole = "", bio = "" }) {
+      const current = await user();
+      return unwrap(await client.from('profiles').upsert({user_id:current.id, display_name:displayName.trim(), affiliation, generation, seminar, avatar, role_label:currentRole, bio}).select().single());
     },
     async listRecruitments() {
-      return unwrap(await client.from('recruitments').select('*,owner:profiles!owner_id(display_name)').order('created_at', {ascending:false}));
+      return unwrap(await client.from('recruitments').select('*,owner:profiles!owner_id(display_name,affiliation,generation)').order('created_at', {ascending:false}));
     },
     async createRecruitment({ kind, title, body, deadline }) {
       const current = await user();
@@ -59,6 +71,21 @@ export function createApi(client) {
       if (recruitment.owner_id !== current.id) throw new Error('この募集の募集者だけが連絡先を確認できます。');
       return unwrap(await client.from('cooperations').select('helper_id,contact_email,consent_at,helper:profiles!helper_id(display_name)').eq('recruitment_id',recruitmentId).order('consent_at'));
     },
+    async communityFeed() { return unwrap(await client.rpc('community_feed')); },
+    async ownRecords() { const current=await user(); return unwrap(await client.from('community_records').select('*').eq('owner_id',current.id)); },
+    async notices() { return unwrap(await client.from('community_notifications').select('*').order('created_at',{ascending:false})); },
+    async readNotices(ids) { unwrap(await client.from('community_notifications').update({read_at:new Date().toISOString()}).in('id',ids)); },
+    async insertRecord(kind,payload={},targetId='-') {
+      const current=await user(); return unwrap(await client.from('community_records').insert({owner_id:current.id,kind,target_id:targetId,payload}).select().single());
+    },
+    async upsertRecord(kind,payload={},targetId='-') {
+      const current=await user(); return unwrap(await client.from('community_records').upsert({owner_id:current.id,kind,target_id:targetId,payload},{onConflict:'owner_id,kind,dedupe_key'}).select().single());
+    },
+    async updateRecord(id,payload) { const current=await user(); return unwrap(await client.from('community_records').update({payload}).eq('id',id).eq('owner_id',current.id).select().single()); },
+    async deleteRecord(id) { const current=await user(); return unwrap(await client.from('community_records').delete().eq('id',id).eq('owner_id',current.id).select('id').single()); },
+    async saveFile({seminar,title,name,content}) { const current=await user(); unwrap(await client.from('community_files').insert({owner_id:current.id,seminar,title,name,content})); },
+    async loadFile(id) { return unwrap(await client.from('community_files').select('content').eq('id',id).single()); },
+    async removeFile(id) { await user(); unwrap(await client.rpc('remove_community_file',{file_id:id})); },
     async counts() { return unwrap(await client.rpc('recruitment_counts')); },
   };
 }

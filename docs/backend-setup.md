@@ -1,94 +1,61 @@
-# Cloudflare + Supabase 構築状況
+# SOTOTUNA ベータ版の構築状況
 
-2026-10-03。最初の範囲はメール認証、プロフィール、会員承認、募集、協力申込と連絡先取得。
+2026-10-03。Cloudflareの本体5タブをSupabaseの専用DBに接続。
 
-## 作成した環境
+## 環境
 
 - GitHub: `y-ito-bit/sototuna-app`
-- Cloudflare: `Y-ito@thinkandact.jp's Account`、配信名 `sototuna-app`
-- Supabase: 専用プロジェクト `sototuna`、ref `gdodurlehfyeilxtecoz`、Singapore。以前の `rrzzgsltkcvexrnzaraf` は動画関連の既存DBなので使用しない。
-- 公開接続情報は `.env.local`。Gitには保存しない。`.env.example` に項目名だけを記載。
+- 配布URL: https://sototuna-app.y-ito-c20.workers.dev/#/qa
+- Supabase: `sototuna` / `gdodurlehfyeilxtecoz` / Singapore。既存の動画用DBは使用しない。
+- `src/backend/config.js` は公開可能なURL・publishable keyのみを保持。ビルド時の `VITE_SUPABASE_URL` / `VITE_SUPABASE_PUBLISHABLE_KEY` で上書き可能。管理キーはフロントに入れない。
 
-## DBとアクセス制御
+## 接続した機能
 
-初期版 `20261003000000_cooperation.sql` と取消権限修正 `20261003001000_withdrawal_access.sql` をSQL Editorから専用DBに適用。4テーブルのRLS有効を確認した。手動適用済みなので、将来Supabase CLIへ移行する際はリモートのmigration履歴を確認し、必要ならこの版を `supabase migration repair 20261003000000 --status applied` で登録してから `db push` する。既存DBへリセットを実行しない。
+- 発行済みID・パスワードで認証、プロフィール編集、質問・匿名質問・回答・ベスト回答・解決・リアクション・通報。
+- 募集投稿・コメント、共有同意付き協力・取消、募集者だけの連絡先一覧、募集者と協力者間のアプリ内メッセージ。
+- 本紹介、イベント参加・取消、OB相談担当登録、イベントリクエスト。
+- ゼミの進捗投稿・コメント、PDF共有、ゼミ選択の保存。
+- 通知・既読・通知設定、訪問記録、下書き、投稿履歴。
 
-- `profiles`: よびな・所属。メールを含まない。
-- `memberships`: 運営が承認したAuthユーザーID。ブラウザから自己承認できない。
-- `recruitments`: AuthのユーザーIDを募集者として記録。
-- `cooperations`: 連絡用メール・共有同意の版・サーバーで刻印する同意日時。
-- メールを取得できるのは申込本人と承認済み募集者。第三者・未認証・未承認者は他人のメールを読めない。
-- 締切後・受付終了・自分の募集への協力は禁止。取消後は連絡先の行を削除する。本人の取消は会員承認取消後も可能。
-- `recruitment_counts()` はメールを返さず、承認済み会員に人数だけを返す。
+イベント一覧はベータ用の企画例。正式な開催案内ではない。架空メールにはメールを送らず、連絡はアプリ内で試す。更新ボタン・画面遷移・画面復帰で再取得し、常時リアルタイム配信は行わない。
 
-## 初期会員とメール認証
+## 会員と権限
 
-初期段階は招待済み会員を使う。Supabase Authへテスト会員を招待し、そのUUIDを `memberships` に登録する。一般公開の新規入会や卒業確認の運用は今回まだ決めていない。
+beta001〜beta015を承認済み。メールは `beta001@beta.sototuna.invalid` の形式で、OTPは不要。14人の新規パスワードは個別に生成し、既存beta001は変更していない。配布リストはGit・Google Drive・Vaultの外のローカル一時ファイルに保存。管理キーの一時ファイルは削除済み。
 
-`src/backend/api.js` のOTP送信は `shouldCreateUser:false`。数値コードを使うため Authentication → Emails → Magic Link の本文に `{{ .Token }}` を設定する。現在の無料プランの管理画面では、Custom SMTP未設定時のテンプレート編集が無効だったため、この設定はまだ適用できていない。
+よびな・アイコン・現職・自己紹介は保存できる。所属区分と所属ゼミは運営が設定する。現在の発行済み会員はOB/OGとして初期化している。学生としての試用には運営側で所属ゼミを指定する。
 
-Supabase標準SMTPは組織の許可済みメール宛の検証用途。一般会員へのメール認証にはCustom SMTPの設定が必要。SMTPパスワードをフロントの環境変数に入れない。送信元ドメインの設定と配信サービス選定は別途必要。
+- 未認証・未承認は共有データを取得できない。端末内の旧プロフィールでは認証できない。
+- 連絡先は本人と承認済み募集者のみ。架空メールはJWTの本人アドレスに固定し、実メールへの変更をDBで拒否。
+- 匿名質問は他人に投稿者のID・プロフィールを返さない。
+- メッセージは募集者と協力者の間のみ。第三者には返さない。
+- 通報・設定・下書き・訪問記録は本人の範囲。通知はサーバーのみが作成。
+- 学生は自分の所属ゼミの共有情報のみ閲覧でき、PDF本文のダウンロードは不可。自分のPDFは削除できる。
+- PDFは1件5MB、1会員合計10MB。現在はDBに保存し、R2は使用しない。
+- ログアウト時は連絡先・共有データ・プロフィール表示を消し、端末保存も認証UUIDごとに分離。
 
-## 接続確認画面
+## マイグレーション
 
-`/backend-check.html` は新しいSupabase認証・募集・申込・取消・募集者一覧を呼ぶ開発用画面。未ログイン・未承認では閲覧範囲を制限する。氏名とメールはDOMのテキストとして描画し、HTMLとして挿入しない。
+`supabase/migrations/20261003000000`〜`20261003004000` を専用DBのSQL Editorで適用済み。04000はコミュニティ、通知、PDF、所属変更防止、関連データの整合性を追加。募集・回答の削除に伴う参照と通知を整理する。
 
-現行の5タブアプリ本体はまだモックで動作する。`src/services/auth.js` の旧Kurocoコードは現在のHTMLアプリが読み込んでいないため、この段階では削除しない。次段階で5タブ本体の認証、プロフィール、募集・協力導線を新APIへ置き換える。端末の旧メール・同意を本人の操作なしに移行しない。
+手動適用のため、将来CLIで `db push` する前にリモートのmigration履歴を確認し、必要なら適用済みの版を `supabase migration repair` で登録する。既存DBをリセットしない。03000のservice_role権限は承認済みのprofiles/membershipsのSELECT・INSERTとschema usageのみ。
 
-## Cloudflare
+## 配信
 
-`wrangler.jsonc` で `dist` の静的配信とSPAフォールバックを設定。今回のデータAPIはSupabaseのRLSを通して直接利用するため、RLSを迂回するサービスキー入りWorkerは作らない。
-
-Git連携時のビルド: `npm run build`。デプロイ: `npx wrangler deploy`。ビルド変数は `VITE_SUPABASE_URL` と `VITE_SUPABASE_PUBLISHABLE_KEY`。
-
-CloudflareのGit自動配信の標準トークンはKV/R2/D1なども編集できるため使用しない。伊藤さんの承認で、対象アカウントのみ `Workers Scripts: Edit` の1権限を持つ `sototuna-deploy-minimal` を作成。この限定トークンはGit連携フォームの候補に表示されなかったため、コマンドから配信した。Git自動配信は未設定。
-
-公開URL: https://sototuna-app.y-ito-c20.workers.dev
-接続確認: https://sototuna-app.y-ito-c20.workers.dev/backend-check
-
-`CLOUDFLARE_ACCOUNT_ID` を明示し、Workers Scripts編集のみで配信成功。R2・D1・KV・DNS・Workers Routesの権限は不要だった。トークン値はGitやGoogle Driveへ保存せず、一時ファイルは配信後に削除。今後の配信には安全な資格情報保存先の設定が必要。同じアカウント内のWorker変更権限は残る。
-
-## 検証
+`wrangler.jsonc` でdistを静的配信しSPAフォールバックを設定。データAPIはSupabaseの認証とRLSを経由し、管理キー入りWorkerは作らない。
 
 ```sh
 npm test
 npm run build
-npx wrangler deploy --dry-run
+npx wrangler deploy
 ```
 
-PGliteのPostgresで実際にRLSを適用し、募集者・本人・第三者・未承認・未認証を切り替えて検証。Supabase AuthのJWT検証・SMTP配信そのものはこのテストの対象外。実サービスでは招待した会員でOTPと申込・一覧を確認する。
+承認済み `sototuna-deploy-minimal` は対象CloudflareアカウントのWorkers Scripts: Editのみ。R2・D1・KV・DNS権限は不要。配信時だけ一時ファイルから環境変数に読み込み、後で削除。CloudflareのGit自動配信は未設定。GitHubへのpushに伴う既存Vercel配信も公開接続設定を利用する。
 
+## 検証
 
-## Issued beta accounts (2026-10-03)
+22件のテストでRLS、匿名性、第三者の連絡先・メッセージ拒否、所属変更防止、学生のPDF取得拒否、通知偽造拒否、関連削除の整合性を確認。
 
-`/backend-check` now accepts issued IDs such as `beta001` and individual passwords. Supabase Auth uses `beta001@beta.sototuna.invalid`; no email or OTP is sent. The original five-tab app still uses mock data.
+専用Supabase上でも複数の発行IDで質問・回答・リアクション・通知・設定・本・イベント・ゼミ・リクエスト・通報・募集・協力・メッセージ・PDFの保存と権限を確認。ブラウザでは本体のログイン、募集と協力・取消、プロフィール、別IDの匿名質問と回答を確認。検証用の投稿は後片付けする。
 
-Create accounts through Supabase Authentication > Users > Add user > Create new user, with Auto confirm user enabled. The operator must enter the new password and submit the form. Approve only issued IDs through SQL Editor after creation:
-
-```sql
-insert into public.memberships(user_id)
-select id from auth.users where email in ('beta001@beta.sototuna.invalid','beta002@beta.sototuna.invalid')
-on conflict (user_id) do nothing;
-```
-
-Migration `20261003002000_beta_contacts.sql` is applied. Beta users can save only their own issued contact address from the verified JWT; real addresses and another user's address are rejected by the DB. Contact links do not launch email. Free-text fields can still contain personal data, so the screen asks participants to use fictional names and content.
-
-16 tests and build passed. Account issuance, approval, and the two-user end-to-end test are still pending.
-
-
-## Bulk issuance for 15 testers
-
-`scripts/issue-beta-accounts.mjs` creates missing beta001 through beta015 using confirmed synthetic email addresses and random individual passwords; existing passwords are preserved. It approves all 15 issued accounts and initializes fictional profiles without replacing existing profiles. It sends no emails. Run only on the dedicated project with server administrative credentials.
-
-The script reads `SOTOTUNA_ADMIN_KEY_FILE` and writes a private CSV to `SOTOTUNA_BETA_CREDENTIALS_FILE`. Both must be local temporary files under `/tmp/`, outside Google Drive and Git. The CSV is exclusively created with mode 600; passwords are saved before membership approval so a later failure does not lose access. Never set the administrative key in VITE variables. Delete the temporary key after execution. Existing users have a blank password column because their passwords cannot be retrieved.
-
-The initial manually created account uses an operator-set password. Change it to a strong individual password before distribution. Account passwords and the administrative key are not recorded in Knowledge Vault.
-
-
-## Issuance completed (2026-10-03)
-
-15 beta accounts are approved; 14 new passwords were generated and beta001 was preserved. The private local distribution list is outside Git, Google Drive, and Vault. The temporary administrator-key file was deleted.
-
-Migration `20261003003000_beta_provisioning_grants.sql` adds public schema usage and SELECT/INSERT on profiles and memberships for service_role only, explicitly approved by the operator. UPDATE/DELETE were not added.
-
-Live verification succeeded for three generated accounts: login and approval, recruitment creation, cooperation, owner contacts, denial of third-party contact reads, rejection of real contact emails, and withdrawal. The temporary test recruitment was removed. The original five-tab app still uses mock data; distribute the /backend-check URL for the real beta flows.
+`/backend-check` は開発用の診断画面。本番利用者には本体URLを配布する。未使用の旧Kuroco/ReactコードはHTML本体から読み込まれていない。
