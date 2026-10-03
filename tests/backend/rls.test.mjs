@@ -8,7 +8,7 @@ const recruitment = '10000000-0000-0000-0000-000000000001';
 const second = '10000000-0000-0000-0000-000000000002';
 async function fixture() {
   const db = new PGlite();
-  await db.exec(`create role anon; create role authenticated;
+  await db.exec(`create role anon; create role authenticated; create role service_role bypassrls;
     create schema auth; create table auth.users(id uuid primary key);
     create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;
     create function auth.jwt() returns jsonb language sql stable as $$ select jsonb_build_object('email',current_setting('request.jwt.claim.email',true)) $$;
@@ -17,6 +17,7 @@ async function fixture() {
   await db.exec(await readFile(new URL('../../supabase/migrations/20261003000000_cooperation.sql',import.meta.url),'utf8'));
   await db.exec(await readFile(new URL('../../supabase/migrations/20261003001000_withdrawal_access.sql',import.meta.url),'utf8'));
   await db.exec(await readFile(new URL('../../supabase/migrations/20261003002000_beta_contacts.sql',import.meta.url),'utf8'));
+  await db.exec(await readFile(new URL('../../supabase/migrations/20261003003000_beta_provisioning_grants.sql',import.meta.url),'utf8'));
   for (const [name,id] of Object.entries(ids)) {
     await db.query('insert into auth.users values($1)',[id]);
     await db.query("insert into profiles(user_id,display_name,affiliation) values($1,$2,'obog')",[id,name]);
@@ -95,4 +96,17 @@ test('beta contact restriction cannot be bypassed by editing the browser request
     await db.query('insert into cooperations(recruitment_id,helper_id,contact_email,consent_version) values($1,$2,$3,1)',[recruitment,ids.helper,'beta001@beta.sototuna.invalid']);
     await assert.rejects(db.query("update cooperations set contact_email='beta002@beta.sototuna.invalid'"),/Beta accounts/);
   } finally {await db.close();}
+});
+
+
+test('provisioning role can approve members but receives no update or delete grants',async()=>{
+  const {db}=await fixture();
+  try {
+    await db.exec('set role service_role');
+    await db.query('insert into memberships(user_id) values($1)',[ids.pending]);
+    assert.equal((await db.query('select * from memberships')).rows.length,4);
+    await assert.rejects(db.query('delete from memberships'),/permission denied/);
+    await assert.rejects(db.query("update profiles set display_name='changed'"),/permission denied/);
+    await assert.rejects(db.query('select * from cooperations'),/permission denied/);
+  }finally{await db.close();}
 });

@@ -83,3 +83,12 @@ Migration `20261003002000_beta_contacts.sql` is applied. Beta users can save onl
 The script reads `SOTOTUNA_ADMIN_KEY_FILE` and writes a private CSV to `SOTOTUNA_BETA_CREDENTIALS_FILE`. Both must be local temporary files under `/tmp/`, outside Google Drive and Git. The CSV is exclusively created with mode 600; passwords are saved before membership approval so a later failure does not lose access. Never set the administrative key in VITE variables. Delete the temporary key after execution. Existing users have a blank password column because their passwords cannot be retrieved.
 
 The initial manually created account uses an operator-set password. Change it to a strong individual password before distribution. Account passwords and the administrative key are not recorded in Knowledge Vault.
+
+
+## Issuance completed (2026-10-03)
+
+15 beta accounts are approved; 14 new passwords were generated and beta001 was preserved. The private local distribution list is outside Git, Google Drive, and Vault. The temporary administrator-key file was deleted.
+
+Migration `20261003003000_beta_provisioning_grants.sql` adds public schema usage and SELECT/INSERT on profiles and memberships for service_role only, explicitly approved by the operator. UPDATE/DELETE were not added.
+
+Live verification succeeded for three generated accounts: login and approval, recruitment creation, cooperation, owner contacts, denial of third-party contact reads, rejection of real contact emails, and withdrawal. The temporary test recruitment was removed. The original five-tab app still uses mock data; distribute the /backend-check URL for the real beta flows.
