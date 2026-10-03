@@ -11,10 +11,12 @@ async function fixture() {
   await db.exec(`create role anon; create role authenticated;
     create schema auth; create table auth.users(id uuid primary key);
     create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;
+    create function auth.jwt() returns jsonb language sql stable as $$ select jsonb_build_object('email',current_setting('request.jwt.claim.email',true)) $$;
     grant usage on schema auth, public to anon, authenticated;
     grant execute on function auth.uid() to anon, authenticated;`);
   await db.exec(await readFile(new URL('../../supabase/migrations/20261003000000_cooperation.sql',import.meta.url),'utf8'));
   await db.exec(await readFile(new URL('../../supabase/migrations/20261003001000_withdrawal_access.sql',import.meta.url),'utf8'));
+  await db.exec(await readFile(new URL('../../supabase/migrations/20261003002000_beta_contacts.sql',import.meta.url),'utf8'));
   for (const [name,id] of Object.entries(ids)) {
     await db.query('insert into auth.users values($1)',[id]);
     await db.query("insert into profiles(user_id,display_name,affiliation) values($1,$2,'obog')",[id,name]);
@@ -80,5 +82,17 @@ test('withdrawal still works after membership approval is revoked', async () => 
     await db.exec('reset role'); await db.query('delete from memberships where user_id=$1',[ids.helper]);
     await as('helper'); assert.equal((await db.query('select * from cooperations')).rows.length,1);
     assert.equal((await db.query('delete from cooperations returning *')).rows.length,1);
+  } finally {await db.close();}
+});
+
+
+test('beta contact restriction cannot be bypassed by editing the browser request',async()=>{
+  const {db,as}=await fixture();
+  try {
+    await as('helper');
+    await db.query("select set_config('request.jwt.claim.email','beta001@beta.sototuna.invalid',false)");
+    await assert.rejects(db.query('insert into cooperations(recruitment_id,helper_id,contact_email,consent_version) values($1,$2,$3,1)',[recruitment,ids.helper,'real@example.com']),/Beta accounts/);
+    await db.query('insert into cooperations(recruitment_id,helper_id,contact_email,consent_version) values($1,$2,$3,1)',[recruitment,ids.helper,'beta001@beta.sototuna.invalid']);
+    await assert.rejects(db.query("update cooperations set contact_email='beta002@beta.sototuna.invalid'"),/Beta accounts/);
   } finally {await db.close();}
 });

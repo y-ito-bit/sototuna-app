@@ -7,10 +7,15 @@ function unwrap(result) {
 export function createApi(client) {
   async function user() {
     const data = unwrap(await client.auth.getUser());
-    if (!data.user) throw new Error('メール認証でログインしてください。');
+    if (!data.user) throw new Error('ログインしてください。');
     return data.user;
   }
   return {
+    async signInBeta(id, password) {
+      const normalized = id.trim().toLowerCase();
+      if (!/^beta[0-9]{3,6}$/.test(normalized)) throw new Error('発行されたテストIDを入力してください。');
+      return unwrap(await client.auth.signInWithPassword({email:normalized+'@beta.sototuna.invalid',password}));
+    },
     // Invite-only initial rollout: users must already exist in Supabase Auth.
     async requestCode(email) {
       unwrap(await client.auth.signInWithOtp({ email: email.trim(), options: { shouldCreateUser: false } }));

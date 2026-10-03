@@ -9,7 +9,7 @@ function button(text,task){const element=node('button',text);element.onclick=()=
 async function signedIn(){
   current=await api.currentUser();$('#auth').hidden=true;$('#profile').hidden=false;
   const member=await api.membership();$('#newRecruit').hidden=!member;$('#recruitList').hidden=!member;
-  status(member?'認証済み・会員承認済みです。':'メール認証済みです。会員承認が必要です。');
+  status(member?'認証済み・会員承認済みです。':'会員承認が必要です。');
   if(member)await list();
 }
 async function list(){
@@ -21,7 +21,7 @@ async function list(){
       card.append(button('協力者・連絡先を見る',async()=>{
         const people=await api.collaborators(row.id);let area=card.querySelector('.contacts');if(!area){area=node('div','');area.className='contacts';card.append(area);}area.replaceChildren();
         area.append(node('p',`協力者 ${people.length}人`));
-        for(const person of people){const entry=node('p',`${person.helper?.display_name||'協力者'}：`);const link=node('a',person.contact_email);link.href='mailto:'+encodeURIComponent(person.contact_email);entry.append(link);area.append(entry);}
+        for(const person of people){const entry=node('p',`${person.helper?.display_name||'協力者'}：`);const link=node('span',person.contact_email+'（テスト用・送信不可）');entry.append(link);area.append(entry);}
       }));
     }else{
       const mine=await api.myCooperation(row.id);
@@ -34,8 +34,7 @@ async function list(){
     $('#recruitments').append(card);
   }
 }
-$('#codeRequest').onsubmit=e=>{e.preventDefault();action(e.submitter,async()=>{await api.requestCode($('#email').value);$('#codeVerify').hidden=false;status('確認コードを送信しました。メールを確認してください。');});};
-$('#codeVerify').onsubmit=e=>{e.preventDefault();action(e.submitter,async()=>{await api.verifyCode($('#email').value,$('#code').value);await signedIn();});};
+$('#betaLogin').onsubmit=e=>{e.preventDefault();action(e.submitter,async()=>{await api.signInBeta($('#betaId').value,$('#betaPassword').value);$('#betaPassword').value='';await signedIn();});};
 $('#profileForm').onsubmit=e=>{e.preventDefault();action(e.submitter,async()=>{await api.saveProfile({displayName:$('#displayName').value,affiliation:$('#affiliation').value});status('プロフィールを保存しました。');});};
 $('#recruitForm').onsubmit=e=>{e.preventDefault();action(e.submitter,async()=>{await api.createRecruitment({kind:'survey',title:$('#title').value,body:$('#body').value,deadline:$('#deadline').value});e.target.reset();await list();status('募集を保存しました。');});};
 $('#reload').onclick=e=>action(e.currentTarget,list);
@@ -46,7 +45,7 @@ async function start(){
 try{
   const client=createBackend({url:import.meta.env.VITE_SUPABASE_URL,publishableKey:import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY});api=createApi(client);
   const {data,error}=await client.auth.getSession();if(error)throw error;
-  if(data.session)await signedIn();else{$('#auth').hidden=false;status('メール認証でログインしてください。');}
+  if(data.session)await signedIn();else{$('#auth').hidden=false;status('運営から受け取ったテストIDでログインしてください。');}
 }catch(error){status(error.message+' 接続設定後にこの画面を再ビルドしてください。');}
 
 }

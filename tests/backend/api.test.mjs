@@ -16,3 +16,12 @@ test('invalid sessions cannot write application data',async()=>{
   const api=createApi({auth:{async getUser(){return {data:{user:null},error:null};}}});
   await assert.rejects(api.cooperate({recruitmentId:'id',email:'test@example.com',consent:true}),/ログイン/);
 });
+
+
+test('beta login maps issued IDs to reserved fake emails without sending mail',async()=>{
+  let value;
+  const api=createApi({auth:{async signInWithPassword(input){value=input;return {data:{},error:null};}}});
+  await api.signInBeta(' BETA001 ','test-password');
+  assert.deepEqual(value,{email:'beta001@beta.sototuna.invalid',password:'test-password'});
+  await assert.rejects(api.signInBeta('real@example.com','test-password'),/テストID/);
+});
