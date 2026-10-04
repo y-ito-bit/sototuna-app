@@ -5,22 +5,12 @@ import { createCommunity } from './community.js';
 const app = window.SototunaApp;
 const $ = selector => document.querySelector(selector);
 let api, community, current, epoch = 0, loading = null;
-const note = document.createElement('div');
-note.className = 'front-note beta-banner';
-note.style.cssText = 'margin:8px 16px;padding:52px 12px 12px;border-radius:12px;background:#eef6ef';
-note.innerHTML = '<span id="betaScope">ベータ版：接続を確認中</span> <button class="chip" id="betaRefresh" hidden>更新</button> <button class="chip" id="betaLogout" hidden>ログアウト</button>';
-$('#app').prepend(note);
-function scope() {
-  if (!current) return;
-  $('#betaScope').textContent = `${current.email.split('@')[0]} ／ ベータ参加者の投稿・参加登録を共有します。連絡先は募集者だけに表示します。架空の情報で試してください。`;
-}
 function loginReady(message='') {
   $('#authContinue').disabled=false; $('#authContinue').textContent='ログイン'; $('#authStatus').textContent=message;
 }
 function clear() {
   epoch++; current=null; loading=null; app.reset();
-  $('#authPassword').value=''; $('#betaRefresh').hidden=true; $('#betaLogout').hidden=true;
-  $('#betaScope').textContent='ベータ版：発行されたテストIDでログインしてください。';
+  $('#authPassword').value='';
 }
 function report(error) { app.toast('保存・読み込みができませんでした。'+(error.message || '再度お試しください。')); }
 async function refresh(force=false) {
@@ -34,7 +24,7 @@ async function refresh(force=false) {
     if (version!==epoch || current?.id!==identity) return;
     const totals=new Map(counts.map(c=>[c.recruitment_id,Number(c.helper_count)]));
     const recruits=rows.map(r=>({id:r.id,userId:r.owner_id,mine:r.owner_id===identity,type:r.kind,title:r.title,body:r.body,deadline:r.deadline,status:r.status,helpers:totals.get(r.id)||0,owner:{name:r.owner?.display_name||'参加者',attr:r.owner?.affiliation||'obog',gen:r.owner?.generation,avatar:'🌱'}}));
-    app.snapshot(recruits,helps.map(c=>c.recruitment_id)); community.accept(feed,own,notices); app.render(); scope();
+    app.snapshot(recruits,helps.map(c=>c.recruitment_id)); community.accept(feed,own,notices); app.render();
   })();
   loading=task;
   try { await task; } finally { if(loading===task) loading=null; }
@@ -46,7 +36,7 @@ async function enter(user) {
   current=user; epoch++; app.start(user,profile);
   await refresh();
   if (!current) return;
-  app.reveal(); $('#authPassword').value=''; $('#betaRefresh').hidden=false; $('#betaLogout').hidden=false; scope();
+  app.reveal(); $('#authPassword').value='';
 }
 async function write(button, task, status) {
   if (!current) return;
@@ -114,13 +104,15 @@ window.SototunaBackend={
     });
   }
 };
-$('#betaRefresh').onclick=e=>write(e.currentTarget,refresh);
-$('#betaLogout').onclick=async()=>{
+document.addEventListener('click',async e=>{
+  const button=e.target.closest('[data-account-action]'); if(!button||!current)return;
+  if(button.dataset.accountAction==='refresh'){write(button,()=>refresh(true));return;}
+  if(button.dataset.accountAction!=='logout')return;
   clear();$('#authContinue').disabled=true;$('#authContinue').textContent='ログアウト中…';
   try { await api.signOut(); } catch { $('#authStatus').textContent='ログアウトの通信に失敗しました。再度ログインしてからログアウトしてください。'; } finally { loginReady($('#authStatus').textContent); }
-};
+});
 window.addEventListener('hashchange',()=>{
-  scope(); if(current) refresh().catch(report);
+  if(current) refresh().catch(report);
 });
 window.addEventListener('focus',()=>{if(current)refresh().catch(report);});
 $('#betaLogin').onsubmit=async e=>{

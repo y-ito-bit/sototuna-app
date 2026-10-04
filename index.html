@@ -1777,7 +1777,11 @@ function renderMe() {
       <button class="utility-link" id="meRules">みんなの利用ルール <span>→</span></button></div>
     <div class="me-tabs">${tabs.map(([k, label]) =>
       `<button class="chip ${state.meTab === k ? "on" : ""}" data-metab="${k}">${label}</button>`).join("")}</div>
-    <div class="card">${listHTML}</div>`;
+    <div class="card">${listHTML}</div>
+    <div class="card">
+      <button class="utility-link" data-account-action="refresh">最新の情報に更新 <span>↻</span></button>
+      <button class="utility-link" data-account-action="logout">ログアウト <span>→</span></button>
+    </div>`;
   requestAnimationFrame(() => {
     const t = $("#treeWrap .tree-svg");
     if (t) t.classList.add("sprout-in");

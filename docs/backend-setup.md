@@ -5,7 +5,7 @@
 ## 環境
 
 - GitHub: `y-ito-bit/sototuna-app`
-- 配布URL: https://sototuna-app.y-ito-c20.workers.dev/#/qa
+- 配布URL: https://sototuna-app.sototuna.workers.dev/#/qa
 - Supabase: `sototuna` / `gdodurlehfyeilxtecoz` / Singapore。既存の動画用DBは使用しない。
 - `src/backend/config.js` は公開可能なURL・publishable keyのみを保持。ビルド時の `VITE_SUPABASE_URL` / `VITE_SUPABASE_PUBLISHABLE_KEY` で上書き可能。管理キーはフロントに入れない。
 
@@ -59,3 +59,6 @@ npx wrangler deploy
 専用Supabase上でも複数の発行IDで質問・回答・リアクション・通知・設定・本・イベント・ゼミ・リクエスト・通報・募集・協力・メッセージ・PDFの保存と権限を確認。ブラウザでは本体のログイン、募集と協力・取消、プロフィール、別IDの匿名質問と回答を確認。検証用の投稿は後片付けする。
 
 `/backend-check` は開発用の診断画面。本番利用者には本体URLを配布する。未使用の旧Kuroco/ReactコードはHTML本体から読み込まれていない。
+
+## 2026-10-04 画面とURLの変更
+アカウントのworkers.dev名をsototunaへ変更。旧URLは利用不可。説明帯は削除し、更新とログアウトはマイページ末尾へ移動。今回の公開はCloudflare画面から静的ビルドをアップロードし、SPAフォールバックを指定。
