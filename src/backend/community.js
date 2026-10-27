@@ -44,6 +44,8 @@ export function createCommunity({api,app,refresh,write,getUser,getEpoch}) {
    const name=a.mine?app.store.profile.name:a.author?.name||'匿名のメンバー';
    openText('回答に返信',`${app.content.text(app.content.quote(name,a.data.text))}<label for="communityText">返信（300字まで）</label><textarea id="communityText" required maxlength="300"></textarea>${askerAnon?'<p class="front-note">匿名で質問しているので、返信も名前を出さず「質問者」と表示されます。</p>':'<label class="ans-anon"><input type="checkbox" id="replyAnon" role="switch"> 匿名で返信する</label>'}`,()=>api.insertRecord('answer_reply',{text:$('#communityText').value.trim(),anonymous:!!$('#replyAnon')?.checked},id));
   },
+  // タグの追加申請は運営あてのリクエストとして送る（運営は event_request を読む）。
+  tagRequest({group,name,note},button){mutate(button,async()=>{await api.insertRecord('event_request',{text:`【タグの追加申請】${group}：${name}${note?`（${note}）`:''}`});app.dialog.close();},'申請を運営に送りました。');},
   postBoardReply(id,button){mutate(button,async()=>{await api.insertRecord('board_reply',{text:(app.state.boardQuote||'')+$('#boardReplyText').value.trim(),attachment:app.state.boardReplyAttachment()},id);app.state.boardQuote=null;},'コメントを共有しました。');},
   editRecord(id) {
    const r=record(id);if(!r.mine)return;

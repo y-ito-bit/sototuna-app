@@ -116,11 +116,11 @@ input:not([type=checkbox]):not([type=radio]):not([type=file]):not([type=range]),
 .teacher-photo,.t-avatar .teacher-photo,.tsheet-av .teacher-photo { width:100%; height:100%; object-fit:cover; border-radius:50%; }
 
 /* On/off choices use the app's switch (same as 「募集中のみ表示」), not the browser checkbox. */
-.curious-filter input,.ans-anon input,.front-setting input[type=checkbox] { -webkit-appearance:none; appearance:none; position:relative; flex:none; width:44px!important; height:26px!important; margin:0!important; padding:0!important; border:0!important; border-radius:999px!important; background:#ddd8d0!important; cursor:pointer; transition:background var(--dur-fast); }
-.curious-filter input::after,.ans-anon input::after,.front-setting input[type=checkbox]::after { content:""; position:absolute; top:3px; left:3px; width:20px; height:20px; border-radius:50%; background:#fff; box-shadow:0 1px 4px rgba(0,0,0,.2); transition:transform var(--dur-fast); }
-.curious-filter input:checked,.ans-anon input:checked,.front-setting input[type=checkbox]:checked { background:var(--green-light)!important; }
-.curious-filter input:checked::after,.ans-anon input:checked::after,.front-setting input[type=checkbox]:checked::after { transform:translateX(18px); }
-.curious-filter input:focus-visible,.ans-anon input:focus-visible,.front-setting input[type=checkbox]:focus-visible { outline:3px solid var(--green); outline-offset:2px; }
+.curious-filter input,.ans-anon input,.front-setting input[type=checkbox],.tag-group-head input { -webkit-appearance:none; appearance:none; position:relative; flex:none; width:44px!important; height:26px!important; margin:0!important; padding:0!important; border:0!important; border-radius:999px!important; background:#ddd8d0!important; cursor:pointer; transition:background var(--dur-fast); }
+.curious-filter input::after,.ans-anon input::after,.front-setting input[type=checkbox]::after,.tag-group-head input::after { content:""; position:absolute; top:3px; left:3px; width:20px; height:20px; border-radius:50%; background:#fff; box-shadow:0 1px 4px rgba(0,0,0,.2); transition:transform var(--dur-fast); }
+.curious-filter input:checked,.ans-anon input:checked,.front-setting input[type=checkbox]:checked,.tag-group-head input:checked { background:var(--green-light)!important; }
+.curious-filter input:checked::after,.ans-anon input:checked::after,.front-setting input[type=checkbox]:checked::after,.tag-group-head input:checked::after { transform:translateX(18px); }
+.curious-filter input:focus-visible,.ans-anon input:focus-visible,.front-setting input[type=checkbox]:focus-visible,.tag-group-head input:focus-visible { outline:3px solid var(--green); outline-offset:2px; }
 .curious-filter { display:flex; align-items:center; gap:8px; min-height:44px; margin:0 16px 4px; font-size:13px; cursor:pointer; }
 .ans-anon,.front-form label.ans-anon { display:flex; align-items:center; gap:8px; min-height:44px; margin:4px 0; font-size:13px; color:var(--ink); cursor:pointer; }
 
@@ -151,3 +151,141 @@ label.file-pick:focus-within { outline:3px solid var(--green); outline-offset:2p
 .ans-reply p { margin-top:2px; font-size:13px; line-height:1.7; white-space:pre-wrap; overflow-wrap:anywhere; }
 .ans-reply .chip,.ans-reply .delete-btn { margin:6px 6px 0 0; font-size:12px; }
 .asker-chip { padding:1px 8px; border-radius:999px; background:var(--green-pale); color:var(--green); font-size:10px; font-weight:700; }
+
+/* マイタグ */
+.my-tags { margin-top:14px; padding-top:12px; border-top:1px solid var(--green-pale); }
+.my-tags-head { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.my-tags-head b { font-size:13px; color:var(--green); }
+.my-tags-empty { text-align:left; margin-top:6px; }
+.tag-list { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+.tag-pill { padding:4px 10px; border-radius:999px; background:var(--green-pale); color:var(--green); font-size:12px; font-weight:700; line-height:1.5; }
+.tag-form .tag-group { margin:0; padding:10px 0; border:0; border-top:1px solid var(--green-pale); }
+.front-form label.tag-group-head { display:flex; align-items:center; gap:10px; min-height:44px; font-size:15px; font-weight:700; color:var(--ink); cursor:pointer; }
+.tag-items { padding:4px 0 6px 54px; }
+.tag-items[hidden] { display:none; }
+.front-form label.tag-pick { margin-top:4px; font-size:12px; color:var(--ink-weak); }
+.tag-details summary { min-height:44px; display:flex; align-items:center; gap:8px; font-size:13px; color:var(--green); font-weight:700; cursor:pointer; }
+.tag-details h4 { margin:10px 0 6px; font-size:11px; color:var(--ink-weak); font-weight:700; }
+.tag-count { min-width:20px; height:20px; padding:0 6px; border-radius:999px; background:var(--green); color:#fff; font-size:11px; display:inline-grid; place-items:center; }
+.tag-count:empty { display:none; }
+.tag-chips { display:flex; flex-wrap:wrap; gap:6px; }
+.front-form label.tag-chip { position:relative; display:inline-flex; align-items:center; min-height:36px; padding:0 12px; border:1.5px solid var(--green-pale); border-radius:999px; background:var(--cream); font-size:13px; color:var(--ink); cursor:pointer; }
+.front-form label.tag-chip:has(input:checked) { background:var(--green); border-color:var(--green); color:#fff; font-weight:700; }
+.front-form label.tag-chip:has(input:focus-visible) { outline:3px solid var(--green); outline-offset:2px; }
+.front-form label.tag-chip[hidden] { display:none; }
+.front-form .tag-chip input { position:absolute!important; width:1px!important; height:1px!important; margin:0!important; padding:0!important; border:0!important; opacity:0; }
+
+/* ありがとうの森 */
+.forest-link { cursor:pointer; }
+.forest-link:focus-visible { outline:3px solid var(--green); outline-offset:3px; }
+.forest-go { display:block; margin-top:10px; color:var(--green); font-size:13px; font-weight:700; }
+.forest-head { display:flex; align-items:center; justify-content:space-between; padding-right:16px; }
+.forest-search-btn { display:inline-flex; align-items:center; gap:6px; min-height:44px; padding:0 16px; margin-top:12px; border:1.5px solid var(--green-pale); border-radius:999px; background:var(--white); color:var(--green); font:inherit; font-size:13px; font-weight:700; box-shadow:0 2px 8px rgba(58,117,0,.06); }
+.forest-stats { padding:6px 16px 10px; text-align:center; }
+.forest-stat-label { font-size:12px; color:var(--ink-weak); }
+.forest-stat-num { margin:2px 0; font-size:34px; font-weight:700; line-height:1.15; color:var(--green); font-variant-numeric:tabular-nums; }
+.forest-stat-num small { margin-left:2px; font-size:15px; }
+.forest-co2 { font-size:13px; color:var(--ink); line-height:1.6; }
+.forest-co2 b { margin:0 2px; color:var(--green); font-size:15px; }
+.forest-src { margin-top:2px; font-size:10px; color:var(--ink-weak); line-height:1.5; }
+/* 1枚の絵：空・丘・地面。木は根元の位置に置き、重なってよい（手前ほど上に重なる）。 */
+.forest-scene { position:relative; margin:0 16px; min-height:260px; border-radius:24px; overflow:hidden;
+  background:
+    radial-gradient(circle at 12% 88%, #f5c542 0 2px, transparent 3px),
+    radial-gradient(circle at 78% 70%, #ff8a65 0 2px, transparent 3px),
+    radial-gradient(circle at 46% 96%, #ffffff 0 2px, transparent 3px),
+    linear-gradient(180deg, #fbfcf3 0, #f3f8e9 55%, #e4f0d4 100%);
+  background-size: 90px 70px, 120px 90px, 70px 60px, 100% 100%; }
+.forest-hills { position:absolute; inset:0 0 auto 0; width:100%; height:110px; }
+.forest-trees { position:absolute; inset:0; }
+.forest-loading { position:absolute; inset:auto 0 40% 0; text-align:center; font-size:13px; color:var(--ink-weak); }
+.forest-tree { position:absolute; display:block; transform:translate(-50%,-100%); pointer-events:none; }
+.forest-ground { position:absolute; left:4%; right:4%; height:36px; border-radius:50%; background:radial-gradient(ellipse at center, rgba(58,117,0,.16), rgba(58,117,0,0) 70%); }
+.forest-tree svg { display:block; width:100%; height:auto; }
+.forest-tree:focus-visible { outline:3px solid var(--green); outline-offset:2px; border-radius:50%; }
+.forest-tree:active svg { transform:scale(.94); transform-origin:bottom center; }
+.forest-svg.big { display:block; width:120px; margin:0 auto; }
+.forest-svg.big svg { width:120px; height:auto; }
+/* タグでさがす：メルカリのような条件の行 */
+.forest-search { padding:0 16px; }
+.forest-search input { width:100%; padding:11px 14px; border:1.5px solid var(--green-pale); border-radius:999px; background:var(--white); font:inherit; color:var(--ink); }
+.cond-chips { display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin-top:10px; }
+.cond-chip { min-height:36px; padding:0 12px; border:0; border-radius:999px; background:var(--green); color:#fff; font:inherit; font-size:12px; font-weight:700; }
+.cond-chip span { margin-left:4px; opacity:.85; }
+.cond-list { margin-top:10px; border-radius:16px; background:var(--white); box-shadow:var(--shadow); overflow:hidden; }
+.cond-row { display:flex; align-items:center; gap:8px; width:100%; min-height:48px; padding:0 14px; border:0; border-top:1px solid var(--green-pale); background:none; font:inherit; font-size:14px; color:var(--ink); text-align:left; }
+.cond-row:first-child { border-top:0; }
+.cond-row > span:first-child { flex:1; font-weight:700; }
+.cond-value { max-width:55%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:13px; color:var(--ink-weak); }
+.cond-value.on { color:var(--green); font-weight:700; }
+.cond-arrow { color:var(--ink-weak); font-size:18px; }
+.cond-picker { display:grid; margin:0 -4px; }
+.cond-picker input { width:100%; margin-bottom:8px; padding:10px 14px; border:1.5px solid var(--green-pale); border-radius:999px; font:inherit; }
+.cond-option { display:flex; align-items:center; justify-content:space-between; min-height:46px; padding:0 8px; border:0; border-bottom:1px solid var(--green-pale); background:none; font:inherit; font-size:14px; color:var(--ink); text-align:left; }
+.cond-option.on { color:var(--green); font-weight:700; }
+.cond-option[hidden] { display:none; }
+.cond-sec { margin:14px 8px 4px; font-size:11px; color:var(--ink-weak); }
+.forest-count { padding:14px 16px 6px; font-size:13px; font-weight:700; color:var(--green); }
+.forest-person { margin:0 16px 12px; padding:16px 18px; }
+.forest-person-head { display:flex; align-items:center; gap:8px; }
+.forest-person-meta { display:flex; flex-wrap:wrap; align-items:center; gap:4px 8px; margin:6px 0 2px; font-size:12px; }
+.forest-role { color:var(--ink); }
+.forest-ask { margin-top:10px; }
+.forest-card { text-align:center; }
+.forest-card .forest-person-meta,.forest-card .tag-list { justify-content:center; }
+.forest-card-count { margin:4px 0 6px; font-weight:700; color:var(--green); }
+.forest-card .btn-main { margin-top:16px; }
+.cond-box { margin-top:10px; }
+#view-forest .screen-title { padding-top:4px; }
+.cond-box summary { display:flex; align-items:center; min-height:44px; font-size:13px; font-weight:700; color:var(--green); cursor:pointer; }
+.cond-box .cond-list { margin-top:2px; }
+/* 奥の木ほど淡く（空気遠近） */
+.forest-tree.depth-0 svg { filter:saturate(.8) brightness(1.08); }
+.forest-tree.depth-1 svg { filter:saturate(.9) brightness(1.03); }
+/* 森でさがす：条件の画面と「○人を表示」 */
+.cond-head { display:flex; align-items:center; justify-content:space-between; margin:14px 2px 0; }
+.cond-head b { font-size:13px; color:var(--green); }
+.cond-hint { margin:8px 2px 0; text-align:left; }
+.forest-show-bar { position:sticky; bottom:84px; padding:14px 16px 4px; background:linear-gradient(180deg, rgba(250,247,239,0), var(--cream) 30%); }
+.cond-picker .cond-option { display:flex; align-items:center; gap:10px; justify-content:flex-start; min-height:46px; padding:0 8px; border-bottom:1px solid var(--green-pale); font-size:14px; cursor:pointer; }
+.cond-picker .cond-option input { width:22px; height:22px; margin:0; flex:none; accent-color:var(--green); }
+.cond-picker .cond-option:has(input:checked) { color:var(--green); font-weight:700; }
+.cond-picker .cond-option[hidden] { display:none; }
+.cond-actions { position:sticky; bottom:-24px; display:flex; gap:10px; align-items:center; margin:12px -4px -8px; padding:12px 4px 8px; background:var(--white); }
+.cond-actions .btn-main { flex:1; }
+.cond-actions .chip { min-height:48px; padding:0 18px; }
+#view-forest > .cond-chips { padding:0 16px; }
+/* 森では木ごとの地面の影を消し、かたまり全体の影だけにする */
+.forest-tree ellipse { display:none; }
+/* 森の下のランキング */
+.forest-scroll-cue { position:absolute; left:50%; bottom:10px; z-index:200; transform:translateX(-50%); min-height:36px; padding:0 14px; border:0; border-radius:999px; background:rgba(255,255,255,.88); color:var(--green); font:inherit; font-size:12px; font-weight:700; box-shadow:0 2px 8px rgba(58,117,0,.12); }
+.forest-ranking { padding:22px 16px 24px; }
+.forest-ranking h2 { font-size:17px; color:var(--green); }
+.forest-ranking .count-note { text-align:left; margin:4px 0 10px; }
+.rank-list { list-style:none; margin:0; padding:0; border-radius:16px; background:var(--white); box-shadow:var(--shadow); overflow:hidden; }
+.rank-row { display:flex; align-items:center; gap:10px; width:100%; min-height:56px; padding:8px 14px; border:0; border-top:1px solid var(--green-pale); background:none; font:inherit; color:var(--ink); text-align:left; }
+.rank-list li:first-child .rank-row { border-top:0; }
+.rank-no { flex:none; width:26px; height:26px; display:grid; place-items:center; border-radius:50%; background:var(--green-pale); color:var(--green); font-size:13px; font-weight:700; font-variant-numeric:tabular-nums; }
+.rank-who { flex:1; min-width:0; display:flex; flex-direction:column; }
+.rank-who b { font-size:14px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.rank-who small { font-size:11px; color:var(--ink-weak); }
+.rank-n { flex:none; display:inline-flex; align-items:center; gap:3px; font-weight:700; color:var(--green); font-variant-numeric:tabular-nums; }
+.rank-n img { width:18px; height:18px; }
+/* お知らせの一覧と、詳しいページの動画 */
+.news-list { list-style:none; margin:0; padding:6px 0; }
+.news-item { display:grid; grid-template-columns:1fr auto; align-items:center; gap:2px 10px; width:100%; min-height:64px; padding:12px 22px; border:0; border-bottom:1px solid #e6ecdf; background:none; font:inherit; color:var(--ink); text-align:left; }
+.news-item-date { display:flex; align-items:center; gap:6px; font-size:11px; color:#687660; letter-spacing:.04em; }
+.news-latest,.news-has-video { padding:1px 7px; border-radius:999px; background:var(--green-pale); color:var(--green); font-size:10px; font-weight:700; letter-spacing:0; }
+.news-item-title { grid-column:1; font-size:15px; font-weight:700; color:#2d4c24; line-height:1.5; }
+.news-arrow { grid-column:2; grid-row:1 / span 2; color:var(--ink-weak); font-size:20px; }
+.news-dialog .news-back { padding:10px 22px 0; }
+.update-video { display:block; width:100%; max-height:62vh; aspect-ratio:9 / 16; margin:0 0 18px; border-radius:16px; background:#e8f2dc; object-fit:contain; }
+/* お知らせのシェア */
+.news-share { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; min-height:46px; margin:18px 0 10px; border:1.5px solid var(--green); border-radius:14px; background:var(--white); color:var(--green); font:inherit; font-size:14px; font-weight:700; cursor:pointer; }
+.news-share svg { width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
+.news-share-alt { margin:0 0 12px; padding:14px; border-radius:14px; background:var(--cream); }
+.news-share-alt p { margin:0 0 8px; font-size:12px; color:#62685e; line-height:1.7; }
+.news-share-alt input { width:100%; padding:10px 12px; border:1px solid var(--green-pale); border-radius:10px; background:var(--white); font:inherit; color:var(--ink); }
+.news-share-actions { display:flex; gap:8px; margin-top:10px; }
+.news-share-actions .chip { min-height:40px; display:inline-flex; align-items:center; text-decoration:none; }
+.news-login-note { margin:0 0 12px; padding:10px 12px; border-radius:12px; background:var(--green-pale); color:var(--green); font-size:13px; font-weight:700; text-align:center; }

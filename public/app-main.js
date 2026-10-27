@@ -370,6 +370,7 @@ function saveStore() {
   catch (e) { storageOk = false; toast("保存できませんでした。画像を外すか、ブラウザの保存設定を確認してください。"); return false; }
 }
 let state = { cat: "all", sort: "new", search: "", bookTag: "すべて", openOnly: true, boardType: "all", boardQuote: null,
+  forest: null, forestAt: 0, forestSearch: "", forestQuery: "", forestCond: {},
   askCat: null, recType: null, meTab: "q",
   teacherSearch: "", evFilter: "now", evId: null, boardId: null, previewAttr: "", profileIcon: "🌱" };
 const PROFILE_ICONS = ["🌱", "🐸", "🐧", "🐰", "🦊", "🐹", "🐻", "🐱", "🐺", "🦉"];
@@ -395,7 +396,7 @@ const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
 function esc(s) { return String(s).replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])); }
 function badge(attr) { const a = ATTRS[attr]; return `<span class="badge ${a.cls}">${a.label}</span>`; }
 function graduationLabel(gen, attr = "obog") {
-  if (attr !== "obog" || !gen || gen === "—") return gen || "";
+  if (attr !== "obog" || !gen || gen === "—") return /^\d+$/.test(String(gen ?? "")) ? `${gen}期生` : gen || "";
   const cohort = Number(String(gen).match(/\d+/)?.[0]);
   const item = GRADUATION_COHORTS.find((x) => x.cohort === cohort);
   return item ? `${item.cohort}期生（${item.graduationYear}年卒）` : String(gen);
@@ -978,13 +979,18 @@ function renderMe() {
         <button class="profile-edit-btn" id="profileEdit">編集する</button>
       </div>
       <div class="profile-bio ${p.bio ? "" : "empty"}">${p.bio ? esc(p.bio) : "プロフィールはまだありません。編集から追加できます。"}</div>
+      <div class="my-tags">
+        <div class="my-tags-head"><b>自分のタグ</b><button class="chip" id="tagEdit">${(p.tags || []).length ? "タグを変える" : "タグを選ぶ"}</button></div>
+        ${myTagsHTML(p.tags)}
+      </div>
     </div>
-    <div class="card tree-card">
+    <div class="card tree-card forest-link" id="forestLink" role="link" tabindex="0" aria-label="ありがとうの森を見る">
       <div id="treeWrap">${treeSVG(total)}</div>
       <div class="tree-count">みんなの「ありがとう」が${total}個</div>
       <div class="tree-stage">${stageLabel}</div>
       <p class="count-note">${total < 10 ? `あと${10-total}個で若木に` : total < 30 ? `あと${30-total}個で大木に` : "あなたの経験が、みんなの力になっています"}</p>
       <progress class="tree-progress" max="30" value="${Math.min(total,30)}" aria-label="ありがとうの木の成長"></progress>
+      <span class="forest-go">ありがとうの森へ →</span>
     </div>
     <div class="card">
       <button class="utility-link" id="meRules">みんなの利用ルール <span>→</span></button></div>
@@ -1002,6 +1008,9 @@ function renderMe() {
   document.querySelectorAll("[data-metab]").forEach((b) =>
     b.addEventListener("click", () => { state.meTab = b.dataset.metab; renderMe(); }));
   $("#profileEdit").addEventListener("click", openProfileEditor);
+  $("#tagEdit").addEventListener("click", () => openTagEditor());
+  $("#forestLink").addEventListener("click", () => go("#/forest"));
+  $("#forestLink").addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go("#/forest"); } });
   $("#meRules").addEventListener("click", openRules);
   document.querySelectorAll("[data-open-kind]").forEach((b) => b.addEventListener("click", () => {
     go(b.dataset.openKind === "recruit" ? "#/board/" + b.dataset.openId : "#/qa/" + b.dataset.openId);
@@ -1061,6 +1070,12 @@ function renderRoute() {
   const qDetail = h.match(/^#\/qa\/([\w-]+)$/);
   const bDetail = h.match(/^#\/board\/([\w-]+)$/);
   const eDetail = h.match(/^#\/events\/([\w-]+)$/);
+  const nDetail = h.match(/^#\/news\/([\w-]+)$/);
+  if (nDetail) {
+    h = "#/qa"; fallbackRoute = h;
+    try { history.replaceState(null, "", location.pathname + location.search + h); } catch (e) {}
+    setTimeout(() => openNewsDetail(nDetail[1]), 0);
+  }
   document.querySelectorAll(".view").forEach((v) => v.classList.remove("on"));
   let tabRoute = h;
   if (qDetail) {
@@ -1079,13 +1094,15 @@ function renderRoute() {
     renderEventDetail(eDetail[1]);
   } else {
     const id = { "#/qa": "view-qa", "#/board": "view-board", "#/events": "view-events",
-      "#/teachers": "view-teachers", "#/me": "view-me" }[h] || "view-qa";
+      "#/teachers": "view-teachers", "#/me": "view-me", "#/forest": "view-forest" }[h] || "view-qa";
+    if (id === "view-forest") tabRoute = "#/me";
     $("#" + id).classList.add("on");
     if (id === "view-qa") { renderQaChips(); renderQaList(); }
     if (id === "view-board") renderBoard();
     if (id === "view-events") { renderEventChips(); renderEvents(); }
     if (id === "view-teachers") renderTeachers();
     if (id === "view-me") renderMe();
+    if (id === "view-forest") renderForest();
   }
   document.querySelectorAll(".tab").forEach((t) => t.classList.toggle("on", t.dataset.route === tabRoute));
   $("#askFab").hidden = !(h === "#/qa");
@@ -1369,6 +1386,311 @@ const utilityDialog = document.createElement('dialog');
 utilityDialog.id = 'utilityDialog';
 utilityDialog.setAttribute('aria-labelledby','utilityTitle');
 document.body.appendChild(utilityDialog);
+/* ありがとうの森：地上にみんなの木が集まる1枚の絵（名前は出さない）。検索ボタンから人をさがす。 */
+// 林野庁「森林はどのぐらいの量の二酸化炭素を吸収しているの？」：36〜40年生のスギ1本で年約8.8kg。
+const CO2_PER_TREE_KG = 8.8;
+function renderForest() {
+  if (Date.now() - state.forestAt > 20000) { state.forestAt = Date.now(); window.SototunaBackend?.loadForest(); }
+  const list = state.forest, view = $("#view-forest");
+  if (state.forestSearch === "cond") {
+    const count = list ? list.filter(forestMatch).length : 0;
+    view.innerHTML = `<button class="detail-back" data-forestclose>← 森にもどる</button>
+      <h1 class="screen-title">森でさがす</h1>${list ? forestCondHTML() : ""}
+      <div class="forest-show-bar"><button class="btn-main" data-forest-show>${count}人を表示</button></div>`;
+    view.querySelector("[data-forestclose]").onclick = () => { state.forestSearch = ""; renderForest(); };
+    view.querySelectorAll("[data-cond]").forEach((b) => b.onclick = () => openCondPicker(b.dataset.cond));
+    view.querySelector("[data-cond-reset]")?.addEventListener("click", () => { state.forestCond = {}; state.forestQuery = ""; renderForest(); });
+    view.querySelector("[data-forest-show]").onclick = () => { state.forestSearch = "results"; renderForest(); };
+    const input = $("#forestQuery");
+    if (input) input.addEventListener("input", () => { state.forestQuery = input.value; view.querySelector("[data-forest-show]").textContent = `${list.filter(forestMatch).length}人を表示`; });
+    return;
+  }
+  if (state.forestSearch === "results") {
+    view.innerHTML = `<button class="detail-back" data-forestcond>← 条件を変える</button>
+      <h1 class="screen-title">さがした結果</h1>${list ? forestResultsHTML(list) : ""}`;
+    view.querySelector("[data-forestcond]").onclick = () => { state.forestSearch = "cond"; renderForest(); };
+    view.querySelectorAll("[data-cond-drop]").forEach((b) => b.onclick = () => {
+      const [g, v] = b.dataset.condDrop.split("|");
+      if (g === "q") state.forestQuery = ""; else state.forestCond[g] = (state.forestCond[g] || []).filter((x) => x !== v);
+      renderForest();
+    });
+    bindForestResults();
+    return;
+  }
+  const total = (list || []).reduce((n, m) => n + (m.thanks || 0), 0);
+  const kg = total * CO2_PER_TREE_KG;
+  view.innerHTML = `<div class="forest-head">
+      <button class="detail-back" data-forestback>← マイページへ</button>
+      <button class="forest-search-btn" data-forestsearch><img class="action-icon" src="/assets/icon-search-v01.png" alt="">さがす</button>
+    </div>
+    <div class="forest-stats">
+      <p class="forest-stat-label">いま、ありがとうの森に集まっている「ありがとう」</p>
+      <p class="forest-stat-num">${list ? total.toLocaleString("ja-JP") : "…"}<small>個</small></p>
+      <p class="forest-co2">もしこれが本物のスギなら、1年で約<b>${list ? (kg >= 1000 ? (kg / 1000).toFixed(1) + "トン" : Math.round(kg).toLocaleString("ja-JP") + "kg") : "…"}</b>のCO2を吸収</p>
+      <p class="forest-src">スギ1本＝年約8.8kgで計算（林野庁）。匿名の投稿への「ありがとう」は数えません。</p>
+    </div>
+    <div class="forest-scene" id="forestScene" role="img" aria-label="ありがとうの森（${list ? list.length : 0}人の木）">
+      <svg class="forest-hills" viewBox="0 0 400 120" preserveAspectRatio="none" aria-hidden="true">
+        <circle cx="332" cy="30" r="16" fill="#f5c542" opacity=".55"/>
+        <path d="M0 70 C60 40 120 44 180 62 C240 80 300 44 400 56 V120 H0Z" fill="#cfe5b4"/>
+        <path d="M0 92 C80 70 150 78 220 90 C290 102 340 80 400 86 V120 H0Z" fill="#dcecc6"/>
+      </svg>
+      <div class="forest-trees" id="forestTrees">${list ? "" : '<p class="forest-loading">森を読みこんでいます…</p>'}</div>
+      ${list ? '<button class="forest-scroll-cue" type="button" data-rankjump>ありがとうランキング ↓</button>' : ""}
+    </div>
+    ${list ? forestRankingHTML(list) : ""}`;
+  view.querySelector("[data-forestback]").onclick = () => go("#/me");
+  view.querySelector("[data-forestsearch]").onclick = () => { state.forestSearch = "cond"; renderForest(); };
+  view.querySelector("[data-rankjump]")?.addEventListener("click", () => $("#forestRanking")?.scrollIntoView({ behavior: "smooth", block: "start" }));
+  view.querySelectorAll("[data-member]").forEach((b) => b.onclick = () => openMemberCard(b.dataset.member));
+  if (list) layoutForest(list);
+}
+// 木を1つのかたまりに集める。受け取った数の多い人ほど奥（大きく高く）、少ない人ほど手前（若葉）。
+// 奥の列は少なく、手前ほど多く並べ、列どうしを大きく重ねて遠近感を出す。全体を残りの高さと幅におさめる。
+function layoutForest(list) {
+  const scene = $("#forestScene"), box = $("#forestTrees"); if (!scene || !box) return;
+  const tabbar = document.querySelector(".tabbar")?.getBoundingClientRect().height || 72;
+  const h = Math.max(260, window.innerHeight - scene.getBoundingClientRect().top - window.scrollY - tabbar - 30);
+  scene.style.height = h + "px";
+  const W = scene.clientWidth, n = list.length; if (!n) { box.innerHTML = ""; return; }
+  const hash = (id) => [...String(id)].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7);
+  const sorted = [...list].sort((a, b) => b.thanks - a.thanks || hash(a.id) - hash(b.id));
+  const R = Math.min(7, Math.max(1, Math.round(Math.sqrt(n) * 0.9)));
+  const weights = Array.from({ length: R }, (_, i) => i + 2), sum = weights.reduce((a, b) => a + b, 0);
+  const counts = weights.map((w) => Math.max(1, Math.round(n * w / sum)));
+  counts[R - 1] += n - counts.reduce((a, b) => a + b, 0);
+  const rows = []; let k = 0;
+  counts.forEach((c) => { rows.push(sorted.slice(k, k + c)); k += c; });
+  const aspect = (m) => (m.thanks >= 30 ? 130 / 140 : 1);
+  const plan = (scale, overlap) => {
+    let base = 0, top = Infinity; const out = [];
+    rows.forEach((row, i) => {
+      const c = row.length, step = 0.5;
+      const w = Math.min(W * 0.96 / (1 + step * (c - 1)), W * (0.46 - i * 0.05)) * scale;
+      const rowH = w * Math.max(...row.map(aspect));
+      base = i === 0 ? rowH : base + rowH * overlap;
+      const span = w * (1 + step * (c - 1)), start = (W - span) / 2 + w / 2;
+      row.forEach((m, j) => {
+        const jit = hash(m.id), shrink = m.thanks < 10 ? 0.9 : 1;
+        const x = start + j * w * step + ((jit % 100) / 100 - 0.5) * w * 0.22 + (i % 2 ? w * 0.12 : 0);
+        const y = base + (((jit >> 7) % 100) / 100 - 0.5) * rowH * (m.thanks < 10 ? 0.45 : 0.14);
+        const size = w * shrink * (0.94 + ((jit >> 3) % 9) / 100);
+        top = Math.min(top, y - size * aspect(m));
+        out.push({ m, x, y, size, row: i, tint: jit });
+      });
+    });
+    return { out, height: base - top, top };
+  };
+  // 列の重なりを、かたまりが残りの高さの8割ほどになるように決める（0.35〜0.8）。高すぎるときは全体を縮める。
+  const sky = 56, room = h - sky - 22;
+  let layout = plan(1, 0.42);
+  const back = layout.out.filter((t) => t.row === 0)[0], firstH = back ? back.size * aspect(back.m) : 0;
+  const rest = layout.height - firstH, overlap = rest > 0 ? Math.min(0.8, Math.max(0.35, 0.42 * (room * 0.82 - firstH) / rest)) : 0.42;
+  layout = plan(1, overlap);
+  if (layout.height > room) layout = plan(room / layout.height, overlap);
+  const shift = sky + Math.max(0, (room - layout.height) * 0.6) - layout.top;
+  const ground = layout.out.reduce((y, t) => Math.max(y, t.y), 0) + shift;
+  box.innerHTML = `<div class="forest-ground" style="top:${(ground - 18).toFixed(0)}px"></div>` + layout.out
+    .sort((a, b) => a.row - b.row || a.y - b.y)
+    .map(({ m, x, y, size, row }, z) => `<span class="forest-tree depth-${Math.min(row, 2)}" style="left:${x.toFixed(1)}px;top:${(y + shift).toFixed(1)}px;width:${size.toFixed(0)}px;z-index:${z + 2}">${treeSVG(m.thanks)}</span>`).join("");
+}
+// ありがとうランキング（森の下）。公開の数で多い順。同じ数は同じ順位。0個の人は載せない。
+function forestRankingHTML(list) {
+  const ranked = list.filter((m) => m.thanks > 0).sort((a, b) => b.thanks - a.thanks).slice(0, 20);
+  let rank = 0, prev = null;
+  const rows = ranked.map((m, i) => { if (m.thanks !== prev) { rank = i + 1; prev = m.thanks; }
+    return `<li><button class="rank-row" data-member="${m.id}"><span class="rank-no rank-${rank <= 3 ? rank : "n"}">${rank}</span><span class="q-avatar">${avatarHTML(m.avatar)}</span>
+      <span class="rank-who"><b>${esc(m.name)}${m.mine ? "（あなた）" : ""}</b><small>${esc(graduationLabel(m.gen, m.attr))}</small></span>
+      <span class="rank-n"><img src="/assets/icon-reaction-thanks-v01.png" alt="">${m.thanks}</span></button></li>`; }).join("");
+  return `<section class="forest-ranking" id="forestRanking" aria-labelledby="forestRankTitle">
+    <h2 id="forestRankTitle">ありがとうランキング</h2>
+    <p class="count-note">受け取った「ありがとう」が多い順です（上位20人まで）。名前を出さずに書いた投稿への分は数えません。</p>
+    ${rows ? `<ol class="rank-list">${rows}</ol>` : '<p class="screen-sub">まだランキングはありません。</p>'}
+  </section>`;
+}
+let forestResizeTimer = null;
+window.addEventListener("resize", () => { clearTimeout(forestResizeTimer); forestResizeTimer = setTimeout(() => { if (location.hash === "#/forest" && !state.forestSearch && state.forest) layoutForest(state.forest); }, 150); });
+function bindForestResults() {
+  $("#view-forest").querySelectorAll("[data-ask-member]").forEach((b) => b.onclick = () => askMember(b.dataset.askMember));
+}
+function memberLine(m) {
+  const gen = graduationLabel(m.gen, m.attr);
+  return `${gen ? `<span class="ans-gen">${esc(gen)}</span>` : ""}${badge(m.attr)}${m.role ? `<span class="forest-role">${esc(m.role)}</span>` : ""}`;
+}
+// 森でさがす（メルカリ式）：取組ごとに条件を選ぶ。1つの取組の中は「どれか」、取組どうしは「かつ」。
+// 例：ゼミ＝中森 かつ GAP＝Clear か RISE。「関わった人すべて」はその取組のタグがあれば当てはまる。
+const ATTR_LABELS = { current: "現役生", obog: "OBOG", teacher: "先生", staff: "職員" };
+function condGroups() {
+  return (window.SototunaTags?.groups || []).map((g) => ({ id: g.id, label: g.label, items: g.items, all: true }))
+    .concat([{ id: "attr", label: "所属", items: Object.entries(ATTR_LABELS).map(([id, label]) => ({ id, label, aliases: [], section: "" })), all: false }]);
+}
+function condValueLabel(g, values) {
+  if (!values?.length) return "";
+  if (values.includes("*")) return `${g.label}に関わった人`;
+  const labels = values.map((v) => g.items.find((i) => i.id === v)?.label).filter(Boolean);
+  return labels.length > 2 ? `${labels.slice(0, 2).join("、")} ほか${labels.length - 2}` : labels.join("、");
+}
+function forestMatch(m) {
+  const tags = m.tags || [], T = window.SototunaTags;
+  for (const [g, values] of Object.entries(state.forestCond)) {
+    if (!values?.length) continue;
+    if (g === "attr") { if (!values.includes(m.attr)) return false; continue; }
+    const ok = values.includes("*") ? tags.some((t) => t === g || t.startsWith(g + ":")) : values.some((v) => tags.includes(g + ":" + v));
+    if (!ok) return false;
+  }
+  const q = state.forestQuery.trim();
+  return !q || String(m.name).toLowerCase().includes(q.toLowerCase()) || tags.some((t) => T.matches(t, q));
+}
+function forestCondHTML() {
+  const groups = condGroups(), any = state.forestQuery.trim() || Object.values(state.forestCond).some((v) => v?.length);
+  return `<div class="forest-search">
+    <input type="search" id="forestQuery" value="${esc(state.forestQuery)}" placeholder="ニックネーム・ゼミ・チームなどでさがす" aria-label="キーワードでさがす">
+    <div class="cond-head"><b>条件をえらぶ</b>${any ? '<button class="front-inline" data-cond-reset>すべてクリア</button>' : ""}</div>
+    <div class="cond-list" role="list">${groups.map((g) => { const v = condValueLabel(g, state.forestCond[g.id]);
+      return `<button class="cond-row" role="listitem" data-cond="${g.id}"><span>${esc(g.label)}</span><span class="cond-value ${v ? "on" : ""}">${esc(v || "指定なし")}</span><span class="cond-arrow" aria-hidden="true">›</span></button>`; }).join("")}</div>
+    <p class="count-note cond-hint">同じ取組の中で選んだものは「どれか」、ちがう取組の条件は「すべて」に当てはまる人をさがします。</p>
+  </div>`;
+}
+function forestResultsHTML(list) {
+  const groups = condGroups(), chips = [];
+  if (state.forestQuery.trim()) chips.push(["q|", `「${state.forestQuery.trim()}」`]);
+  groups.forEach((g) => (state.forestCond[g.id] || []).forEach((v) => chips.push([`${g.id}|${v}`, `${g.label}：${v === "*" ? "関わった人" : g.items.find((i) => i.id === v)?.label || v}`])));
+  const hits = list.filter(forestMatch);
+  return `${chips.length ? `<div class="cond-chips">${chips.map(([key, label]) => `<button class="cond-chip" data-cond-drop="${esc(key)}" aria-label="${esc(label)}の条件を外す">${esc(label)} <span aria-hidden="true">×</span></button>`).join("")}</div>` : ""}
+    <p class="forest-count">${chips.length ? "当てはまる人" : "森のメンバー"} ${hits.length}人</p>
+    ${hits.length ? hits.map((m) => `<article class="card forest-person">
+      <div class="forest-person-head"><span class="q-avatar">${avatarHTML(m.avatar)}</span><b>${esc(m.name)}${m.mine ? "（あなた）" : ""}</b></div>
+      <div class="forest-person-meta">${memberLine(m)}</div>
+      ${myTagsHTML(m.tags)}
+      ${m.mine ? "" : `<button class="chip forest-ask" data-ask-member="${m.id}">@${esc(m.name)} さんにきいてみる</button>`}</article>`).join("")
+      : `<div class="empty"><div class="mascot">${mascotPNG()}</div>この条件に当てはまる人は、まだいません。<br>条件を減らすか、タグを付ける人が増えると見つかります。</div>`}`;
+}
+function openCondPicker(id) {
+  const g = condGroups().find((x) => x.id === id); if (!g) return;
+  const chosen = new Set(state.forestCond[id] || []);
+  const box = (value, label, words = "", cls = "") => `<label class="cond-option ${cls}" data-words="${esc(words.toLowerCase())}"><input type="checkbox" value="${value}" ${chosen.has(value) ? "checked" : ""}><span>${esc(label)}</span></label>`;
+  const sections = [...new Set(g.items.map((i) => i.section))];
+  openUtility(g.label, `<div class="cond-picker">
+    ${g.items.length > 10 ? '<input type="search" id="condFilter" placeholder="さがす" aria-label="選択肢をさがす">' : ""}
+    ${g.all ? box("*", `${g.label}に関わった人（すべて）`, "", "cond-all") : ""}
+    ${sections.map((sec) => `${sec ? `<h4 class="cond-sec">${esc(sec)}</h4>` : ""}${g.items.filter((i) => i.section === sec).map((i) => box(i.id, i.label, [i.label, ...i.aliases].join(" "))).join("")}`).join("")}
+    </div><div class="cond-actions"><button class="chip" type="button" id="condClear">クリア</button><button class="btn-main" type="button" id="condDone">決定</button></div>`);
+  const all = utilityDialog.querySelector('.cond-all input');
+  // 「関わった人すべて」と個別の選択は同時に持たない
+  utilityDialog.querySelectorAll(".cond-picker input[type=checkbox]").forEach((c) => c.addEventListener("change", () => {
+    if (!c.checked) return;
+    if (c === all) utilityDialog.querySelectorAll(".cond-picker input[type=checkbox]").forEach((o) => { if (o !== all) o.checked = false; });
+    else if (all) all.checked = false;
+  }));
+  $("#condClear").onclick = () => utilityDialog.querySelectorAll(".cond-picker input[type=checkbox]").forEach((c) => { c.checked = false; });
+  $("#condDone").onclick = () => {
+    state.forestCond[id] = [...utilityDialog.querySelectorAll(".cond-picker input:checked")].map((c) => c.value);
+    utilityDialog.close(); renderForest();
+  };
+  const f = utilityDialog.querySelector("#condFilter");
+  if (f) f.addEventListener("input", () => {
+    const q = f.value.trim().toLowerCase();
+    utilityDialog.querySelectorAll(".cond-option:not(.cond-all)").forEach((o) => { o.hidden = !!q && !o.dataset.words.includes(q); });
+  });
+}
+function openMemberCard(id) {
+  const m = (state.forest || []).find((x) => x.id === id); if (!m) return;
+  openUtility(m.name + (m.mine ? "（あなた）" : ""), `<div class="forest-card">
+    <span class="forest-svg big">${treeSVG(m.thanks)}</span><p class="forest-card-count">ありがとう ${m.thanks}個</p>
+    <div class="forest-person-meta">${memberLine(m)}</div>${myTagsHTML(m.tags)}
+    ${m.mine ? "" : `<button class="btn-main forest-ask" data-ask-member="${m.id}">@${esc(m.name)} さんにきいてみる</button>`}</div>`);
+  utilityDialog.querySelector("[data-ask-member]")?.addEventListener("click", () => askMember(m.id));
+}
+// 「きく」へ移り、@メンション付きで質問を書き始める。呼ばれた人には通知が届く。
+function askMember(id) {
+  const m = (state.forest || []).find((x) => x.id === id); if (!m) return;
+  if (utilityDialog.open) utilityDialog.close();
+  go("#/qa");
+  setTimeout(() => openAsk(`@${m.name} さんに聞きたいです。`), 60);
+}
+/* マイタグ：ゼミ・GAP・イベスタ・PBL/CBL・クラサポ・ゼミ連。中身（先生・チーム・プロジェクト）は任意。 */
+function myTagsHTML(tags) {
+  const labels = (tags || []).map((t) => window.SototunaTags?.label(t)).filter(Boolean);
+  return labels.length ? `<div class="tag-list">${labels.map((l) => `<span class="tag-pill">${esc(l)}</span>`).join("")}</div>`
+    : '<p class="count-note my-tags-empty">ゼミ・GAP・イベスタ・PBLなど、関わった取組を選べます。ほかのメンバーにも表示されます。</p>';
+}
+function openTagEditor(selected = store.profile.tags || []) {
+  const groups = window.SototunaTags?.groups || [];
+  const has = (g) => selected.some((t) => t === g.id || t.startsWith(g.id + ":"));
+  const picked = (g, i) => selected.includes(g.id + ":" + i.id);
+  const sections = (items) => [...new Set(items.map((i) => i.section))];
+  const itemsHTML = (g) => {
+    if (!g.items.length) return "";
+    if (!g.multi) return `<label class="tag-pick" for="tagSel-${g.id}">${esc(g.pick)}（任意）</label><select id="tagSel-${g.id}" data-tag-select="${g.id}"><option value="">選ばない</option>${sections(g.items).map((sec) =>
+      `<optgroup label="${esc(sec)}">${g.items.filter((i) => i.section === sec).map((i) => `<option value="${i.id}" ${picked(g, i) ? "selected" : ""}>${esc(i.label)}</option>`).join("")}</optgroup>`).join("")}</select>`;
+    const n = g.items.filter((i) => picked(g, i)).length;
+    return `<details class="tag-details" ${n ? "open" : ""}><summary>${esc(g.pick)}を選ぶ（任意・いくつでも）${n ? `<span class="tag-count">${n}</span>` : ""}</summary>${sections(g.items).map((sec) =>
+      `${sec ? `<h4>${esc(sec)}</h4>` : ""}<div class="tag-chips">${g.items.filter((i) => i.section === sec).map((i) =>
+        `<label class="tag-chip" data-words="${esc([i.label, ...i.aliases].join(" ").toLowerCase())}"><input type="checkbox" value="${g.id}:${i.id}" ${picked(g, i) ? "checked" : ""}>${esc(i.label)}</label>`).join("")}</div>`).join("")}</details>`;
+  };
+  openUtility("自分のタグ", `<form id="tagForm" class="front-form tag-form">
+    <p class="front-note">関わった取組をオンにしてください。中身は、わかるものだけで大丈夫です。タグはほかのメンバーにも表示されます。</p>
+    <input type="search" id="tagFilter" placeholder="さがす（例：洲本、Clear、中森）" aria-label="選択肢をさがす">
+    ${groups.map((g) => `<fieldset class="tag-group" data-group="${g.id}">
+      <label class="tag-group-head"><input type="checkbox" role="switch" data-tag-group="${g.id}" ${has(g) ? "checked" : ""}>${esc(g.label)}</label>
+      <div class="tag-items" ${has(g) ? "" : "hidden"}>${itemsHTML(g)}</div></fieldset>`).join("")}
+    <button class="btn-main" type="submit" id="tagSave">保存する</button>
+    <p id="tagStatus" class="front-status" role="status"></p>
+    <button class="front-inline" type="button" id="tagRequest">選択肢にないときは、追加を申請する</button>
+  </form>`);
+  const form = $("#tagForm");
+  form.querySelectorAll("[data-tag-group]").forEach((sw) => sw.addEventListener("change", () => {
+    sw.closest(".tag-group").querySelector(".tag-items").hidden = !sw.checked;
+  }));
+  // 中身を選んだら、その取組も自動でオンにする
+  form.addEventListener("change", (e) => {
+    const box = e.target.closest(".tag-chip input, [data-tag-select]"); if (!box) return;
+    const sw = box.closest(".tag-group").querySelector("[data-tag-group]");
+    const chose = box.type === "checkbox" ? box.checked : !!box.value;
+    if (chose && !sw.checked) { sw.checked = true; sw.dispatchEvent(new Event("change")); }
+    const details = box.closest(".tag-details"); if (!details) return;
+    const n = details.querySelectorAll("input:checked").length, count = details.querySelector(".tag-count");
+    if (count) count.textContent = n || ""; else if (n) details.querySelector("summary").insertAdjacentHTML("beforeend", `<span class="tag-count">${n}</span>`);
+  });
+  $("#tagFilter").addEventListener("input", (e) => {
+    const q = e.target.value.trim().toLowerCase();
+    form.querySelectorAll(".tag-chip").forEach((c) => { c.hidden = !!q && !c.dataset.words.includes(q); });
+    if (q) form.querySelectorAll(".tag-details").forEach((d) => { if (d.querySelector(".tag-chip:not([hidden])")) d.open = true; });
+  });
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const tags = [];
+    form.querySelectorAll("[data-tag-group]:checked").forEach((sw) => {
+      const box = sw.closest(".tag-group"), id = sw.dataset.tagGroup;
+      const chosen = [...box.querySelectorAll(".tag-chip input:checked")].map((c) => c.value);
+      const sel = box.querySelector("[data-tag-select]")?.value;
+      if (sel) chosen.push(id + ":" + sel);
+      tags.push(...(chosen.length ? chosen : [id]));
+    });
+    window.SototunaBackend?.saveTags(tags, $("#tagSave"));
+  });
+  $("#tagRequest").addEventListener("click", () => openTagRequest());
+}
+function openTagRequest() {
+  const groups = window.SototunaTags?.groups || [];
+  openUtility("タグの追加を申請", `<form id="tagRequestForm" class="front-form">
+    <p class="front-note">選択肢にないゼミ・チーム・プロジェクトなどを運営に知らせてください。運営が確認して追加します。</p>
+    <label for="tagReqGroup">どの取組に足しますか</label>
+    <select id="tagReqGroup" required><option value="">選んでください</option>${groups.map((g) => `<option>${esc(g.label)}</option>`).join("")}<option>新しい取組</option></select>
+    <label for="tagReqName">足したい名前</label>
+    <input id="tagReqName" required maxlength="60" placeholder="例：〇〇プロジェクト、〇〇ゼミ">
+    <label for="tagReqNote">補足（任意）</label>
+    <textarea id="tagReqNote" maxlength="300" placeholder="例：2019年度に活動していたGAPのチームです"></textarea>
+    <button class="btn-main" type="submit" id="tagReqSend">運営に申請する</button>
+    <p id="frontStatus" class="front-status" role="status"></p>
+    <button class="front-inline" type="button" id="tagReqBack">タグ選びにもどる</button>
+  </form>`);
+  $("#tagReqBack").addEventListener("click", () => openTagEditor());
+  $("#tagRequestForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    window.SototunaBackend?.tagRequest({ group: $("#tagReqGroup").value, name: $("#tagReqName").value.trim(), note: $("#tagReqNote").value.trim() }, $("#tagReqSend"));
+  });
+}
 function openUtility(title, body) {
   utilityDialog.classList.remove("news-dialog");
   utilityDialog.innerHTML = `<div class="guide-head"><h2 id="utilityTitle">${esc(title)}</h2><button class="sheet-close" id="utilityClose" aria-label="閉じる">×</button></div><div class="info-content">${body}</div>`;
@@ -1470,7 +1792,7 @@ window.SototunaApp = {
     store = Object.assign(emptyStore(), loadStore() || {});
     store.profile = { name:profile.display_name, attr:profile.affiliation, gen:profile.generation,
       seminar:profile.seminar, email:user.email, avatar:profile.avatar || "🌱",
-      currentRole:profile.role_label || "", bio:profile.bio || "" };
+      currentRole:profile.role_label || "", bio:profile.bio || "", tags:Array.isArray(profile.tags) ? profile.tags : [] };
     store.myRecruits=[]; store.myHelps=[]; store.cooperationContacts={}; store.boardReplies={};
     backendAuthenticated = true;
   },
@@ -1488,32 +1810,91 @@ window.SototunaApp = {
   snapshot(recruits, helps) { remoteRecruits = recruits; store.myRecruits = recruits.filter(r=>r.mine); store.myHelps = helps; },
   reveal() { document.querySelectorAll("#app > .view,#app > .tabbar,#app > .fab,#guideLaunch,#tsunamaru").forEach(el=>el.inert=false); $("#authGate").classList.remove("on"); $("#guideLaunch").hidden=false; $("#newsLaunch").hidden=false; $("#appTools").hidden=false; renderRoute(); },
   reset() {
-    backendAuthenticated=false; remoteRecruits=[];remoteQuestions=[];remoteAnswers=[];remoteBooks=[];communityRecords=[];remoteFiles=[]; store=emptyStore(); state.boardId=null; state.meTab="q"; state.curiousOnly=false; $("#curiousOnly").checked=false;
+    backendAuthenticated=false; remoteRecruits=[];remoteQuestions=[];remoteAnswers=[];remoteBooks=[];communityRecords=[];remoteFiles=[]; store=emptyStore(); state.boardId=null; state.meTab="q"; state.curiousOnly=false; state.forest=null; state.forestAt=0; state.forestSearch=""; state.forestQuery=""; state.forestCond={}; $("#curiousOnly").checked=false;
     document.querySelectorAll(".view,.overlay,.guide-overlay").forEach(el=>el.classList.remove("on"));
     document.querySelectorAll("#app > .view,#app > .tabbar,#app > .fab,#guideLaunch,#tsunamaru").forEach(el=>el.inert=true);
     document.querySelectorAll(".fab").forEach(el=>el.hidden=true);
     $("#tsunamaru").hidden=true;
     $("#authGate").classList.add("on"); $("#guideLaunch").hidden=true; $("#newsLaunch").hidden=true; $("#appTools").hidden=true;
     if(utilityDialog.open) utilityDialog.close();
-    document.querySelectorAll(".view").forEach(el=>{ if(["view-boarddetail","view-detail","view-eventdetail","view-me"].includes(el.id)) el.innerHTML=""; });
+    document.querySelectorAll(".view").forEach(el=>{ if(["view-boarddetail","view-detail","view-eventdetail","view-me","view-forest"].includes(el.id)) el.innerHTML=""; });
   },
-  saveLocal() { return saveStore(); }, closeProfileEditor
+  saveLocal() { return saveStore(); }, closeProfileEditor,
+  forest(list) { state.forest = list; if (location.hash === "#/forest") renderForest(); }
 };
 
-function openUpdateNews() {
-  openUtility('お知らせ', `<article class="update-news">
-    <div class="update-date"><span>アップデート</span><time datetime="2026-10-27">2026.10.27</time></div>
-    <h3 class="update-title">ひろばでも、<br>ありがとう。</h3>
-    <p class="update-intro">みなさんから届いた声をもとに、<br>読みやすく、伝えやすくしました。</p>
-    <div class="update-changes">
-      <section class="update-change"><img src="/assets/icon-reaction-thanks-v01.png" alt=""><div><h4>ひろばにも「ありがとう」</h4><p>募集やコメントに送れます。回答のありがとうは右上に小さくまとめ、1画面に多く並ぶようにしました。</p></div></section>
-      <section class="update-change"><img src="/assets/icon-nav-board.png" alt=""><div><h4>コメント・回答に返信</h4><p>ひろばのコメントにも、きくの回答にも「返信」できます。どの発言への返事か分かる形で残ります。</p></div></section>
-      <section class="update-change"><img src="/assets/icon-nav-ask.png" alt=""><div><h4>回答も匿名でOK</h4><p>質問も回答も、名前を出すのが基本です。匿名にしたいときだけオンにしてください。</p></div></section>
-    </div>
-    <div class="update-more"><span>ほかにも</span><p>ひろばを募集の種類で絞り込めます。質問の書き出しヒントと、回答を待っている質問の案内を追加。<br>iPhoneで画面が少し右にずれる問題、画像を選ぶと書きかけの文が消える問題を直しました。OB訪問の一覧は勤務先だけを表示します。</p></div>
+// お知らせ（新しい順）。一覧から開くと、その回の詳しいページ。動画がある回はページの上に埋め込む。
+const NEWS = [
+  { id: "2026-10-27-forest", date: "2026-10-27", title: "ありがとうの森が<br>ひらきました。", intro: "メンバーの木が集まる森と、<br>「自分のタグ」ができました。",
+    video: { src: "/assets/news/update-20261027.mp4", poster: "/assets/news/update-20261027.jpg" },
+    changes: [
+      ["/assets/icon-reaction-thanks-v01.png", "ありがとうの森", "マイページの木をタップすると、みんなの木が集まる森へ。下には、ありがとうランキングも。"],
+      ["/assets/icon-nav-me.png", "自分のタグ", "ゼミ・GAP・イベスタ・PBL/CBL・クラサポ・ゼミ連から、関わった取組を選べます。ないものは追加を申請できます。"],
+      ["/assets/icon-search-v01.png", "さがして、きいてみる", "森の「さがす」から、ゼミやチームで条件をしぼって人を見つけ、@メンション付きで質問できます。"],
+    ],
+    more: "きくの回答にも「返信」。<br>スイッチや添付ボタン、入力漏れの案内のデザインを整えました。" },
+  { id: "2026-10-27-board", date: "2026-10-27", title: "ひろばでも、<br>ありがとう。", intro: "みなさんから届いた声をもとに、<br>読みやすく、伝えやすくしました。",
+    changes: [
+      ["/assets/icon-reaction-thanks-v01.png", "ひろばにも「ありがとう」", "募集やコメントに送れます。回答のありがとうは右上に小さくまとめ、1画面に多く並ぶようにしました。"],
+      ["/assets/icon-nav-board.png", "コメントに返信", "ひろばのコメントの「返信」から、どの発言への返事か分かる形で書けます。"],
+      ["/assets/icon-nav-ask.png", "回答も匿名でOK", "質問も回答も、名前を出すのが基本です。匿名にしたいときだけオンにしてください。"],
+    ],
+    more: "ひろばを募集の種類で絞り込めます。質問の書き出しヒントと、回答を待っている質問の案内を追加。<br>iPhoneで画面が少し右にずれる問題、画像を選ぶと書きかけの文が消える問題を直しました。OB訪問の一覧は勤務先だけを表示します。" },
+  { id: "2026-10-15", date: "2026-10-15", title: "投稿の編集も、<br>画像の添付も。", intro: "みなさんから届いた声をもとに、<br>いつものやりとりを使いやすくしました。",
+    changes: [
+      ["/assets/icon-nav-board.png", "投稿をあとから編集", "ひろばの募集・コメント、本紹介・討論会の投稿を書き直せます。"],
+      ["/assets/icon-event-books.png", "画像やチラシを添付", "募集には画像・PDFを、公開コメントには画像を添えられます。"],
+      ["/assets/icon-reaction-curious-v01.png", "「気になる」をまとめて確認", "「きく」で、自分が気になった質問だけを表示できます。"],
+    ],
+    more: "本の業界分類を21種類に。<br>本文のURLもタップで開けるようになりました。" },
+];
+const newsDate = (d) => d.replaceAll("-", ".");
+function openNewsList() {
+  openUtility("お知らせ", `<ul class="news-list">${NEWS.map((n, i) => `<li><button class="news-item" data-news="${n.id}">
+      <span class="news-item-date"><time datetime="${n.date}">${newsDate(n.date)}</time>${i === 0 ? '<span class="news-latest">最新</span>' : ""}${n.video ? '<span class="news-has-video">動画あり</span>' : ""}</span>
+      <span class="news-item-title">${n.title.replace("<br>", "")}</span><span class="news-arrow" aria-hidden="true">›</span></button></li>`).join("")}</ul>`);
+  utilityDialog.classList.add("news-dialog");
+  utilityDialog.querySelectorAll("[data-news]").forEach((b) => b.onclick = () => openNewsDetail(b.dataset.news));
+}
+function openNewsDetail(id) {
+  const n = NEWS.find((x) => x.id === id); if (!n) return;
+  openUtility("お知らせ", `<button class="detail-back news-back" type="button" id="newsBack">← お知らせ一覧</button>
+    <article class="update-news">
+    ${n.video ? `<video class="update-video" src="${n.video.src}" poster="${n.video.poster}" controls playsinline preload="none" aria-label="アップデートの紹介動画"></video>` : ""}
+    <div class="update-date"><span>アップデート</span><time datetime="${n.date}">${newsDate(n.date)}</time></div>
+    <h3 class="update-title">${n.title}</h3>
+    <p class="update-intro">${n.intro}</p>
+    <div class="update-changes">${n.changes.map(([icon, h, p]) => `<section class="update-change"><img src="${icon}" alt=""><div><h4>${h}</h4><p>${p}</p></div></section>`).join("")}</div>
+    <div class="update-more"><span>ほかにも</span><p>${n.more}</p></div>
+    <button type="button" class="news-share" id="newsShare"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5"/><path d="M5 12v6a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3v-6"/></svg>このお知らせをシェア</button>
+    <div class="news-share-alt" id="newsShareAlt" hidden></div>
     <button type="button" class="update-dismiss" id="updateDismiss">閉じる</button>
   </article>`);
-  utilityDialog.classList.add('news-dialog');
-  $('#updateDismiss').onclick=()=>utilityDialog.close();
+  utilityDialog.classList.add("news-dialog");
+  $("#newsBack").onclick = openNewsList;
+  $("#updateDismiss").onclick = () => utilityDialog.close();
+  $("#newsShare").onclick = () => shareNews(n);
 }
-$('#newsLaunch').onclick=openUpdateNews;
+// 共有リンクは #/news/<id>。開いた人はログイン後にこのお知らせが開く。スマホは共有シート、出ないときはコピーとLINE。
+async function shareNews(n) {
+  const url = `${location.origin}/#/news/${n.id}`;
+  const title = n.title.replace("<br>", "");
+  const text = `SOTOTUNAのお知らせ「${title}」（${newsDate(n.date)}）\nSOTOTUNAにログインすると、このお知らせが開きます。`;
+  if (navigator.share) {
+    try { await navigator.share({ title: "SOTOTUNAのお知らせ", text, url }); return; }
+    catch (e) { if (e && e.name === "AbortError") return; }
+  }
+  const alt = $("#newsShareAlt"); if (!alt) return;
+  alt.hidden = false;
+  alt.innerHTML = `<p>リンクを送ってください。開いた人は、ログインしたあとにこのお知らせが開きます。</p>
+    <input type="text" readonly value="${esc(url)}" aria-label="お知らせのリンク" id="newsShareUrl">
+    <div class="news-share-actions"><button type="button" class="chip" id="newsCopy">リンクをコピー</button>
+    <a class="chip" href="https://line.me/R/share?text=${encodeURIComponent(text + "\n" + url)}" target="_blank" rel="noopener noreferrer">LINEで送る</a></div>`;
+  $("#newsCopy").onclick = async () => {
+    try { await navigator.clipboard.writeText(url); toast("リンクをコピーしました"); }
+    catch (e) { const i = $("#newsShareUrl"); i.focus(); i.select(); toast("リンクを選びました。コピーしてください"); }
+  };
+}
+// 共有リンクから来た人には、ログイン画面で「ログインすると開きます」と知らせる
+if (/^#\/news\//.test(location.hash)) $("#betaLogin")?.insertAdjacentHTML("afterbegin", '<p class="news-login-note">ログインすると、共有されたお知らせが開きます。</p>');
+$('#newsLaunch').onclick=openNewsList;

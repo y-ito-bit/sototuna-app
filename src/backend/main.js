@@ -104,6 +104,16 @@ window.SototunaBackend={
       p.name=saved.display_name; p.avatar=app.state.profileIcon; p.currentRole=$('#profileRole').value.trim().slice(0,40);p.bio=$('#profileBio').value.trim().slice(0,200);
       app.saveLocal(); app.closeProfileEditor(); await refresh(true); if(version!==epoch)return; app.toast('プロフィールを更新しました。');
     });
+  },
+  loadForest() {
+    write(null,async version=>{const list=await api.memberForest(); if(version!==epoch)return; app.forest(list);});
+  },
+  saveTags(tags,button) {
+    write(button,async version=>{
+      const saved=await api.saveTags(tags);
+      if(version!==epoch) return;
+      app.store.profile.tags=saved.tags; app.saveLocal(); app.dialog.close(); app.render(); app.toast('タグを保存しました。');
+    },$('#tagStatus'));
   }
 };
 document.addEventListener('click',async e=>{

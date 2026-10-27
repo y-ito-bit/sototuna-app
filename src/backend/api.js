@@ -45,6 +45,11 @@ export function createApi(client) {
       const current = await user();
       return unwrap(await client.from('profiles').upsert({user_id:current.id, display_name:displayName.trim(), affiliation, generation, seminar, avatar, role_label:currentRole, bio}).select().single());
     },
+    async memberForest() { return unwrap(await client.rpc('member_forest')); },
+    async saveTags(tags) {
+      const current = await user();
+      return unwrap(await client.from('profiles').update({tags}).eq('user_id', current.id).select('tags').single());
+    },
     async listRecruitments() {
       return unwrap(await client.from('recruitments').select('*,owner:profiles!owner_id(display_name,affiliation,generation)').order('created_at', {ascending:false}));
     },

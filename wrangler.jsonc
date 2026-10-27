@@ -2,9 +2,13 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "sototuna-app",
   "compatibility_date": "2026-10-03",
+  // Only the update videos go through the Worker (byte ranges for iPhone Safari); everything else is plain static assets.
+  "main": "worker/media-range.js",
   "assets": {
     "directory": "./dist",
-    "not_found_handling": "single-page-application"
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/assets/news/*"]
   },
   "workers_dev": true,
   "send_metrics": false

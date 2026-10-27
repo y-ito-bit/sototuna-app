@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {fixture} from './fixture.mjs';
 const owner='00000000-0000-0000-0000-000000000001',helper='00000000-0000-0000-0000-000000000002';
-async function setup(){const ctx=await fixture();await ctx.db.exec(await readFile(new URL('../../supabase/migrations/20261003004000_community.sql',import.meta.url),'utf8'));await ctx.db.exec(await readFile(new URL('../../supabase/migrations/20261015000000_member_feedback.sql',import.meta.url),'utf8'));await ctx.db.exec(await readFile(new URL('../../supabase/migrations/20261015001000_beta_operations.sql',import.meta.url),'utf8'));await ctx.db.exec(await readFile(new URL('../../supabase/migrations/20261027000000_board_thanks_anonymous_answers.sql',import.meta.url),'utf8'));await ctx.db.exec(await readFile(new URL('../../supabase/migrations/20261027010000_answer_replies.sql',import.meta.url),'utf8'));return ctx;}
+async function setup(){const ctx=await fixture();await ctx.db.exec(await readFile(new URL('../../supabase/migrations/20261003004000_community.sql',import.meta.url),'utf8'));await ctx.db.exec(await readFile(new URL('../../supabase/migrations/20261015000000_member_feedback.sql',import.meta.url),'utf8'));await ctx.db.exec(await readFile(new URL('../../supabase/migrations/20261015001000_beta_operations.sql',import.meta.url),'utf8'));await ctx.db.exec(await readFile(new URL('../../supabase/migrations/20261027000000_board_thanks_anonymous_answers.sql',import.meta.url),'utf8'));await ctx.db.exec(await readFile(new URL('../../supabase/migrations/20261027010000_answer_replies.sql',import.meta.url),'utf8'));await ctx.db.exec(await readFile(new URL('../../supabase/migrations/20261028000000_member_tags.sql',import.meta.url),'utf8'));await ctx.db.exec(await readFile(new URL('../../supabase/migrations/20261028001000_thanks_forest.sql',import.meta.url),'utf8'));return ctx;}
 async function insert(db,kind,payload={},target='-'){return (await db.query('insert into community_records(kind,payload,target_id) values($1,$2,$3) returning id',[kind,JSON.stringify(payload),target])).rows[0].id;}
 test('anonymous questions hide identity, preserve owner controls, and notify on replies',async()=>{
  const {db,as}=await setup();try{
@@ -138,6 +138,39 @@ test('replies to answers notify the answerer and asker, and never reveal an anon
  await as('helper');assert.equal((await db.query("select * from community_notifications where source_id=$1",[third])).rows.length,1);
  await db.query('update community_records set payload=$1 where id=$2',[JSON.stringify({text:'直しました'}),back]);
  assert.equal((await db.query('select payload from community_records where id=$1',[back])).rows[0].payload.text,'直しました');
+ }finally{await db.close();}
+});
+
+test('my tags are visible to members, editable only by the owner, and must use the catalog id shape',async()=>{
+ const {db,as}=await setup();try{
+ await as('owner');
+ await db.query('update profiles set tags=$1 where user_id=$2',[JSON.stringify(['zemi:nakamori','pbl:sumoto','pbl:nantan','ibesta']),owner]);
+ for(const bad of [{a:1},['ゼミ'],['pbl:'],['x'.repeat(31)],[1],Array.from({length:61},(_,i)=>'pbl:p'+i)])
+  await assert.rejects(db.query('update profiles set tags=$1 where user_id=$2',[JSON.stringify(bad),owner]));
+ await as('helper');
+ assert.deepEqual((await db.query('select tags from profiles where user_id=$1',[owner])).rows[0].tags,['zemi:nakamori','pbl:sumoto','pbl:nantan','ibesta']);
+ assert.equal((await db.query("update profiles set tags='[]' where user_id=$1 returning user_id",[owner])).rows.length,0);
+ assert.deepEqual((await db.query('select tags from profiles where user_id=$1',[helper])).rows[0].tags,[]);
+ }finally{await db.close();}
+});
+
+test('the forest lists approved members with public fields and counts thanks, leaving out anonymous posts',async()=>{
+ const {db,as}=await setup();const rid='10000000-0000-0000-0000-000000000001';try{
+ await as('owner');const q=await insert(db,'question',{text:'質問',category:'work',anonymous:false});
+ await db.query("update profiles set role_label='市役所',tags=$1 where user_id=$2",[JSON.stringify(['pbl:sumoto']),owner]);
+ await as('helper');const named=await insert(db,'answer',{text:'名前で回答'},q);const hidden=await insert(db,'answer',{text:'匿名で回答',anonymous:true},q);
+ const b=await insert(db,'book',{title:'本',author:'著者',comment:'おすすめ',tag:'IT'});
+ await as('owner');await insert(db,'thanks',{},named);await insert(db,'thanks',{},hidden);await insert(db,'thanks',{},b);
+ await as('helper');await insert(db,'thanks',{},rid);
+ await as('other');const forest=(await db.query('select member_forest() as f')).rows[0].f;
+ assert.deepEqual(forest.map(m=>m.name).sort(),['helper','other','owner'],'承認済みの会員だけ（pendingは出ない）');
+ const by=Object.fromEntries(forest.map(m=>[m.name,m]));
+ assert.equal(by.helper.thanks,2,'匿名の回答へのありがとうは数えない（名前の回答1＋本1）');
+ assert.equal(by.owner.thanks,1,'募集へのありがとう');assert.equal(by.owner.role,'市役所');assert.deepEqual(by.owner.tags,['pbl:sumoto']);
+ assert.equal(by.other.mine,true);assert.equal(forest[0].name,'helper','多い順');
+ assert.ok(!('bio' in by.owner),'自己紹介の文は森に出さない');
+ await as('pending');assert.deepEqual((await db.query('select member_forest() as f')).rows[0].f,[]);
+ await as('anon');await assert.rejects(db.query('select member_forest()'));
  }finally{await db.close();}
 });
 
