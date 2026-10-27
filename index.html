@@ -631,15 +631,15 @@ a:focus-visible { outline: 3px solid var(--green); outline-offset: 3px; }
 .info-content .rules-list p { margin:0; font-size:14px; line-height:1.85; }
 @media(max-width:380px) { .q-card { padding:18px; } #utilityDialog { padding:22px; } }
 </style>
-<link rel="stylesheet" href="/front-features.css">
-<script src="/front-services.js"></script>
+<link rel="stylesheet" href="/front-features.css?v=20261027-03">
+<script src="/front-services.js?v=20261027-03"></script>
 </head>
 <body>
 <div id="app">
-  <button class="guide-launch" id="guideLaunch" aria-label="アプリの使い方を見る" hidden>
-    <span class="guide-label">使い方</span>
-  </button>
-
+  <nav class="app-tools" id="appTools" aria-label="アプリの案内" hidden>
+    <button class="news-launch" id="newsLaunch" hidden aria-label="アップデートのお知らせ">お知らせ</button>
+    <button class="guide-launch" id="guideLaunch" aria-label="アプリの使い方を見る" hidden><span class="guide-label">使い方</span></button>
+  </nav>
   <!-- きく（Q&Aフィード） -->
   <section class="view" id="view-qa" aria-label="質問一覧">
     <header class="app-head">
@@ -650,6 +650,7 @@ a:focus-visible { outline: 3px solid var(--green); outline-offset: 3px; }
       <input type="text" id="searchInput" placeholder="キーワードでさがす" aria-label="質問を検索">
     </div>
     <div class="chips" id="qaChips"></div>
+    <label class="curious-filter"><input type="checkbox" id="curiousOnly" role="switch"> 「気になる」を押した質問だけ表示</label>
     <div class="sort-row">並び:
       <select id="sortSel" aria-label="並び替え">
         <option value="new">新着順</option>
@@ -658,6 +659,7 @@ a:focus-visible { outline: 3px solid var(--green); outline-offset: 3px; }
         <option value="open">未回答のみ</option>
       </select>
     </div>
+    <div id="qaPickup"></div>
     <div id="qaList"></div>
   </section>
 
@@ -668,6 +670,7 @@ a:focus-visible { outline: 3px solid var(--green); outline-offset: 3px; }
   <section class="view" id="view-board" aria-label="ひろば">
     <h1 class="screen-title">ひろば</h1>
     <p class="screen-sub">「一緒にしませんか」の募集ボード🌱</p>
+    <div class="chips" id="boardChips"></div>
     <div class="board-toggle">
       <button class="switch on" id="openOnly" role="switch" aria-checked="true" aria-label="募集中のみ表示"></button>
       募集中のみ表示
@@ -745,18 +748,19 @@ a:focus-visible { outline: 3px solid var(--green); outline-offset: 3px; }
         <label for="askText">質問（300字まで）</label>
         <textarea id="askText" maxlength="300" placeholder="例: 公務員試験の勉強、いつから始めましたか?"></textarea>
         <div class="count-note" id="askCount">0 / 300</div>
+        <div class="ask-hints" id="askHints"></div>
       </div>
       <div class="field">
         <div class="anon-row">
           <div>
             <div class="anon-label">匿名できく</div>
-            <div class="anon-note">匿名でも、ちゃんと届くよ🌱</div>
+            <div class="anon-note">オンにすると、名前を出さずに投稿できます</div>
           </div>
-          <button class="switch on" id="anonToggle" role="switch" aria-checked="true" aria-label="匿名で投稿"></button>
+          <button class="switch" id="anonToggle" role="switch" aria-checked="false" aria-label="匿名で投稿"></button>
         </div>
       </div>
-      <div class="field"><label for="askImage">画像を添付（任意・1枚）</label>
-        <input id="askImage" type="file" accept="image/jpeg,image/png,image/webp">
+      <div class="field"><label>画像を添付（任意・1枚）</label>
+        <label class="file-pick"><input id="askImage" type="file" accept="image/jpeg,image/png,image/webp"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="9" cy="10" r="1.8"/><path d="M5 17l5-5 4 4 2-2 3 3"/></svg><span class="file-pick-text" data-default="画像をえらぶ">画像をえらぶ</span></label>
         <p class="count-note">JPEG・PNG・WebP、5MBまで。名前や個人情報が写っていないか確認してください。</p>
         <div id="askImagePreview"></div></div>
       <button class="btn-main" id="askSubmit" disabled>きいてみる</button>
@@ -785,6 +789,7 @@ a:focus-visible { outline: 3px solid var(--green); outline-offset: 3px; }
         <label for="recDeadline">締切日</label>
         <input type="date" id="recDeadline">
       </div>
+      <div class="field" id="recAttachmentField"></div>
       <button class="btn-main" id="recSubmit" disabled>募集する</button>
     </div>
   </div>
@@ -860,8 +865,9 @@ a:focus-visible { outline: 3px solid var(--green); outline-offset: 3px; }
   </div>
 </div>
 
-<script src="/app-main.js"></script>
-<script src="/front-features.js"></script>
+<script src="/content-tools.js?v=20261027-03"></script>
+<script src="/app-main.js?v=20261027-03"></script>
+<script src="/front-features.js?v=20261027-03"></script>
 <script type="module" src="/src/backend/main.js"></script>
 </body>
 </html>

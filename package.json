@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "node --test tests/front-services.test.mjs tests/backend/*.test.mjs",
+    "test": "node --test tests/content.test.mjs tests/front-services.test.mjs tests/backend/*.test.mjs",
     "deploy:cloudflare": "npm run build && wrangler deploy",
     "check:backend": "node --env-file=.env.local scripts/check-backend-config.mjs"
   },

@@ -1,3 +1,14 @@
+const content = window.SototunaContent;
+// Keep cached HTML compatible while a new static deployment propagates.
+if (!document.getElementById('appTools')) {
+  const tools = document.createElement('nav');
+  tools.id='appTools'; tools.className='app-tools'; tools.hidden=true;
+  tools.setAttribute('aria-label','アプリの案内');
+  const news=document.getElementById('newsLaunch'), guide=document.getElementById('guideLaunch');
+  if(news)tools.appendChild(news);
+  if(guide)tools.appendChild(guide);
+  document.getElementById('app').prepend(tools);
+}
 
 "use strict";
 /* =====================================================================
@@ -39,6 +50,18 @@ const QCATS = {
   research: { label: "研究・ゼミ", icon: "assets/icon-cat-research.png" },
   life:     { label: "くらし",     icon: "assets/icon-cat-life.png" },
 };
+// 「何を聞けばいいか思いつかない」人向けの書き出し。タップで入力欄に入る。
+const ASK_HINTS = {
+  career:   ["〇〇業界を選んだ決め手は何でしたか？", "就活で、やっておいてよかったことは？", "インターンにはいつ頃から参加しましたか？"],
+  work:     ["〇〇の仕事の1日の流れを教えてください", "入社してから驚いたことは何ですか？", "政策学部で学んだことは、仕事で生きていますか？"],
+  research: ["ゼミ選びで何を重視しましたか？", "卒論のテーマはどうやって決めましたか？", "フィールドワーク先はどう見つけましたか？"],
+  life:     ["学生のうちにやっておけばよかったことは？", "授業と課外活動の両立のコツは？", "京都でのおすすめの過ごし方は？"],
+};
+// 先生の似顔絵イラスト（public/assets/teachers/<id>.webp）。用意できた先生の id をここに足す。
+const TEACHER_ART = new Set([]);
+function teacherArt(t) {
+  return TEACHER_ART.has(t.id) ? `<img class="teacher-photo" src="/assets/teachers/${t.id}.webp" alt="" aria-hidden="true">` : uiIcon("assets/icon-nav-teachers.png", "teacher-art");
+}
 function uiIcon(src, cls = "mini-icon") {
   return `<img class="${cls}" src="${src}" alt="" aria-hidden="true">`;
 }
@@ -52,7 +75,7 @@ const RTYPES = {
   event:      { label: "イベント手伝い", icon: "assets/icon-nav-events.png" },
   other:      { label: "その他", icon: "assets/icon-cat-work.png" },
 };
-const BOOK_TAGS = ["すべて", "公務員", "金融", "メーカー", "IT", "教育", "NPO"];
+const BOOK_TAGS = ["すべて", "公務員", "金融", "メーカー", "IT", "教育", "NPO", "農業・林業", "漁業", "鉱業", "建設", "電気・ガス・水道", "運輸・郵便", "卸売・小売", "不動産", "専門・技術サービス", "宿泊・飲食", "生活関連サービス・娯楽", "医療・福祉", "複合サービス", "その他サービス", "業界共通・その他"];
 const SPEECHES = [
   "その質問、だれかが詳しいかも","匿名でも大丈夫だよ","ありがとうを伝えよう🌱","未回答の質問が待ってるよ",
   "先生図鑑、めくってみた?","10月はOB訪問月間だよ","11月は討論会ブラッシュアップ","9月5日は同窓会だよ",
@@ -346,7 +369,7 @@ function saveStore() {
   try { localStorage.setItem(STORE_KEY, JSON.stringify(store)); storageOk = true; return true; }
   catch (e) { storageOk = false; toast("保存できませんでした。画像を外すか、ブラウザの保存設定を確認してください。"); return false; }
 }
-let state = { cat: "all", sort: "new", search: "", bookTag: "すべて", openOnly: true,
+let state = { cat: "all", sort: "new", search: "", bookTag: "すべて", openOnly: true, boardType: "all", boardQuote: null,
   askCat: null, recType: null, meTab: "q",
   teacherSearch: "", evFilter: "now", evId: null, boardId: null, previewAttr: "", profileIcon: "🌱" };
 const PROFILE_ICONS = ["🌱", "🐸", "🐧", "🐰", "🦊", "🐹", "🐻", "🐱", "🐺", "🦉"];
@@ -474,6 +497,38 @@ function allQuestions() {
   return remoteQuestions;
 }
 function answersOf(qid) { return remoteAnswers.filter(a=>a.questionId===qid); }
+function thanksFor(id) { return communityRecords.filter(r=>r.kind==="thanks"&&r.targetId===id).length; }
+function thanksButton(id, n, own, attr = "data-react-thanks") {
+  const on = !!store.myThanks[id];
+  return `<button class="react-btn ${on ? "on" : ""}" ${attr}="${id}" ${own ? "disabled" : ""} aria-pressed="${on}" aria-label="${own ? "あなたの投稿へのありがとう" : "ありがとうを送る"}（${n}件）"><img src="/assets/icon-reaction-thanks-v01.png" alt=""><span>${n}</span></button>`;
+}
+// 回答の下に並ぶ返信。匿名で質問した人の返信は「質問者」とだけ出す。
+function answerRepliesHTML(answerId) {
+  const list = communityRecords.filter((r) => r.kind === "answer_reply" && r.targetId === answerId).sort((x, y) => Date.parse(x.createdAt) - Date.parse(y.createdAt));
+  if (!list.length) return "";
+  return `<div class="ans-replies">${list.map((r) => {
+    const who = r.mine ? store.profile.name + (r.data.anonymous ? "（匿名で表示中）" : "") : r.author ? r.author.name : r.data.byAsker ? "質問者" : "匿名のメンバー";
+    const chip = r.data.byAsker && who !== "質問者" ? '<span class="asker-chip">質問者</span>' : "";
+    return `<div class="ans-reply"><div class="ans-reply-head"><b>${esc(who)}</b>${chip}<span class="q-date">${relDate(Date.parse(r.createdAt))}</span></div><p>${content.text(r.data.text)}</p>${r.mine ? `<button class="chip" data-edit-community="${r.id}">編集</button><button class="delete-btn" data-delete-community="${r.id}">削除</button>` : ""}</div>`;
+  }).join("")}</div>`;
+}
+// 未回答の質問を、その分野で回答経験が多い人（本人の中で多い分野）に見せる。
+function pickupQuestions() {
+  const asked = new Map();
+  store.myAnswers.forEach((a) => { const q = allQuestions().find((x) => x.id === a.questionId); if (q) asked.set(q.category, (asked.get(q.category) || 0) + 1); });
+  const ranked = [...asked].sort((a, b) => b[1] - a[1]).map(([k]) => k);
+  const open = allQuestions().filter((q) => !q.mine && !q.solved && answersOf(q.id).length === 0).sort((a, b) => b.createdAt - a.createdAt);
+  const list = (ranked.length ? ranked.flatMap((k) => open.filter((q) => q.category === k)) : open).slice(0, 3);
+  return { cats: ranked.filter((k) => list.some((q) => q.category === k)), list };
+}
+function renderQaPickup() {
+  let box = $("#qaPickup");
+  if (!box) { $("#qaList").insertAdjacentHTML("beforebegin", '<div id="qaPickup"></div>'); box = $("#qaPickup"); }
+  const { cats, list } = pickupQuestions();
+  const show = list.length && state.cat === "all" && !state.search && !state.curiousOnly && state.sort === "new";
+  box.innerHTML = show ? `<section class="card qa-pickup"><h2>${cats.length ? `あなたがよく答える「${cats.map((k) => QCATS[k].label).join("・")}」で、回答を待っている質問` : "回答を待っている質問"}</h2>
+    ${list.map((q) => `<a class="qa-pickup-item" href="#/qa/${q.id}"><span>${esc(q.text)}</span><b>こたえる →</b></a>`).join("")}</section>` : "";
+}
 function meTooTotal(q) { return q.meToo; }
 function thanksTotal(qid) { return answersOf(qid).reduce((n,a)=>n+a.thanks,0); }
 function deleteOwnPost(kind,id) {
@@ -500,7 +555,9 @@ function renderQaChips() {
     `<button class="chip ${state.cat === k ? "on" : ""}" data-cat="${k}">${label}</button>`).join("");
 }
 function renderQaList() {
+  renderQaPickup();
   let list = allQuestions().filter((q) => state.cat === "all" || q.category === state.cat);
+  if (state.curiousOnly) list = list.filter(q=>store.myMeToo.includes(q.id));
   if (state.search) list = list.filter((q) => q.text.toLowerCase().includes(state.search.toLowerCase()));
   if (state.sort === "open") list = list.filter((q) => !q.solved && answersOf(q.id).length === 0);
   if (state.sort === "thanks") list = [...list].sort((a, b) => thanksTotal(b.id) - thanksTotal(a.id));
@@ -551,7 +608,7 @@ function renderDetail(qid) {
         ${qUserHTML(q)}
         <span class="q-date">${relDate(q.createdAt)}</span>
       </div>
-      <p class="q-text">${esc(q.text)}</p>
+      <p class="q-text">${content.text(q.text)}</p>
       ${questionImage(q.image)}
       <div class="thanks-row">
         <button class="metoo-btn ${meTooDone ? "done" : ""}" id="meTooBtn">
@@ -564,31 +621,31 @@ function renderDetail(qid) {
     </article>
     <div class="ans-count-label">回答 ${ans.length}件</div>
     ${sorted.length ? sorted.map((a) => {
-      const u = a.mine ? { name: store.profile.name, avatar: store.profile.avatar || "🌱", attr: store.profile.attr, gen: store.profile.gen } : a.owner;
-      const myN = store.myThanks[a.id] || 0;
+      const anon = a.anonymous && !a.mine;
+      const u = a.mine ? { name: store.profile.name + (a.anonymous ? "（匿名で表示中）" : ""), avatar: store.profile.avatar || "🌱", attr: store.profile.attr, gen: store.profile.gen } : anon ? { name: "匿名のメンバー", avatar: "🌱" } : a.owner;
       const best = q.bestAnswerId === a.id;
       return `<article class="card answer ${best ? "best" : ""}" data-ans="${a.id}">
         ${best ? `<span class="ba-ribbon">🎗ベストアンサー</span>` : ""}
         <div class="ans-head">
-          <span class="q-avatar">${avatarHTML(u.avatar)}</span>
-          <span class="ans-name">${esc(u.name)}</span>
-          ${graduationLabel(u.gen, u.attr) ? `<span class="ans-gen">${esc(graduationLabel(u.gen, u.attr))}</span>` : ""}
-          ${badge(u.attr)}
+          <span class="ans-who">
+            <span class="q-avatar ${anon ? "anon" : ""}">${avatarHTML(u.avatar)}</span>
+            <span class="ans-name">${esc(u.name)}</span>
+            ${!anon && graduationLabel(u.gen, u.attr) ? `<span class="ans-gen">${esc(graduationLabel(u.gen, u.attr))}</span>` : ""}
+            ${anon ? "" : badge(u.attr)}
+          </span>
+          ${thanksButton(a.id, a.thanks, a.mine, "data-thanks")}<button class="quote-btn" type="button" data-answer-reply="${a.id}" aria-label="この回答に返信">返信</button>
         </div>
-        <p class="ans-text">${esc(a.text)}</p>
-        <div class="thanks-row">
-          <button class="thanks-btn ${myN ? "mine" : ""}" data-thanks="${a.id}" ${a.mine?"disabled":""} aria-label="ありがとうを送る" aria-pressed="${!!myN}">
-            <span class="sprout"><img class="reaction-icon" src="/assets/icon-reaction-thanks-v01.png" alt=""></span>ありがとう <span class="tn">${a.thanks}</span>
-          </button>
-        </div>
+        <p class="ans-text">${content.text(a.text)}</p>
+        ${answerRepliesHTML(a.id)}
         ${q.mine ? `<button class="chip" data-best-answer="${a.id}">${best?"ベストアンサーを解除":"ベストアンサーにする"}</button>` : ""}
         ${a.mine ? `<div class="post-delete-row"><button class="delete-btn" data-delete-answer="${a.id}">回答を削除</button></div>` : ""}
       </article>`;
     }).join("")
     : `<div class="empty"><div class="mascot">${mascotPNG()}</div>まだ回答がないみたい。だれかの登場を待とう…！<br>あなたが答えられるなら、ぜひ🌱</div>`}
     <div class="ans-form">
-      <div class="ans-guide">経験ベースで、やさしく🌱（社外秘はNG）。回答はよびな（${esc(store.profile.name)}）で表示されます</div>
+      <div class="ans-guide">経験ベースで、やさしく🌱（社外秘はNG）。回答はよびな（${esc(store.profile.name)}）で表示されます。匿名にもできます</div>
       <textarea id="ansText" maxlength="300" placeholder="こたえを書く…"></textarea>
+      <label class="ans-anon"><input type="checkbox" id="ansAnon" role="switch"> 匿名でこたえる</label>
       <button class="btn-main ans-submit" id="ansSubmit">こたえる</button>
     </div>
     <section class="related-questions"><h2 class="ans-count-label">同じテーマの質問</h2>
@@ -616,8 +673,16 @@ function renderDetail(qid) {
 function allRecruits() {
   return remoteRecruits;
 }
+function renderBoardChips() {
+  let box = $("#boardChips");
+  if (!box) { $("#boardList").insertAdjacentHTML("beforebegin", '<div class="chips" id="boardChips"></div>'); box = $("#boardChips"); }
+  const types = [["all", "すべて"]].concat(Object.entries(RTYPES).map(([k, t]) => [k, t.label]));
+  box.innerHTML = types.map(([k, label]) => `<button class="chip ${state.boardType === k ? "on" : ""}" data-boardtype="${k}">${k === "all" ? "" : uiIcon(RTYPES[k].icon)}${label}</button>`).join("");
+}
 function renderBoard() {
+  renderBoardChips();
   let list = allRecruits();
+  if (state.boardType !== "all") list = list.filter((r) => r.type === state.boardType);
   if (state.openOnly) list = list.filter((r) => r.status === "open" && r.deadline >= new Date().toLocaleDateString("sv-SE"));
   $("#boardList").innerHTML = list.length ? list.map((r) => {
     const u = r.mine ? { name: store.profile.name + "（あなた）", attr: store.profile.attr, gen: store.profile.gen } : r.owner;
@@ -628,9 +693,10 @@ function renderBoard() {
       <div class="r-head">
         <span class="r-type">${uiIcon(RTYPES[r.type].icon)}${RTYPES[r.type].label}</span>
         <span class="r-state ${closed ? "closed" : "open"}">${closed ? "受付終了" : "募集中"}</span>
+        ${thanksButton(r.id, thanksFor(r.id), r.mine)}
       </div>
       <h2 class="r-title">${esc(r.title)}</h2>
-      <p class="r-body">${esc(r.body)}</p>
+      <p class="r-body">${content.text(r.body)}</p>${content.attachment(r.attachment)}
       <div class="r-meta">${esc(u.name)}${graduationLabel(u.gen, u.attr) ? "（" + esc(graduationLabel(u.gen, u.attr)) + "）" : ""} ${badge(u.attr)}　締切 ${esc((r.deadline || "").slice(5).replace("-", "/"))}</div>
       <div class="help-row">
         <button class="help-btn ${helped ? "mine" : ""}" data-help="${r.id}" ${r.mine || closed ? "disabled" : ""}>
@@ -645,6 +711,7 @@ function renderBoard() {
 function renderBoardDetail(id) {
   const r = allRecruits().find((item) => item.id === id);
   if (!r) { go("#/board"); return; }
+  if (state.boardId !== id) state.boardQuote = null;
   state.boardId = id;
   const u = r.mine ? { name: store.profile.name + "（あなた）", avatar:store.profile.avatar || "🌱", attr: store.profile.attr, gen:store.profile.gen } : r.owner;
   const helped = store.myHelps.includes(r.id);
@@ -653,16 +720,24 @@ function renderBoardDetail(id) {
   $("#view-boarddetail").innerHTML = `
     <button class="detail-back" data-boardback>← ひろばへ</button>
     <article class="card board-detail-head">
-      <div class="r-head"><span class="r-type">${uiIcon(RTYPES[r.type].icon)}${RTYPES[r.type].label}</span><span class="r-state ${closed ? "closed" : "open"}">${closed ? "受付終了" : "募集中"}</span></div>
+      <div class="r-head"><span class="r-type">${uiIcon(RTYPES[r.type].icon)}${RTYPES[r.type].label}</span><span class="r-state ${closed ? "closed" : "open"}">${closed ? "受付終了" : "募集中"}</span>${thanksButton(r.id, thanksFor(r.id), r.mine)}</div>
       <h1 class="r-title" style="font-size:19px">${esc(r.title)}</h1>
-      <p class="r-body">${esc(r.body)}</p>
+      <p class="r-body">${content.text(r.body)}</p>${content.attachment(r.attachment)}
       <div class="r-meta">${esc(u.name)}${graduationLabel(u.gen, u.attr) ? "（" + esc(graduationLabel(u.gen, u.attr)) + "）" : ""} ${badge(u.attr)}　締切 ${esc((r.deadline || "").slice(5).replace("-", "/"))}</div>
       <div class="help-row"><button class="help-btn ${helped ? "mine" : ""}" data-detailhelp="${r.id}" ${r.mine || closed ? "disabled" : ""}>${r.mine ? "あなたの募集" : closed ? "受付終了" : helped ? `${uiIcon("/assets/icon-help-v01.png", "action-icon")}協力内容を確認` : `${uiIcon("/assets/icon-help-v01.png", "action-icon")}協力する`}</button><span class="help-count">${n}人が協力中</span></div>
-      ${r.mine ? `<div class="post-delete-row"><button class="delete-btn" data-delete-recruit="${r.id}">募集を削除</button></div>` : ""}
+      ${r.mine ? `<div class="post-delete-row"><button class="chip" data-edit-recruit="${r.id}">募集を編集</button><button class="delete-btn" data-delete-recruit="${r.id}">募集を削除</button></div>` : ""}
     </article>
-    <section class="card"><h2>みんなに見えるやりとり</h2>${communityRecords.filter(p=>p.kind==='board_reply'&&p.targetId===id).map(p=>`<div class="thread-item"><div><b>${esc(p.author.name)}</b><p>${esc(p.data.text)}</p>${p.mine?`<button class="delete-btn" data-delete-community="${p.id}">コメントを削除</button>`:''}</div></div>`).join('')||'<p>まだコメントはありません。</p>'}
-    ${closed?'':`<form id="boardReplyForm" class="front-form"><label for="boardReplyText">この募集について話す（全参加者に公開）</label><textarea id="boardReplyText" required maxlength="1000"></textarea><button class="btn-main" type="submit">送信する</button></form>`}</section>`;
+    <section class="card"><h2>みんなに見えるやりとり</h2>${communityRecords.filter(p=>p.kind==='board_reply'&&p.targetId===id).map(p=>`<div class="board-comment"><div><div class="comment-head"><b>${esc(p.author.name)}</b>${thanksButton(p.id, thanksFor(p.id), p.mine)}<button class="quote-btn" type="button" data-quote="${p.id}" aria-label="${esc(p.author.name)}さんのコメントに返信">返信</button></div><p>${content.text(p.data.text)}</p>${content.attachment(p.data.attachment)}${p.mine?`<button class="chip" data-edit-community="${p.id}">コメントを編集</button><button class="delete-btn" data-delete-community="${p.id}">コメントを削除</button>`:''}</div></div>`).join('')||'<p>まだコメントはありません。</p>'}
+    ${closed?'':`<form id="boardReplyForm" class="front-form"><label for="boardReplyText">この募集について話す（全参加者に公開）</label><div id="boardQuotePreview"></div><textarea id="boardReplyText" required maxlength="1000"></textarea>${content.picker("boardReplyAttachment")}<button class="btn-main" type="submit">送信する</button></form>`}</section>`;
+  if($('#boardReplyForm')) state.boardReplyAttachment=content.bind('boardReplyAttachment');
   $('#boardReplyForm')?.addEventListener('submit',e=>{e.preventDefault();window.SototunaBackend?.postBoardReply(id,e.submitter);});
+  renderBoardQuote();
+}
+function renderBoardQuote() {
+  const box = $("#boardQuotePreview"), text = $("#boardReplyText"); if (!box || !text) return;
+  box.innerHTML = state.boardQuote ? `<div class="quote-preview">${content.text(state.boardQuote)}<button class="chip" type="button" id="boardQuoteClear">返信をやめる</button></div>` : "";
+  text.maxLength = 1000 - (state.boardQuote || "").length;
+  $("#boardQuoteClear")?.addEventListener("click", () => { state.boardQuote = null; renderBoardQuote(); });
 }
 
 /* =====================================================================
@@ -684,7 +759,7 @@ function renderTeachers() {
     <button class="tcard" data-teacher="${t.id}" aria-label="${esc(t.name)}先生のカード">
       <div class="tcard-inner">
         <div class="tface">
-          <span class="t-avatar">${uiIcon("assets/icon-nav-teachers.png", "teacher-art")}</span>
+          <span class="t-avatar ${TEACHER_ART.has(t.id) ? "has-art" : ""}">${teacherArt(t)}</span>
           <span class="t-name">${esc(t.name)}</span>
           <span class="t-title">${esc(t.title)}</span>
           <span class="t-field">${esc(cut(t.field, 22))}</span>
@@ -705,7 +780,7 @@ function openTeacherSheet(id) {
   const sec = (title, body) => body ? `<div class="tsheet-sec"><h4>${title}</h4>${nl2p(body)}</div>` : "";
   $("#teacherSheet").innerHTML = `
     <div class="tsheet-head">
-      <span class="tsheet-av">${uiIcon("assets/icon-nav-teachers.png", "teacher-art")}</span>
+      <span class="tsheet-av ${TEACHER_ART.has(t.id) ? "has-art" : ""}">${teacherArt(t)}</span>
       <div>
         <div class="tsheet-name">${esc(t.name)} <span class="t-title">${esc(t.title)}</span></div>
         <div class="tsheet-field">${esc(t.field)}</div>
@@ -792,7 +867,7 @@ function renderBooks() {
         <div class="book-title">『${esc(b.title)}』</div>
         <div class="book-author">${esc(b.author)}<span class="book-tag" style="margin-left:8px">${esc(b.tag)}</span></div>
         <div class="book-reco">${avatarHTML(u.avatar)} ${esc(u.name)}${graduationLabel(u.gen, u.attr) ? "（" + esc(graduationLabel(u.gen, u.attr)) + "）" : ""}${badge(u.attr)}</div>
-        <div class="book-comment">${esc(b.comment)}</div>${b.mine?`<button class="delete-btn" data-delete-community="${b.id}">紹介を削除</button>`:""}
+        <div class="book-comment">${content.text(b.comment)}</div><button class="book-thanks ${store.myThanks[b.id]?'on':''}" data-book-thanks="${b.id}" aria-pressed="${!!store.myThanks[b.id]}" ${b.mine?'disabled':''}><img src="/assets/icon-reaction-thanks-v01.png" alt="">ありがとう <span>${b.thanks||0}</span></button>${b.mine?`<button class="chip" data-edit-community="${b.id}">紹介を編集</button><button class="delete-btn" data-delete-community="${b.id}">紹介を削除</button>`:""}
       </div>
     </article>`;
   }).join("") : `<div class="empty">まだ本の紹介がありません。おすすめの1冊を登録できます。</div>`;
@@ -1047,6 +1122,24 @@ $("#qaList").addEventListener("keydown", (e) => {
   go("#/qa/" + c.dataset.q);
 });
 
+/* 入力漏れ：ブラウザ標準の吹き出しの代わりに、欄の下へアプリの見た目で出す */
+document.addEventListener("invalid", (e) => {
+  const el = e.target; e.preventDefault();
+  const anchor = el.closest(".file-pick") || el;
+  el.classList.add("is-invalid");
+  let msg = anchor.nextElementSibling?.classList.contains("field-msg") ? anchor.nextElementSibling : null;
+  if (!msg) { anchor.insertAdjacentHTML("afterend", '<p class="field-msg" role="alert"></p>'); msg = anchor.nextElementSibling; }
+  msg.textContent = el.validity.valueMissing ? (el.type === "file" ? "ファイルを選んでください" : el.tagName === "SELECT" ? "選んでください" : "ここに入力してください") : el.validationMessage;
+  if (el.form && [...el.form.elements].find((x) => x.willValidate && !x.validity.valid) === el) el.focus();
+}, true);
+document.addEventListener("change", (e) => { if (e.target.matches?.(".file-pick input")) content.syncPick(e.target); });
+["input", "change"].forEach((type) => document.addEventListener(type, (e) => {
+  const el = e.target; if (!el.classList?.contains("is-invalid") || !el.validity.valid) return;
+  el.classList.remove("is-invalid");
+  const anchor = el.closest(".file-pick") || el;
+  if (anchor.nextElementSibling?.classList.contains("field-msg")) anchor.nextElementSibling.remove();
+}, true));
+
 /* 質問投稿 */
 $("#askFab").addEventListener("click", () => openAsk());
 function askCatsHTML() {
@@ -1067,6 +1160,7 @@ function openAsk(prefill = "", category = null, editId = null) {
   state.editQuestion = editId;
   state.askImage = null;
   $("#askImage").value = "";
+  content.syncPick?.($("#askImage"));
   $("#askImagePreview").innerHTML = "";
   $("#askSubmit").textContent = editId ? "変更を保存" : "きいてみる";
   $("#askOverlay .sheet-title").textContent = editId ? "質問を編集する" : "みんなに、きいてみよう";
@@ -1075,9 +1169,10 @@ function openAsk(prefill = "", category = null, editId = null) {
   renderAskImage();
   state.askCat = category || (d ? d.category : null);
   $("#askText").value = prefill || (d ? d.text : "");
-  $("#anonToggle").classList.toggle("on", d ? d.anonymous !== false : true);
+  $("#anonToggle").classList.toggle("on", !!d?.anonymous);
   $("#anonToggle").setAttribute("aria-checked", $("#anonToggle").classList.contains("on"));
   $("#askCats").innerHTML = askCatsHTML();
+  renderAskHints();
   $("#askCount").textContent = $("#askText").value.length + " / 300";
   askValidate();
   $("#askOverlay").classList.add("on");
@@ -1087,7 +1182,20 @@ $("#askCats").addEventListener("click", (e) => {
   const b = e.target.closest("[data-askcat]"); if (!b) return;
   state.askCat = b.dataset.askcat;
   $("#askCats").innerHTML = askCatsHTML();
+  renderAskHints();
   askValidate(); saveDraft();
+});
+function renderAskHints() {
+  let box = $("#askHints");
+  if (!box) { $("#askCount").insertAdjacentHTML("afterend", '<div class="ask-hints" id="askHints"></div>'); box = $("#askHints"); }
+  const hints = state.askCat ? ASK_HINTS[state.askCat] : Object.values(ASK_HINTS).map((h) => h[0]);
+  box.innerHTML = state.editQuestion ? "" : `<p>書き出しに迷ったら、タップして使ってください</p>${hints.map((h) => `<button type="button" class="chip" data-askhint>${esc(h)}</button>`).join("")}`;
+}
+document.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-askhint]"); if (!b) return;
+  const text = $("#askText");
+  text.value = (text.value.trim() ? text.value.replace(/\s*$/, "\n") : "") + b.textContent;
+  text.dispatchEvent(new Event("input")); text.focus();
 });
 $("#askText").addEventListener("input", () => {
   $("#askCount").textContent = $("#askText").value.length + " / 300";
@@ -1105,6 +1213,10 @@ $("#askSubmit").addEventListener("click",()=>window.SototunaBackend?.ask());
 
 
 /* ひろば操作 */
+document.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-boardtype]"); if (!b) return;
+  state.boardType = b.dataset.boardtype; renderBoard();
+});
 $("#openOnly").addEventListener("click", () => {
   state.openOnly = !state.openOnly;
   $("#openOnly").classList.toggle("on", state.openOnly);
@@ -1112,6 +1224,7 @@ $("#openOnly").addEventListener("click", () => {
   renderBoard();
 });
 $("#boardList").addEventListener("click", (e) => {
+  if(e.target.closest("a,[data-react-thanks]")) return;
   const b = e.target.closest("[data-help]");
   if (b) {
     if (b.disabled) return;
@@ -1123,12 +1236,19 @@ $("#boardList").addEventListener("click", (e) => {
   if (c) go("#/board/" + c.dataset.recruit);
 });
 $("#boardList").addEventListener("keydown", (e) => {
-  if (e.key !== "Enter" || e.target.closest("[data-help]")) return;
+  if (e.key !== "Enter" || e.target.closest("[data-help],a")) return;
   const c = e.target.closest("[data-recruit]");
   if (c) go("#/board/" + c.dataset.recruit);
 });
 $("#view-boarddetail").addEventListener("click", (e) => {
   if (e.target.closest("[data-boardback]")) { go("#/board"); return; }
+  const quote = e.target.closest("[data-quote]");
+  if (quote) {
+    const p = communityRecords.find((x) => x.id === quote.dataset.quote); if (!p) return;
+    state.boardQuote = content.quote(p.author.name, p.data.text); renderBoardQuote();
+    $("#boardReplyForm")?.scrollIntoView({ block: "center" }); $("#boardReplyText")?.focus();
+    return;
+  }
   const deleteRecruit = e.target.closest("[data-delete-recruit]");
   if (deleteRecruit) {
     if (deleteOwnPost("recruit", deleteRecruit.dataset.deleteRecruit)) go("#/board");
@@ -1147,15 +1267,19 @@ $("#view-boarddetail").addEventListener("click", (e) => {
   const id = b.dataset.detailhelp;
   openCooperation(id);
 });
-$("#recruitFab").addEventListener("click", () => {
-  state.recType = null;
-  $("#recTypes").innerHTML = Object.entries(RTYPES).map(([k, t]) =>
-    `<button class="attr-chip" data-rectype="${k}">${uiIcon(t.icon)}${t.label}</button>`).join("");
-  $("#recTitle").value = ""; $("#recBody").value = ""; $("#recDeadline").value = "";
-  $("#recCount").textContent = "0 / 200";
-  $("#recSubmit").disabled = true;
-  $("#recruitOverlay").classList.add("on");
-});
+function openRecruitmentEditor(r=null) {
+  state.editRecruitment=r?.id||null; state.recType=r?.type||null;
+  $('#recTypes').innerHTML=Object.entries(RTYPES).map(([k,t])=>`<button class="attr-chip ${state.recType===k?'on':''}" data-rectype="${k}">${uiIcon(t.icon)}${t.label}</button>`).join('');
+  $('#recTitle').value=r?.title||'';$('#recBody').value=r?.body||'';$('#recDeadline').value=r?.deadline||'';
+  $('#recCount').textContent=$('#recBody').value.length+' / 200';$('#recSubmit').textContent=r?'変更を保存する':'募集する';
+  $('#recruitOverlay .sheet-title').textContent=r?'募集を編集する':'「一緒にしませんか」を募集する';
+  $('#recAttachmentField').innerHTML=content.picker('recAttachment',{pdf:true});
+  state.recAttachment=content.bind('recAttachment',r?.attachment||null,{pdf:true});
+  recValidate();$('#recruitOverlay').classList.add('on');
+}
+$('#recruitFab').addEventListener('click',()=>openRecruitmentEditor());
+document.addEventListener('click',e=>{const b=e.target.closest('[data-edit-recruit]');if(b){const r=allRecruits().find(r=>r.id===b.dataset.editRecruit&&r.mine);if(r)openRecruitmentEditor(r);}});
+$('#curiousOnly').addEventListener('change',e=>{state.curiousOnly=e.target.checked;renderQaList();});
 function recValidate() {
   $("#recSubmit").disabled = !(state.recType && $("#recTitle").value.trim() && $("#recBody").value.trim() && $("#recDeadline").value);
 }
@@ -1246,6 +1370,7 @@ utilityDialog.id = 'utilityDialog';
 utilityDialog.setAttribute('aria-labelledby','utilityTitle');
 document.body.appendChild(utilityDialog);
 function openUtility(title, body) {
+  utilityDialog.classList.remove("news-dialog");
   utilityDialog.innerHTML = `<div class="guide-head"><h2 id="utilityTitle">${esc(title)}</h2><button class="sheet-close" id="utilityClose" aria-label="閉じる">×</button></div><div class="info-content">${body}</div>`;
   $('#utilityClose').onclick = () => utilityDialog.close();
   utilityDialog.showModal();
@@ -1295,7 +1420,7 @@ function questionImage(data) {
 }
 function renderAskImage() {
   $('#askImagePreview').innerHTML = questionImage(state.askImage) + (state.askImage ? '<button class="detail-back" type="button" id="removeAskImage">画像を外す</button>' : '');
-  $('#removeAskImage')?.addEventListener('click',()=>{ state.askImage=null; $('#askImage').value=''; renderAskImage(); saveDraft(); });
+  $('#removeAskImage')?.addEventListener('click',()=>{ state.askImage=null; $('#askImage').value=''; content.syncPick?.($('#askImage')); renderAskImage(); saveDraft(); });
 }
 let imageReadVersion = 0;
 $('#askImage').addEventListener('change', async e => {
@@ -1332,8 +1457,14 @@ document.querySelectorAll("#app > .view,#app > .tabbar,#app > .fab,#guideLaunch,
 if (!location.hash) { try { history.replaceState(null, "", "#/qa"); } catch (e) {} }
 window.SototunaApp = {
   get store() { return store; }, get state() { return state; }, get recruits() { return remoteRecruits; },
-  esc, toast, openUtility, openAsk, avatarHTML, get seminars() {return TOURON_POSTS.map(p=>p.seminar);}, get dialog() { return utilityDialog; }, go,
+  content, bookTags:BOOK_TAGS, esc, toast, openUtility, openAsk, avatarHTML, get seminars() {return TOURON_POSTS.map(p=>p.seminar);}, get dialog() { return utilityDialog; }, go,
   render() { renderRoute(); },
+  // 写真を選んで戻ったときなどの再描画で、書きかけの文や返信先を消さないための確認。
+  hasDraft() {
+    if (state.boardQuote) return true;
+    return [...document.querySelectorAll(".view.on, .overlay.on, #utilityDialog[open]")].some((box) =>
+      [...box.querySelectorAll("textarea, input[type=text], input[type=file]")].some((el) => el.id !== "searchInput" && (el.type === "file" ? el.files.length > 0 : el.value.trim() !== "")));
+  },
   start(user, profile) {
     STORE_KEY = "sototuna_beta_" + user.id;
     store = Object.assign(emptyStore(), loadStore() || {});
@@ -1350,20 +1481,39 @@ window.SototunaApp = {
     store.myMeToo=own.filter(r=>r.kind==='curious').map(r=>r.target_id);
     store.myThanks=Object.fromEntries(own.filter(r=>r.kind==='thanks').map(r=>[r.target_id,1]));
     store.myEvents=own.filter(r=>r.kind==='event_join').map(r=>r.target_id);store.obHost=own.some(r=>r.kind==='host');
-    store.receivedThanks=store.myAnswers.reduce((n,r)=>n+r.thanks,0);
+    const boardOwn=new Set([...store.myRecruits.map(r=>r.id),...records.filter(r=>r.kind==='board_reply'&&r.mine).map(r=>r.id)]);
+    store.receivedThanks=[...store.myAnswers,...store.myBooks].reduce((n,r)=>n+(r.thanks||0),0)+records.filter(r=>r.kind==='thanks'&&boardOwn.has(r.targetId)).length;
     store.draft=own.find(r=>r.kind==='draft')?.payload || null;
   },
   snapshot(recruits, helps) { remoteRecruits = recruits; store.myRecruits = recruits.filter(r=>r.mine); store.myHelps = helps; },
-  reveal() { document.querySelectorAll("#app > .view,#app > .tabbar,#app > .fab,#guideLaunch,#tsunamaru").forEach(el=>el.inert=false); $("#authGate").classList.remove("on"); $("#guideLaunch").hidden=false; renderRoute(); },
+  reveal() { document.querySelectorAll("#app > .view,#app > .tabbar,#app > .fab,#guideLaunch,#tsunamaru").forEach(el=>el.inert=false); $("#authGate").classList.remove("on"); $("#guideLaunch").hidden=false; $("#newsLaunch").hidden=false; $("#appTools").hidden=false; renderRoute(); },
   reset() {
-    backendAuthenticated=false; remoteRecruits=[];remoteQuestions=[];remoteAnswers=[];remoteBooks=[];communityRecords=[];remoteFiles=[]; store=emptyStore(); state.boardId=null; state.meTab="q";
+    backendAuthenticated=false; remoteRecruits=[];remoteQuestions=[];remoteAnswers=[];remoteBooks=[];communityRecords=[];remoteFiles=[]; store=emptyStore(); state.boardId=null; state.meTab="q"; state.curiousOnly=false; $("#curiousOnly").checked=false;
     document.querySelectorAll(".view,.overlay,.guide-overlay").forEach(el=>el.classList.remove("on"));
     document.querySelectorAll("#app > .view,#app > .tabbar,#app > .fab,#guideLaunch,#tsunamaru").forEach(el=>el.inert=true);
     document.querySelectorAll(".fab").forEach(el=>el.hidden=true);
     $("#tsunamaru").hidden=true;
-    $("#authGate").classList.add("on"); $("#guideLaunch").hidden=true;
+    $("#authGate").classList.add("on"); $("#guideLaunch").hidden=true; $("#newsLaunch").hidden=true; $("#appTools").hidden=true;
     if(utilityDialog.open) utilityDialog.close();
     document.querySelectorAll(".view").forEach(el=>{ if(["view-boarddetail","view-detail","view-eventdetail","view-me"].includes(el.id)) el.innerHTML=""; });
   },
   saveLocal() { return saveStore(); }, closeProfileEditor
 };
+
+function openUpdateNews() {
+  openUtility('お知らせ', `<article class="update-news">
+    <div class="update-date"><span>アップデート</span><time datetime="2026-10-27">2026.10.27</time></div>
+    <h3 class="update-title">ひろばでも、<br>ありがとう。</h3>
+    <p class="update-intro">みなさんから届いた声をもとに、<br>読みやすく、伝えやすくしました。</p>
+    <div class="update-changes">
+      <section class="update-change"><img src="/assets/icon-reaction-thanks-v01.png" alt=""><div><h4>ひろばにも「ありがとう」</h4><p>募集やコメントに送れます。回答のありがとうは右上に小さくまとめ、1画面に多く並ぶようにしました。</p></div></section>
+      <section class="update-change"><img src="/assets/icon-nav-board.png" alt=""><div><h4>コメント・回答に返信</h4><p>ひろばのコメントにも、きくの回答にも「返信」できます。どの発言への返事か分かる形で残ります。</p></div></section>
+      <section class="update-change"><img src="/assets/icon-nav-ask.png" alt=""><div><h4>回答も匿名でOK</h4><p>質問も回答も、名前を出すのが基本です。匿名にしたいときだけオンにしてください。</p></div></section>
+    </div>
+    <div class="update-more"><span>ほかにも</span><p>ひろばを募集の種類で絞り込めます。質問の書き出しヒントと、回答を待っている質問の案内を追加。<br>iPhoneで画面が少し右にずれる問題、画像を選ぶと書きかけの文が消える問題を直しました。OB訪問の一覧は勤務先だけを表示します。</p></div>
+    <button type="button" class="update-dismiss" id="updateDismiss">閉じる</button>
+  </article>`);
+  utilityDialog.classList.add('news-dialog');
+  $('#updateDismiss').onclick=()=>utilityDialog.close();
+}
+$('#newsLaunch').onclick=openUpdateNews;

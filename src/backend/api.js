@@ -48,9 +48,13 @@ export function createApi(client) {
     async listRecruitments() {
       return unwrap(await client.from('recruitments').select('*,owner:profiles!owner_id(display_name,affiliation,generation)').order('created_at', {ascending:false}));
     },
-    async createRecruitment({ kind, title, body, deadline }) {
+    async createRecruitment({ kind, title, body, deadline, attachment = null }) {
       const current = await user();
-      return unwrap(await client.from('recruitments').insert({owner_id:current.id, kind, title:title.trim(), body:body.trim(), deadline}).select().single());
+      return unwrap(await client.from('recruitments').insert({owner_id:current.id, kind, title:title.trim(), body:body.trim(), deadline, attachment}).select().single());
+    },
+    async updateRecruitment(id,{kind,title,body,deadline,attachment=null}) {
+      const current=await user();
+      return unwrap(await client.from('recruitments').update({kind,title:title.trim(),body:body.trim(),deadline,attachment}).eq('id',id).eq('owner_id',current.id).select().single());
     },
     async cooperate({ recruitmentId, email, consent }) {
       if (consent !== true) throw new Error('メールアドレス共有への同意が必要です。');
@@ -71,6 +75,7 @@ export function createApi(client) {
       if (recruitment.owner_id !== current.id) throw new Error('この募集の募集者だけが連絡先を確認できます。');
       return unwrap(await client.from('cooperations').select('helper_id,contact_email,consent_at,helper:profiles!helper_id(display_name)').eq('recruitment_id',recruitmentId).order('consent_at'));
     },
+    async recordAppVisit() { unwrap(await client.rpc('record_app_visit')); },
     async communityFeed() { return unwrap(await client.rpc('community_feed')); },
     async ownRecords() { const current=await user(); return unwrap(await client.from('community_records').select('*').eq('owner_id',current.id)); },
     async notices() { return unwrap(await client.from('community_notifications').select('*').order('created_at',{ascending:false})); },

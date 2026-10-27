@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {BETA_IDS,issueAccounts} from '../../scripts/issue-beta-accounts.mjs';
-test('issue 15 accounts without changing an existing password or losing credentials on approval failure',async()=>{
+test('issue 50 accounts without changing an existing password or losing credentials on approval failure',async()=>{
   const calls=[],records=[];
   const request=async(path,options={})=>{
     calls.push({path,...options});
@@ -10,10 +10,10 @@ test('issue 15 accounts without changing an existing password or losing credenti
     return {};
   };
   const result=await issueAccounts({request,record:async r=>records.push(r),password:()=> 'generated-random-password'});
-  assert.deepEqual(result,{total:15,created:14});
-  assert.equal(BETA_IDS.at(-1),'beta015');
+  assert.deepEqual(result,{total:50,created:49});
+  assert.equal(BETA_IDS.at(-1),'beta050');
   assert.equal(records[0].password,'');
-  assert.equal(calls.filter(c=>c.method==='POST'&&c.path==='/auth/v1/admin/users').length,14);
+  assert.equal(calls.filter(c=>c.method==='POST'&&c.path==='/auth/v1/admin/users').length,49);
   assert.ok(calls.filter(c=>c.path==='/auth/v1/admin/users').every(c=>c.body.email_confirm===true));
   assert.ok(calls.every(c=>!c.path.includes('invite')));
   const persisted=[];
@@ -23,4 +23,19 @@ test('issue 15 accounts without changing an existing password or losing credenti
     throw new Error('approval unavailable');
   },record:async r=>persisted.push(r),password:()=> 'recoverable-password'}),/approval unavailable/);
   assert.equal(persisted[0].password,'recoverable-password');
+});
+
+test('expanding 15 issued IDs to 50 only creates the 35 missing accounts',async()=>{
+ const existing=Array.from({length:15},(_,i)=>({id:'old-'+i,email:`beta${String(i+1).padStart(3,'0')}@beta.sototuna.invalid`}));
+ const writes=[],recorded=[];
+ const result=await issueAccounts({request:async(path,options={})=>{
+  if(path.includes('?page='))return {users:existing};
+  writes.push({path,...options});
+  if(path==='/auth/v1/admin/users')return {id:'new-'+options.body.email};return {};
+ },record:async row=>recorded.push(row),password:()=> 'a-new-private-random-password'});
+ assert.deepEqual(result,{total:50,created:35});
+ assert.equal(recorded.filter(row=>row.password==='').length,15);
+ assert.ok(recorded.slice(0,15).every(row=>row.existing));
+ assert.ok(!writes.some(row=>row.method==='PUT'||row.method==='PATCH'));
+ assert.equal(writes.filter(row=>row.path==='/auth/v1/admin/users').length,35);
 });

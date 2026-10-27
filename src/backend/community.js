@@ -18,7 +18,7 @@ export function createCommunity({api,app,refresh,write,getUser,getEpoch}) {
    const mapped=r=>({id:r.id,...r.data,userId:r.ownerId,mine:r.mine,owner:r.author,createdAt:Date.parse(r.createdAt)});
    const q=records.filter(r=>r.kind==='question').map(r=>({...mapped(r),meToo:count('curious',r.id)}));
    const a=records.filter(r=>r.kind==='answer').map(r=>({...mapped(r),questionId:r.targetId,thanks:count('thanks',r.id)}));
-   const b=records.filter(r=>r.kind==='book').map(mapped);
+   const b=records.filter(r=>r.kind==='book').map(r=>({...mapped(r),thanks:count('thanks',r.id)}));
    app.community(q,a,b,records,feed.files,own);
   },
   ask() {
@@ -32,30 +32,50 @@ export function createCommunity({api,app,refresh,write,getUser,getEpoch}) {
    },'質問を共有しました。');
   },
   updateQuestion(id,changes) {mutate(null,()=>api.updateRecord(id,{...record(id).data,...changes}),'質問を更新しました。');},
-  answer(id){mutate($('#ansSubmit'),()=>api.insertRecord('answer',{text:$('#ansText').value.trim()},id),'回答を届けました。');},
+  answer(id){mutate($('#ansSubmit'),()=>api.insertRecord('answer',{text:$('#ansText').value.trim(),anonymous:!!$('#ansAnon')?.checked},id),'回答を届けました。');},
   deletePost(id,kind){mutate(null,async()=>{await api.deleteRecord(id);if(kind==='question')app.go('#/qa');},'投稿を削除しました。');},
   reaction(kind,target,button){mutate(button,async()=>{
    const old=own.find(r=>r.kind===kind&&r.target_id===target);
    if(old)await api.deleteRecord(old.id);else await api.upsertRecord(kind,{},target);
   },'更新しました。');},
   book(button){mutate(button,async()=>{await api.insertRecord('book',{title:$('#bookTitle').value.trim(),author:$('#bookAuthor').value.trim(),comment:$('#bookComment').value.trim(),tag:$('#bookTag').value});app.dialog.close();},'本の紹介を共有しました。');},
-  postBoardReply(id,button){mutate(button,async()=>{await api.insertRecord('board_reply',{text:$('#boardReplyText').value.trim()},id);$('#boardReplyText').value='';},'コメントを共有しました。');},
+  answerReply(id){
+   const a=record(id),q=records.find(r=>r.id===a.targetId),askerAnon=q?.mine&&q.data.anonymous;
+   const name=a.mine?app.store.profile.name:a.author?.name||'匿名のメンバー';
+   openText('回答に返信',`${app.content.text(app.content.quote(name,a.data.text))}<label for="communityText">返信（300字まで）</label><textarea id="communityText" required maxlength="300"></textarea>${askerAnon?'<p class="front-note">匿名で質問しているので、返信も名前を出さず「質問者」と表示されます。</p>':'<label class="ans-anon"><input type="checkbox" id="replyAnon" role="switch"> 匿名で返信する</label>'}`,()=>api.insertRecord('answer_reply',{text:$('#communityText').value.trim(),anonymous:!!$('#replyAnon')?.checked},id));
+  },
+  postBoardReply(id,button){mutate(button,async()=>{await api.insertRecord('board_reply',{text:(app.state.boardQuote||'')+$('#boardReplyText').value.trim(),attachment:app.state.boardReplyAttachment()},id);app.state.boardQuote=null;},'コメントを共有しました。');},
+  editRecord(id) {
+   const r=record(id);if(!r.mine)return;
+   if(r.kind==='book') {
+    app.openUtility('本の紹介を編集',`<form id="communityEditForm" class="front-form"><label for="editTitle">本のタイトル</label><input id="editTitle" required maxlength="100" value="${esc(r.data.title)}"><label for="editAuthor">著者</label><input id="editAuthor" required maxlength="80" value="${esc(r.data.author)}"><label for="editTag">業界・分野</label><select id="editTag">${app.bookTags.filter(t=>t!=='すべて').map(t=>`<option ${t===r.data.tag?'selected':''}>${esc(t)}</option>`).join('')}</select><label for="editText">おすすめの理由</label><textarea id="editText" required maxlength="300">${esc(r.data.comment)}</textarea><button class="btn-main">変更を保存する</button><p id="frontStatus" role="status"></p></form>`);
+   }else if(['touron','touron_comment','board_reply','answer_reply'].includes(r.kind)){
+    app.openUtility('投稿を編集',`<form id="communityEditForm" class="front-form">${r.kind==='touron'?`<label for="editTitle">タイトル</label><input id="editTitle" required maxlength="100" value="${esc(r.data.title)}">`:''}<label for="editText">本文</label><textarea id="editText" required maxlength="${r.kind==='answer_reply'?300:1000}">${esc(r.data.text)}</textarea>${r.kind==='board_reply'?app.content.picker('editAttachment'):''}<button class="btn-main">変更を保存する</button><p id="frontStatus" role="status"></p></form>`);
+   }else return;
+   const attachment=r.kind==='board_reply'?app.content.bind('editAttachment',r.data.attachment):null;
+   $('#communityEditForm').onsubmit=e=>{e.preventDefault();mutate(e.submitter,async()=>{
+    const payload={...r.data};
+    if(r.kind==='book')Object.assign(payload,{title:$('#editTitle').value.trim(),author:$('#editAuthor').value.trim(),comment:$('#editText').value.trim(),tag:$('#editTag').value});
+    else {payload.text=$('#editText').value.trim();if(r.kind==='touron')payload.title=$('#editTitle').value.trim();if(attachment)payload.attachment=attachment();}
+    await api.updateRecord(id,payload);app.dialog.close();
+   },'投稿を更新しました。');};
+  },
   saveDraft(value){clearTimeout(draftTimer);const version=getEpoch();draftTimer=setTimeout(()=>{if(getUser()&&version===getEpoch())draftRequest=api.upsertRecord('draft',value,'draft').catch(()=>app.toast('下書きの同期に失敗しました。この端末の下書きは残っています。'));},900);},
   eventRequest(){openText('イベントをリクエスト','<label for="communityText">企画してほしい内容（1,000字まで）</label><textarea id="communityText" required maxlength="1000"></textarea><p>運営に送信します。架空の情報で試してください。</p>',()=>api.insertRecord('event_request',{text:$('#communityText').value.trim()}));},
   hostsHTML(){
    const hosts=records.filter(r=>r.kind==='host');
-   return `<p class="front-note">受付中のOBOGに、公開の質問を送れます。個人情報は書かないでください。</p>${app.store.profile.attr==='obog'?`<section class="card"><label>OB訪問をうけつける <button class="switch ${app.store.obHost?'on':''}" id="obHostToggle" role="switch" aria-checked="${app.store.obHost}" aria-label="OB訪問をうけつける"></button></label></section>`:''}<h2 class="ans-count-label">受付中の先輩 ${hosts.length}人</h2>${hosts.map(r=>`<article class="card"><b>${app.avatarHTML(r.author.avatar)} ${esc(r.author.name)}</b><p>${esc(r.author.currentRole||'')}</p><p>${esc(r.author.bio||'')}</p>${!r.mine?`<button class="chip" data-host-question="${esc(r.author.name)}">きいてみる</button>`:'<span>あなたの受付</span>'}</article>`).join('')||'<p class="screen-sub">まだ受付中の先輩はいません。</p>'}`;
+   return `<p class="front-note">受付中のOBOGに、公開の質問を送れます。個人情報は書かないでください。</p>${app.store.profile.attr==='obog'?`<section class="card"><label>OB訪問をうけつける <button class="switch ${app.store.obHost?'on':''}" id="obHostToggle" role="switch" aria-checked="${app.store.obHost}" aria-label="OB訪問をうけつける"></button></label></section>`:''}<h2 class="ans-count-label">受付中の先輩 ${hosts.length}人</h2>${hosts.map(r=>`<article class="card"><b>${app.avatarHTML(r.author.avatar)} ${esc(r.author.name)}</b><p>${r.author.currentRole?`勤務先：${esc(r.author.currentRole)}`:'勤務先は未設定です'}</p>${!r.mine?`<button class="chip" data-host-question="${esc(r.author.name)}">きいてみる</button>`:'<span>あなたの受付</span>'}</article>`).join('')||'<p class="screen-sub">まだ受付中の先輩はいません。</p>'}`;
   },
   touronHTML(){
    const mine=app.store.profile,sem=mine.seminar;
    const seminars=mine.attr==='current'?(sem?[sem]:[]):app.seminars;
    const posts=records.filter(r=>r.kind==='touron');
-   return `<p class="front-note">現役生には自分のゼミの進捗だけを表示します。OBOG・先生・職員には全ゼミを表示します。</p>${seminars.length?'<button class="chip" data-touron-post>進捗を投稿する</button>':'<p>所属ゼミは運営に設定してもらってください。</p>'}${seminars.map(sem=>`<section class="card"><h2>${esc(sem)}</h2>${posts.filter(r=>r.targetId===sem).map(r=>`<article><h3>${esc(r.data.title)}</h3><p>${esc(r.data.text)}</p><small>${esc(r.author.name)} · ${esc(new Date(r.createdAt).toLocaleDateString('ja-JP'))}</small>${r.mine?`<button class="delete-btn" data-delete-community="${r.id}">進捗を削除</button>`:''}</article>`).join('')||'<p>まだ進捗の投稿はありません。</p>'}${records.filter(r=>r.kind==='touron_comment'&&r.targetId===sem).map(r=>`<div class="tr-comment"><b>${esc(r.author.name)}</b><p>${esc(r.data.text)}</p>${r.mine?`<button class="delete-btn" data-delete-community="${r.id}">意見を削除</button>`:''}</div>`).join('')}${mine.attr!=='current'?`<button class="chip" data-touron-comment="${esc(sem)}">意見を書く</button>`:''}</section>`).join('')}`;
+   return `<p class="front-note">現役生には自分のゼミの進捗だけを表示します。OBOG・先生・職員には全ゼミを表示します。</p>${seminars.length?'<button class="chip" data-touron-post>進捗を投稿する</button>':'<p>所属ゼミは運営に設定してもらってください。</p>'}${seminars.map(sem=>`<section class="card"><h2>${esc(sem)}</h2>${posts.filter(r=>r.targetId===sem).map(r=>`<article><h3>${esc(r.data.title)}</h3><p>${app.content.text(r.data.text)}</p><small>${esc(r.author.name)} · ${esc(new Date(r.createdAt).toLocaleDateString('ja-JP'))}</small>${r.mine?`<button class="chip" data-edit-community="${r.id}">編集</button><button class="delete-btn" data-delete-community="${r.id}">進捗を削除</button>`:''}</article>`).join('')||'<p>まだ進捗の投稿はありません。</p>'}${records.filter(r=>r.kind==='touron_comment'&&r.targetId===sem).map(r=>`<div class="tr-comment"><b>${esc(r.author.name)}</b><p>${app.content.text(r.data.text)}</p>${r.mine?`<button class="chip" data-edit-community="${r.id}">編集</button><button class="delete-btn" data-delete-community="${r.id}">意見を削除</button>`:''}</div>`).join('')}${mine.attr!=='current'?`<button class="chip" data-touron-comment="${esc(sem)}">意見を書く</button>`:''}</section>`).join('')}`;
   },
   async openConversation(recruitmentId,recipientId,recipientName){
    await refresh();const user=getUser();if(!user)return;
    const messages=records.filter(r=>r.kind==='message'&&r.targetId===recruitmentId&&((r.ownerId===user.id&&r.data.recipientId===recipientId)||(r.ownerId===recipientId&&r.data.recipientId===user.id))).slice().reverse();
-   app.openUtility(`${recipientName}さんとの連絡`,`<p class="front-note">募集者と協力を申し込んだ方だけが読めるアプリ内の連絡です。架空メールにはメールを送りません。</p><ul class="front-list">${messages.map(r=>`<li><b>${esc(r.author.name)}</b><p>${esc(r.data.text)}</p><small>${esc(new Date(r.createdAt).toLocaleString('ja-JP'))}</small></li>`).join('')||'<li>まだ連絡はありません。</li>'}</ul><form id="conversationForm" class="front-form"><label for="conversationText">連絡内容（1,000字まで）</label><textarea id="conversationText" required maxlength="1000"></textarea><button class="btn-main" type="submit">送信する</button><p id="frontStatus" role="status"></p></form>`);
+   app.openUtility(`${recipientName}さんとの連絡`,`<p class="front-note">募集者と協力を申し込んだ方だけが読めるアプリ内の連絡です。架空メールにはメールを送りません。</p><ul class="front-list">${messages.map(r=>`<li><b>${esc(r.author.name)}</b><p>${app.content.text(r.data.text)}</p><small>${esc(new Date(r.createdAt).toLocaleString('ja-JP'))}</small></li>`).join('')||'<li>まだ連絡はありません。</li>'}</ul><form id="conversationForm" class="front-form"><label for="conversationText">連絡内容（1,000字まで）</label><textarea id="conversationText" required maxlength="1000"></textarea><button class="btn-main" type="submit">送信する</button><p id="frontStatus" role="status"></p></form>`);
    $('#conversationForm').onsubmit=e=>{e.preventDefault();mutate(e.submitter,async()=>{await api.insertRecord('message',{text:$('#conversationText').value.trim(),recipientId,recipientName},recruitmentId);await controller.openConversation(recruitmentId,recipientId,recipientName);},'連絡を届けました。');};
   },
   service:{
@@ -79,6 +99,9 @@ export function createCommunity({api,app,refresh,write,getUser,getEpoch}) {
   }
  };
  document.addEventListener('click',e=>{
+  const answerReply=e.target.closest('[data-answer-reply]');if(answerReply){controller.answerReply(answerReply.dataset.answerReply);return;}
+  const thanks=e.target.closest('[data-book-thanks],[data-react-thanks]');if(thanks){controller.reaction('thanks',thanks.dataset.bookThanks||thanks.dataset.reactThanks,thanks);return;}
+  const edit=e.target.closest('[data-edit-community]');if(edit){controller.editRecord(edit.dataset.editCommunity);return;}
   const del=e.target.closest('[data-delete-community]');if(del){if(confirm('この投稿を削除しますか？'))controller.deletePost(del.dataset.deleteCommunity,'other');return;}
   const host=e.target.closest('[data-host-question]');if(host){app.openAsk('@'+host.dataset.hostQuestion+' さんに聞きたいです。','work');return;}
   const post=e.target.closest('[data-touron-post]'), comment=e.target.closest('[data-touron-comment]');

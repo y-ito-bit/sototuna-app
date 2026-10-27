@@ -12,6 +12,7 @@ function clear() {
   epoch++; current=null; loading=null; app.reset();
   $('#authPassword').value='';
 }
+function recordAppVisit() { if(current&&document.visibilityState!=='hidden')api.recordAppVisit().catch(()=>console.warn('利用日数の記録に失敗しました。')); }
 function report(error) { app.toast('保存・読み込みができませんでした。'+(error.message || '再度お試しください。')); }
 async function refresh(force=false) {
   if (!current) throw new Error('ログインしてください。');
@@ -23,7 +24,7 @@ async function refresh(force=false) {
     const [rows, helps, counts,feed,own,notices]=await Promise.all([api.listRecruitments(),api.myCooperations(),api.counts(),api.communityFeed(),api.ownRecords(),api.notices()]);
     if (version!==epoch || current?.id!==identity) return;
     const totals=new Map(counts.map(c=>[c.recruitment_id,Number(c.helper_count)]));
-    const recruits=rows.map(r=>({id:r.id,userId:r.owner_id,mine:r.owner_id===identity,type:r.kind,title:r.title,body:r.body,deadline:r.deadline,status:r.status,helpers:totals.get(r.id)||0,owner:{name:r.owner?.display_name||'参加者',attr:r.owner?.affiliation||'obog',gen:r.owner?.generation,avatar:'🌱'}}));
+    const recruits=rows.map(r=>({id:r.id,userId:r.owner_id,mine:r.owner_id===identity,type:r.kind,title:r.title,body:r.body,attachment:r.attachment,deadline:r.deadline,status:r.status,helpers:totals.get(r.id)||0,owner:{name:r.owner?.display_name||'参加者',attr:r.owner?.affiliation||'obog',gen:r.owner?.generation,avatar:'🌱'}}));
     app.snapshot(recruits,helps.map(c=>c.recruitment_id)); community.accept(feed,own,notices); app.render();
   })();
   loading=task;
@@ -36,7 +37,7 @@ async function enter(user) {
   current=user; epoch++; app.start(user,profile);
   await refresh();
   if (!current) return;
-  app.reveal(); $('#authPassword').value='';
+  app.reveal(); $('#authPassword').value=''; recordAppVisit();
 }
 async function write(button, task, status) {
   if (!current) return;
@@ -85,9 +86,10 @@ window.SototunaBackend={
   openCooperation, openContacts,
   createRecruitment() {
     write($('#recSubmit'),async version=>{
-      const row=await api.createRecruitment({kind:app.state.recType,title:$('#recTitle').value,body:$('#recBody').value,deadline:$('#recDeadline').value});
+      const payload={kind:app.state.recType,title:$('#recTitle').value,body:$('#recBody').value,deadline:$('#recDeadline').value,attachment:app.state.recAttachment()};
+      const row=app.state.editRecruitment?await api.updateRecruitment(app.state.editRecruitment,payload):await api.createRecruitment(payload);
       if(version!==epoch) return;
-      $('#recruitOverlay').classList.remove('on'); await refresh(true); if(version!==epoch)return; app.go('#/board/'+row.id); app.toast('募集を公開しました。');
+      $('#recruitOverlay').classList.remove('on'); await refresh(true); if(version!==epoch)return; app.go('#/board/'+row.id); app.toast(app.state.editRecruitment?'募集を更新しました。':'募集を公開しました。');app.state.editRecruitment=null;
     });
   },
   deleteRecruitment(id) {
@@ -114,7 +116,9 @@ document.addEventListener('click',async e=>{
 window.addEventListener('hashchange',()=>{
   if(current) refresh().catch(report);
 });
-window.addEventListener('focus',()=>{if(current)refresh().catch(report);});
+// Returning from the photo picker fires focus; re-rendering then would wipe the text being written.
+window.addEventListener('focus',()=>{if(current){if(!app.hasDraft())refresh().catch(report);recordAppVisit();}});
+document.addEventListener('visibilitychange',()=>{if(current&&document.visibilityState==='visible')recordAppVisit();});
 $('#betaLogin').onsubmit=async e=>{
   e.preventDefault(); $('#authContinue').disabled=true; $('#authContinue').textContent='確認中…';$('#authStatus').textContent='';
   try { const result=await api.signInBeta($('#authBetaId').value,$('#authPassword').value);await enter(result.user); }

@@ -2,7 +2,7 @@ import {randomBytes} from 'node:crypto';
 import {open,readFile} from 'node:fs/promises';
 import {pathToFileURL} from 'node:url';
 
-export const BETA_IDS = Array.from({length:15},(_,i)=>`beta${String(i+1).padStart(3,'0')}`);
+export const BETA_IDS = Array.from({length:50},(_,i)=>`beta${String(i+1).padStart(3,'0')}`);
 const domain = '@beta.sototuna.invalid';
 const projectUrl = 'https://gdodurlehfyeilxtecoz.supabase.co';
 export async function issueAccounts({request,record,password=()=>randomBytes(24).toString('base64url')}) {
